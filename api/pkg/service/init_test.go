@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 	}
 
 	db = testConfig.DB()
-	db.AutoMigrate(model.Category{}, model.Tag{})
+	db.AutoMigrate(model.Category{}, model.Tag{}, model.Catalog{}, model.Resource{}, model.ResourceVersion{})
 
 	defer os.Exit(m.Run())
 	defer testConfig.Cleanup()
