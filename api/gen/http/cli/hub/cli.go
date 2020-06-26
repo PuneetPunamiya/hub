@@ -14,6 +14,7 @@ import (
 	"os"
 
 	categoryc "github.com/tektoncd/hub/api/gen/http/category/client"
+	resourcec "github.com/tektoncd/hub/api/gen/http/resource/client"
 	goahttp "goa.design/goa/v3/http"
 	goa "goa.design/goa/v3/pkg"
 )
@@ -23,13 +24,15 @@ import (
 //    command (subcommand1|subcommand2|...)
 //
 func UsageCommands() string {
-	return `category all
+	return `resource all-resources
+category all
 `
 }
 
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
-	return os.Args[0] + ` category all` + "\n" +
+	return os.Args[0] + ` resource all-resources --limit 17538033380356395303` + "\n" +
+		os.Args[0] + ` category all` + "\n" +
 		""
 }
 
@@ -43,10 +46,18 @@ func ParseEndpoint(
 	restore bool,
 ) (goa.Endpoint, interface{}, error) {
 	var (
+		resourceFlags = flag.NewFlagSet("resource", flag.ContinueOnError)
+
+		resourceAllResourcesFlags     = flag.NewFlagSet("all-resources", flag.ExitOnError)
+		resourceAllResourcesLimitFlag = resourceAllResourcesFlags.String("limit", "100", "")
+
 		categoryFlags = flag.NewFlagSet("category", flag.ContinueOnError)
 
 		categoryAllFlags = flag.NewFlagSet("all", flag.ExitOnError)
 	)
+	resourceFlags.Usage = resourceUsage
+	resourceAllResourcesFlags.Usage = resourceAllResourcesUsage
+
 	categoryFlags.Usage = categoryUsage
 	categoryAllFlags.Usage = categoryAllUsage
 
@@ -65,6 +76,8 @@ func ParseEndpoint(
 	{
 		svcn = flag.Arg(0)
 		switch svcn {
+		case "resource":
+			svcf = resourceFlags
 		case "category":
 			svcf = categoryFlags
 		default:
@@ -82,6 +95,13 @@ func ParseEndpoint(
 	{
 		epn = svcf.Arg(0)
 		switch svcn {
+		case "resource":
+			switch epn {
+			case "all-resources":
+				epf = resourceAllResourcesFlags
+
+			}
+
 		case "category":
 			switch epn {
 			case "all":
@@ -109,6 +129,13 @@ func ParseEndpoint(
 	)
 	{
 		switch svcn {
+		case "resource":
+			c := resourcec.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "all-resources":
+				endpoint = c.AllResources()
+				data, err = resourcec.BuildAllResourcesPayload(*resourceAllResourcesLimitFlag)
+			}
 		case "category":
 			c := categoryc.NewClient(scheme, host, doer, enc, dec, restore)
 			switch epn {
@@ -123,6 +150,30 @@ func ParseEndpoint(
 	}
 
 	return endpoint, data, nil
+}
+
+// resourceUsage displays the usage of the resource command and its subcommands.
+func resourceUsage() {
+	fmt.Fprintf(os.Stderr, `The resource service provides all resources information
+Usage:
+    %s [globalflags] resource COMMAND [flags]
+
+COMMAND:
+    all-resources: Get all Resources
+
+Additional help:
+    %s resource COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func resourceAllResourcesUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] resource all-resources -limit UINT
+
+Get all Resources
+    -limit UINT: 
+
+Example:
+    `+os.Args[0]+` resource all-resources --limit 17538033380356395303
+`, os.Args[0])
 }
 
 // categoryUsage displays the usage of the category command and its subcommands.
