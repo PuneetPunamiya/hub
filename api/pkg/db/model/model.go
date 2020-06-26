@@ -50,9 +50,16 @@ type (
 	ResourceVersion struct {
 		gorm.Model
 		Version     string
+		DisplayName string
 		Description string
 		URL         string
 		Resource    Resource
 		ResourceID  uint
+	}
+
+	// ResourceTag represent struct for resource_tag, needed for creating foreign key
+	ResourceTag struct {
+		ResourceID uint
+		TagID      uint
 	}
 )
