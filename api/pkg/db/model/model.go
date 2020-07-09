@@ -21,9 +21,9 @@ type (
 
 	Catalog struct {
 		gorm.Model
-		Name       string
-		Type       string
-		URL        string
+		Name       string `gorm:"size:100;not null;unique"`
+		Type       string `gorm:"size:100;not null;unique"`
+		URL        string `gorm:"size:100;not null;unique"`
 		Owner      string
 		ContextDir string
 		Resources  []Resource
@@ -32,8 +32,8 @@ type (
 
 	Resource struct {
 		gorm.Model
-		Name      string
-		Type      string
+		Name      string `gorm:"size:100;not null;unique"`
+		Type      string `gorm:"size:100;not null;unique"`
 		Rating    float64
 		Catalog   Catalog
 		CatalogID uint
@@ -43,11 +43,11 @@ type (
 
 	ResourceVersion struct {
 		gorm.Model
-		Version             string
+		Version             string `gorm:"size:100;not null;unique"`
 		Description         string
-		URL                 string
+		URL                 string `gorm:"size:100;not null;unique"`
 		DisplayName         string
-		MinPipelinesVersion string
+		MinPipelinesVersion string `gorm:"size:100;not null;unique"`
 		Resource            Resource
 		ResourceID          uint
 	}
