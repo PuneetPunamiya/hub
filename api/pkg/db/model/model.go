@@ -7,13 +7,13 @@ import (
 type (
 	Category struct {
 		gorm.Model
-		Name string `gorm:"size:100;not null;unique"`
+		Name string `gorm:"not null"`
 		Tags []Tag
 	}
 
 	Tag struct {
 		gorm.Model
-		Name       string `gorm:"size:100;not null;unique"`
+		Name       string `gorm:"not null"`
 		Category   Category
 		CategoryID int
 		Resources  []*Resource `gorm:"many2many:resource_tags;"`
@@ -21,19 +21,18 @@ type (
 
 	Catalog struct {
 		gorm.Model
-		Name       string
-		Type       string
-		URL        string
-		Owner      string
+		Name       string `gorm:"primary_key"`
+		Type       string `gorm:"primary_key"`
+		URL        string `gorm:"not null"`
 		ContextDir string
 		Resources  []Resource
-		Revision   string
+		Revision   string `gorm:"not null"`
 	}
 
 	Resource struct {
 		gorm.Model
-		Name      string
-		Type      string
+		Name      string `gorm:"not null"`
+		Type      string `gorm:"not null"`
 		Rating    float64
 		Catalog   Catalog
 		CatalogID uint
@@ -43,11 +42,11 @@ type (
 
 	ResourceVersion struct {
 		gorm.Model
-		Version             string
+		Version             string `gorm:"not null"`
 		Description         string
-		URL                 string
+		URL                 string `gorm:"not null"`
 		DisplayName         string
-		MinPipelinesVersion string
+		MinPipelinesVersion string `gorm:"not null"`
 		Resource            Resource
 		ResourceID          uint
 	}
