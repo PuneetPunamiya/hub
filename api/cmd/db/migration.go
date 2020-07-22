@@ -1,7 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/jinzhu/gorm"
+	"github.com/prometheus/common/log"
 	"github.com/tektoncd/hub/api/pkg/app"
 	"github.com/tektoncd/hub/api/pkg/db/model"
 	"go.uber.org/zap"
@@ -17,80 +21,8 @@ func Migrate(api *app.APIConfig) error {
 	migration := gormigrate.New(
 		api.DB(),
 		gormigrate.DefaultOptions,
-		[]*gormigrate.Migration{
-			{
-				ID: "202007141723",
-				Migrate: func(tx *gorm.DB) error {
-
-					tx.Model(&model.Catalog{}).AddUniqueIndex("idx_id", "id")
-
-					catalog_query := `ALTER TABLE catalogs
-						alter column name set NOT NULL,
-						alter column type set NOT NULL,
-						alter column url set NOT NULL,
-						alter column owner set NOT NULL;`
-
-					resource_query := `ALTER TABLE resources
-						alter column name set NOT NULL,
-						 alter column type set NOT NULL;`
-
-					resource_version_query := `ALTER TABLE resource_versions
-						 alter column version set NOT NULL,
-						 alter column description set NOT NULL,
-						 alter column min_pipelines_version set NOT NULL;`
-
-					if err := tx.Exec(catalog_query).Error; err != nil {
-						log.Error(err)
-						return err
-					}
-					if err := tx.Exec(resource_query).Error; err != nil {
-						log.Error(err)
-						return err
-					}
-					if err := tx.Exec(resource_version_query).Error; err != nil {
-						log.Error(err)
-						return err
-					}
-					return nil
-				},
-			},
-			{
-				ID: "202006071000",
-				Migrate: func(tx *gorm.DB) error {
-
-					if err := tx.AutoMigrate(
-						&model.Tag{}, &model.Catalog{},
-						&model.Resource{}, &model.ResourceVersion{}).Error; err != nil {
-						log.Error(err)
-						return err
-					}
-
-					if err := fkey(log, tx, model.Resource{}, "catalog_id", "catalogs"); err != nil {
-						return err
-					}
-					if err := fkey(log, tx, model.ResourceVersion{}, "resource_id", "resources"); err != nil {
-						return err
-					}
-					if err := fkey(log, tx, model.ResourceTag{},
-						"resource_id", "resources",
-						"tag_id", "tags"); err != nil {
-						return err
-					}
-					return nil
-				},
-			},
-			{
-				ID: "202006091100",
-				Migrate: func(tx *gorm.DB) error {
-					if err := tx.AutoMigrate(
-						&model.ResourceVersion{}).Error; err != nil {
-						log.Error(err)
-						return err
-					}
-					return nil
-				},
-			},
-		})
+		migrations,
+	)
 
 	migration.InitSchema(func(db *gorm.DB) error {
 		if err := db.AutoMigrate(
@@ -142,6 +74,88 @@ func Migrate(api *app.APIConfig) error {
 
 	log.Info("Migration ran successfully !!")
 	return nil
+}
+
+var migrations = []*gormigrate.Migration{
+	{
+		ID: "202007141723",
+		Migrate: func(tx *gorm.DB) error {
+
+			tx.Model(&model.Catalog{}).AddUniqueIndex("idx_id", "id")
+
+			catalog_query := `ALTER TABLE catalogs
+				alter column name set NOT NULL,
+				alter column type set NOT NULL,
+				alter column url set NOT NULL;`
+
+			resource_query := `ALTER TABLE resources
+				alter column name set NOT NULL,
+				 alter column type set NOT NULL;`
+
+			resource_version_query := `ALTER TABLE resource_versions
+				 alter column version set NOT NULL,
+				 alter column description set NOT NULL,
+				 alter column min_pipelines_version set NOT NULL;`
+
+			if err := tx.Exec(catalog_query).Error; err != nil {
+				log.Error(err)
+				return err
+			}
+			if err := tx.Exec(resource_query).Error; err != nil {
+				log.Error(err)
+				return err
+			}
+			if err := tx.Exec(resource_version_query).Error; err != nil {
+				log.Error(err)
+				return err
+			}
+			return nil
+		},
+	},
+	{
+		ID: "202006071000",
+		Migrate: func(tx *gorm.DB) error {
+
+			api, err := app.FromEnv()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "FATAL: failed to initialise: %s", err)
+				os.Exit(1)
+			}
+
+			log := api.Logger()
+
+			if err := tx.AutoMigrate(
+				&model.Tag{}, &model.Catalog{},
+				&model.Resource{}, &model.ResourceVersion{}).Error; err != nil {
+				log.Error(err)
+				return err
+			}
+
+			if err := fkey(log, tx, model.Resource{}, "catalog_id", "catalogs"); err != nil {
+				return err
+			}
+			if err := fkey(log, tx, model.ResourceVersion{}, "resource_id", "resources"); err != nil {
+				return err
+			}
+			if err := fkey(log, tx, model.ResourceTag{},
+				"resource_id", "resources",
+				"tag_id", "tags"); err != nil {
+				return err
+			}
+			return nil
+		},
+	},
+	{
+		ID: "202006091100",
+		Migrate: func(tx *gorm.DB) error {
+			if err := tx.AutoMigrate(
+				&model.ResourceVersion{}).Error; err != nil {
+				log.Error(err)
+				return err
+			}
+			return nil
+		},
+	},
 }
 
 func fkey(log *zap.SugaredLogger, db *gorm.DB, model interface{}, args ...string) error {
