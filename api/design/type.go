@@ -273,3 +273,9 @@ var Versions = ResultType("application/vnd.hub.versions", "Versions", func() {
 
 	Required("latest", "versions")
 })
+
+var JWTAuth = JWTSecurity("jwt", func() {
+	Description("Secures endpoint by requiring a valid JWT retrieved via the /auth/login endpoint.")
+	Scope("api:read", "Read-only access")
+	Scope("api:write", "Read and write access")
+})
