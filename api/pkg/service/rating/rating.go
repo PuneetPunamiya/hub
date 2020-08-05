@@ -24,6 +24,8 @@ import (
 
 	"github.com/tektoncd/hub/api/gen/rating"
 	"github.com/tektoncd/hub/api/pkg/app"
+	"github.com/tektoncd/hub/api/pkg/db/model"
+	"github.com/tektoncd/hub/api/pkg/token"
 )
 
 type service struct {
@@ -32,6 +34,18 @@ type service struct {
 	jwtKey string
 }
 
+var (
+	invalidTokenError  = rating.MakeInvalidToken(fmt.Errorf("invalid user token"))
+	invalidScopesError = rating.MakeInvalidScopes(fmt.Errorf("user not authorized"))
+	fetchError         = rating.MakeInternalError(fmt.Errorf("failed to fetch rating"))
+)
+
+type contextKey string
+
+var (
+	contextKeyUserID = contextKey("user-id")
+)
+
 // New returns the rating service implementation.
 func New(api app.Config) rating.Service {
 	return &service{api.Logger(), api.DB(), api.JWTSigningKey()}
@@ -39,13 +53,48 @@ func New(api app.Config) rating.Service {
 
 // JWTAuth implements the authorization logic for service "rating" for the
 // "jwt" security scheme.
-func (s *service) JWTAuth(ctx context.Context, token string, scheme *security.JWTScheme) (context.Context, error) {
-	return ctx, fmt.Errorf("not implemented")
+func (s *service) JWTAuth(ctx context.Context, jwt string, scheme *security.JWTScheme) (context.Context, error) {
+
+	claims, err := token.Verify(jwt, s.jwtKey)
+	if err != nil {
+		return ctx, invalidTokenError
+	}
+
+	err = token.ValidateScopes(claims, scheme)
+	if err != nil {
+		return ctx, invalidScopesError
+	}
+
+	// Gets user id and passes in context to API Method
+	userID, ok := claims["id"].(float64)
+	if !ok {
+		return ctx, invalidTokenError
+	}
+
+	ctx = context.WithValue(ctx, contextKeyUserID, uint(userID))
+
+	return ctx, nil
 }
 
 // Find user's rating for a resource
 func (s *service) Get(ctx context.Context, p *rating.GetPayload) (res *rating.GetResult, err error) {
-	res = &rating.GetResult{}
-	s.logger.Info("rating.Get")
-	return
+
+	userID := ctx.Value(contextKeyUserID).(uint)
+
+	q := s.db.Where("user_id = ? AND resource_id = ?", userID, p.ID)
+
+	r := &model.UserResourceRating{}
+	if err := q.Find(&r).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return &rating.GetResult{Rating: 0}, nil
+		}
+		s.logger.Error(err)
+		return nil, fetchError
+	}
+
+	res = &rating.GetResult{
+		Rating: r.Rating,
+	}
+
+	return res, nil
 }
