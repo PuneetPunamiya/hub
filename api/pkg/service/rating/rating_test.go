@@ -47,3 +47,15 @@ func TestGet_RatingNotFound(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, uint(0), rat.Rating)
 }
+
+func TestUpdate(t *testing.T) {
+	tc := testutils.Setup(t)
+	testutils.LoadFixtures(t, tc.FixturePath())
+
+	ratingSvc := New(tc)
+	ctx := context.WithValue(context.Background(), contextKeyUserID, uint(11))
+	payload := &rating.UpdatePayload{ID: 1, Rating: 3, Token: "token"}
+	rat, err := ratingSvc.Update(ctx, payload)
+	assert.NoError(t, err)
+	assert.Equal(t, float64(4), rat.AvgRating)
+}

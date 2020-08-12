@@ -121,3 +121,33 @@ func TestGet_Http_RatingNotFound(t *testing.T) {
 		assert.Equal(t, float64(0), jsonMap["rating"])
 	})
 }
+
+func UpdateChecker(tc *testutils.TestConfig) *goahttpcheck.APIChecker {
+	checker := goahttpcheck.New()
+	checker.Mount(server.NewUpdateHandler,
+		server.MountUpdateHandler,
+		rating.NewUpdateEndpoint(New(tc), New(tc).(rating.Auther).JWTAuth))
+	return checker
+}
+
+func TestUpdate_Http(t *testing.T) {
+	tc := testutils.Setup(t)
+	testutils.LoadFixtures(t, tc.FixturePath())
+
+	data := []byte(`{"rating": 2}`)
+
+	UpdateChecker(tc).Test(t, http.MethodPut, "/resource/1/rating").
+		WithHeader("Authorization", validToken).WithBody(data).
+		Check().
+		HasStatus(200).Cb(func(r *http.Response) {
+		b, readErr := ioutil.ReadAll(r.Body)
+		assert.NoError(t, readErr)
+		defer r.Body.Close()
+
+		var jsonMap map[string]interface{}
+		marshallErr := json.Unmarshal([]byte(b), &jsonMap)
+		assert.NoError(t, marshallErr)
+
+		assert.Equal(t, float64(3.5), jsonMap["avgRating"])
+	})
+}

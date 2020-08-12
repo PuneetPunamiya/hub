@@ -17,6 +17,7 @@ package rating
 import (
 	"context"
 	"fmt"
+	"math"
 
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
@@ -38,6 +39,7 @@ var (
 	invalidTokenError  = rating.MakeInvalidToken(fmt.Errorf("invalid user token"))
 	invalidScopesError = rating.MakeInvalidScopes(fmt.Errorf("user not authorized"))
 	fetchError         = rating.MakeInternalError(fmt.Errorf("failed to fetch rating"))
+	updateError        = rating.MakeInternalError(fmt.Errorf("failed to update rating"))
 )
 
 type contextKey string
@@ -101,7 +103,40 @@ func (s *service) Get(ctx context.Context, p *rating.GetPayload) (res *rating.Ge
 
 // Update user's rating for a resource
 func (s *service) Update(ctx context.Context, p *rating.UpdatePayload) (res *rating.UpdateResult, err error) {
-	res = &rating.UpdateResult{}
-	s.logger.Info("rating.Update")
-	return
+
+	userID := ctx.Value(contextKeyUserID).(uint)
+
+	// update user's rating for the resource
+	q := s.db.Where("user_id = ? AND resource_id = ?", userID, p.ID)
+
+	rat := &model.UserResourceRating{
+		UserID:     userID,
+		ResourceID: p.ID,
+		Rating:     p.Rating,
+	}
+	if err := q.Assign(&model.UserResourceRating{Rating: p.Rating}).
+		FirstOrCreate(rat).Error; err != nil {
+		return nil, updateError
+	}
+
+	// evaluates average rating of the resource
+	q = s.db.Model(&model.UserResourceRating{}).Where("resource_id = ?", p.ID).Select("avg(rating)")
+
+	var avg float64
+	q.Row().Scan(&avg)
+
+	// updates resource average's rating in resource table
+	q = s.db.Model(&model.Resource{}).Where("id = ?", p.ID)
+
+	avg = math.Round(avg*10) / 10
+	if err := q.Update("rating", avg).
+		Error; err != nil {
+		return nil, updateError
+	}
+
+	res = &rating.UpdateResult{
+		AvgRating: avg,
+	}
+
+	return res, nil
 }
