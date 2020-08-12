@@ -50,4 +50,34 @@ var _ = Service("rating", func() {
 			Response("internal-error", StatusInternalServerError)
 		})
 	})
+
+	Method("Update", func() {
+		Description("Update user's rating for a resource")
+		Security(JWTAuth, func() {
+			Scope("api:write")
+		})
+		Payload(func() {
+			Attribute("id", UInt, "ID of a resource")
+			Attribute("rating", UInt, "User rating for resource", func() {
+				Minimum(0)
+				Maximum(5)
+			})
+			Token("token", String, "JWT")
+			Required("id", "token", "rating")
+		})
+		Result(func() {
+			Attribute("avgRating", Float64, "Average Rating of resource")
+			Required("avgRating")
+		})
+
+		HTTP(func() {
+			PUT("/resource/{id}/rating")
+			Header("token:Authorization")
+
+			Response(StatusOK)
+			Response("invalid-token", StatusUnauthorized)
+			Response("invalid-scopes", StatusForbidden)
+			Response("internal-error", StatusInternalServerError)
+		})
+	})
 })

@@ -98,3 +98,10 @@ func (s *service) Get(ctx context.Context, p *rating.GetPayload) (res *rating.Ge
 
 	return res, nil
 }
+
+// Update user's rating for a resource
+func (s *service) Update(ctx context.Context, p *rating.UpdatePayload) (res *rating.UpdateResult, err error) {
+	res = &rating.UpdateResult{}
+	s.logger.Info("rating.Update")
+	return
+}

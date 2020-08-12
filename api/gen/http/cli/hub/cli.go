@@ -31,17 +31,17 @@ func UsageCommands() string {
 auth authenticate
 status status
 resource (query|list|versions-by-id|by-type-name-version|by-version-id|by-type-name|by-id)
-rating get
+rating (get|update)
 `
 }
 
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` category list` + "\n" +
-		os.Args[0] + ` auth authenticate --code "Nesciunt placeat provident ducimus amet doloribus molestias."` + "\n" +
+		os.Args[0] + ` auth authenticate --code "Quas deserunt nostrum assumenda pariatur occaecati voluptas."` + "\n" +
 		os.Args[0] + ` status status` + "\n" +
-		os.Args[0] + ` resource query --name "Voluptas assumenda." --type "" --limit 989687786003471143` + "\n" +
-		os.Args[0] + ` rating get --id 17905673839553189026 --token "Ipsum deleniti."` + "\n" +
+		os.Args[0] + ` resource query --name "Suscipit aut minima autem ut est error." --type "" --limit 710655447639764616` + "\n" +
+		os.Args[0] + ` rating get --id 5654750039892505354 --token "Earum expedita."` + "\n" +
 		""
 }
 
@@ -101,6 +101,11 @@ func ParseEndpoint(
 		ratingGetFlags     = flag.NewFlagSet("get", flag.ExitOnError)
 		ratingGetIDFlag    = ratingGetFlags.String("id", "REQUIRED", "ID of a resource")
 		ratingGetTokenFlag = ratingGetFlags.String("token", "REQUIRED", "")
+
+		ratingUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
+		ratingUpdateBodyFlag  = ratingUpdateFlags.String("body", "REQUIRED", "")
+		ratingUpdateIDFlag    = ratingUpdateFlags.String("id", "REQUIRED", "ID of a resource")
+		ratingUpdateTokenFlag = ratingUpdateFlags.String("token", "REQUIRED", "")
 	)
 	categoryFlags.Usage = categoryUsage
 	categoryListFlags.Usage = categoryListUsage
@@ -122,6 +127,7 @@ func ParseEndpoint(
 
 	ratingFlags.Usage = ratingUsage
 	ratingGetFlags.Usage = ratingGetUsage
+	ratingUpdateFlags.Usage = ratingUpdateUsage
 
 	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
 		return nil, nil, err
@@ -214,6 +220,9 @@ func ParseEndpoint(
 			case "get":
 				epf = ratingGetFlags
 
+			case "update":
+				epf = ratingUpdateFlags
+
 			}
 
 		}
@@ -288,6 +297,9 @@ func ParseEndpoint(
 			case "get":
 				endpoint = c.Get()
 				data, err = ratingc.BuildGetPayload(*ratingGetIDFlag, *ratingGetTokenFlag)
+			case "update":
+				endpoint = c.Update()
+				data, err = ratingc.BuildUpdatePayload(*ratingUpdateBodyFlag, *ratingUpdateIDFlag, *ratingUpdateTokenFlag)
 			}
 		}
 	}
@@ -341,7 +353,7 @@ Authenticates users against GitHub OAuth
     -code STRING: 
 
 Example:
-    `+os.Args[0]+` auth authenticate --code "Nesciunt placeat provident ducimus amet doloribus molestias."
+    `+os.Args[0]+` auth authenticate --code "Quas deserunt nostrum assumenda pariatur occaecati voluptas."
 `, os.Args[0])
 }
 
@@ -396,7 +408,7 @@ Find resources by a combination of name, type
     -limit UINT: 
 
 Example:
-    `+os.Args[0]+` resource query --name "Voluptas assumenda." --type "" --limit 989687786003471143
+    `+os.Args[0]+` resource query --name "Suscipit aut minima autem ut est error." --type "" --limit 710655447639764616
 `, os.Args[0])
 }
 
@@ -407,7 +419,7 @@ List all resources sorted by rating and name
     -limit UINT: 
 
 Example:
-    `+os.Args[0]+` resource list --limit 10573978620324901534
+    `+os.Args[0]+` resource list --limit 14793232043880619506
 `, os.Args[0])
 }
 
@@ -418,7 +430,7 @@ Find all versions of a resource by its id
     -id UINT: ID of a resource
 
 Example:
-    `+os.Args[0]+` resource versions-by-id --id 7813958734577306762
+    `+os.Args[0]+` resource versions-by-id --id 4098784061040958288
 `, os.Args[0])
 }
 
@@ -431,7 +443,7 @@ Find resource using name, type and version of resource
     -version STRING: version of resource
 
 Example:
-    `+os.Args[0]+` resource by-type-name-version --type "pipeline" --name "Est voluptatibus numquam rerum." --version "Iure modi facere cumque omnis non ut."
+    `+os.Args[0]+` resource by-type-name-version --type "task" --name "Nihil eum placeat voluptas et consequuntur." --version "Et enim ut rerum repellat."
 `, os.Args[0])
 }
 
@@ -442,7 +454,7 @@ Find a resource using its version's id
     -version-id UINT: Version ID of a resource's version
 
 Example:
-    `+os.Args[0]+` resource by-version-id --version-id 1607812625788888782
+    `+os.Args[0]+` resource by-version-id --version-id 8492161670635965626
 `, os.Args[0])
 }
 
@@ -454,7 +466,7 @@ Find resources using name and type
     -name STRING: Name of resource
 
 Example:
-    `+os.Args[0]+` resource by-type-name --type "task" --name "Qui fugiat earum."
+    `+os.Args[0]+` resource by-type-name --type "task" --name "Ipsum deleniti."
 `, os.Args[0])
 }
 
@@ -465,7 +477,7 @@ Find a resource using it's id
     -id UINT: ID of a resource
 
 Example:
-    `+os.Args[0]+` resource by-id --id 2274039768596523285
+    `+os.Args[0]+` resource by-id --id 9069823556065941305
 `, os.Args[0])
 }
 
@@ -477,6 +489,7 @@ Usage:
 
 COMMAND:
     get: Find user's rating for a resource
+    update: Update user's rating for a resource
 
 Additional help:
     %s rating COMMAND --help
@@ -490,6 +503,21 @@ Find user's rating for a resource
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` rating get --id 17905673839553189026 --token "Ipsum deleniti."
+    `+os.Args[0]+` rating get --id 5654750039892505354 --token "Earum expedita."
+`, os.Args[0])
+}
+
+func ratingUpdateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] rating update -body JSON -id UINT -token STRING
+
+Update user's rating for a resource
+    -body JSON: 
+    -id UINT: ID of a resource
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` rating update --body '{
+      "rating": 4
+   }' --id 4075726782902513524 --token "Quia consequatur possimus tempora omnis et."
 `, os.Args[0])
 }
