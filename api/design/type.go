@@ -278,4 +278,5 @@ var JWTAuth = JWTSecurity("jwt", func() {
 	Description("Secures endpoint by requiring a valid JWT retrieved via the /auth/login endpoint.")
 	Scope("api:read", "Read-only access")
 	Scope("api:write", "Read and write access")
+	Scope("agent:create", "Agent create access")
 })

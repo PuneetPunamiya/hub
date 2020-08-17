@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 
+	adminc "github.com/tektoncd/hub/api/gen/http/admin/client"
 	authc "github.com/tektoncd/hub/api/gen/http/auth/client"
 	categoryc "github.com/tektoncd/hub/api/gen/http/category/client"
 	ratingc "github.com/tektoncd/hub/api/gen/http/rating/client"
@@ -31,6 +32,7 @@ func UsageCommands() string {
 auth authenticate
 status status
 resource (query|list|versions-by-id|by-type-name-version|by-version-id|by-type-name|by-id)
+admin create-agent
 rating (get|update)
 `
 }
@@ -38,10 +40,17 @@ rating (get|update)
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` category list` + "\n" +
-		os.Args[0] + ` auth authenticate --code "Quas deserunt nostrum assumenda pariatur occaecati voluptas."` + "\n" +
+		os.Args[0] + ` auth authenticate --code "Est error eaque quos."` + "\n" +
 		os.Args[0] + ` status status` + "\n" +
-		os.Args[0] + ` resource query --name "Suscipit aut minima autem ut est error." --type "" --limit 710655447639764616` + "\n" +
-		os.Args[0] + ` rating get --id 5654750039892505354 --token "Earum expedita."` + "\n" +
+		os.Args[0] + ` resource query --name "Voluptatibus numquam rerum." --type "pipeline" --limit 9315258255542775101` + "\n" +
+		os.Args[0] + ` admin create-agent --body '{
+      "name": "Voluptas beatae id qui.",
+      "scopes": [
+         "Possimus tempora omnis et nihil aut.",
+         "Quidem magni.",
+         "Nemo sint est omnis."
+      ]
+   }' --token "Sint cupiditate voluptatem ipsum tenetur."` + "\n" +
 		""
 }
 
@@ -96,6 +105,12 @@ func ParseEndpoint(
 		resourceByIDFlags  = flag.NewFlagSet("by-id", flag.ExitOnError)
 		resourceByIDIDFlag = resourceByIDFlags.String("id", "REQUIRED", "ID of a resource")
 
+		adminFlags = flag.NewFlagSet("admin", flag.ContinueOnError)
+
+		adminCreateAgentFlags     = flag.NewFlagSet("create-agent", flag.ExitOnError)
+		adminCreateAgentBodyFlag  = adminCreateAgentFlags.String("body", "REQUIRED", "")
+		adminCreateAgentTokenFlag = adminCreateAgentFlags.String("token", "REQUIRED", "")
+
 		ratingFlags = flag.NewFlagSet("rating", flag.ContinueOnError)
 
 		ratingGetFlags     = flag.NewFlagSet("get", flag.ExitOnError)
@@ -125,6 +140,9 @@ func ParseEndpoint(
 	resourceByTypeNameFlags.Usage = resourceByTypeNameUsage
 	resourceByIDFlags.Usage = resourceByIDUsage
 
+	adminFlags.Usage = adminUsage
+	adminCreateAgentFlags.Usage = adminCreateAgentUsage
+
 	ratingFlags.Usage = ratingUsage
 	ratingGetFlags.Usage = ratingGetUsage
 	ratingUpdateFlags.Usage = ratingUpdateUsage
@@ -152,6 +170,8 @@ func ParseEndpoint(
 			svcf = statusFlags
 		case "resource":
 			svcf = resourceFlags
+		case "admin":
+			svcf = adminFlags
 		case "rating":
 			svcf = ratingFlags
 		default:
@@ -212,6 +232,13 @@ func ParseEndpoint(
 
 			case "by-id":
 				epf = resourceByIDFlags
+
+			}
+
+		case "admin":
+			switch epn {
+			case "create-agent":
+				epf = adminCreateAgentFlags
 
 			}
 
@@ -291,6 +318,13 @@ func ParseEndpoint(
 				endpoint = c.ByID()
 				data, err = resourcec.BuildByIDPayload(*resourceByIDIDFlag)
 			}
+		case "admin":
+			c := adminc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "create-agent":
+				endpoint = c.CreateAgent()
+				data, err = adminc.BuildCreateAgentPayload(*adminCreateAgentBodyFlag, *adminCreateAgentTokenFlag)
+			}
 		case "rating":
 			c := ratingc.NewClient(scheme, host, doer, enc, dec, restore)
 			switch epn {
@@ -353,7 +387,7 @@ Authenticates users against GitHub OAuth
     -code STRING: 
 
 Example:
-    `+os.Args[0]+` auth authenticate --code "Quas deserunt nostrum assumenda pariatur occaecati voluptas."
+    `+os.Args[0]+` auth authenticate --code "Est error eaque quos."
 `, os.Args[0])
 }
 
@@ -408,7 +442,7 @@ Find resources by a combination of name, type
     -limit UINT: 
 
 Example:
-    `+os.Args[0]+` resource query --name "Suscipit aut minima autem ut est error." --type "" --limit 710655447639764616
+    `+os.Args[0]+` resource query --name "Voluptatibus numquam rerum." --type "pipeline" --limit 9315258255542775101
 `, os.Args[0])
 }
 
@@ -419,7 +453,7 @@ List all resources sorted by rating and name
     -limit UINT: 
 
 Example:
-    `+os.Args[0]+` resource list --limit 14793232043880619506
+    `+os.Args[0]+` resource list --limit 18080844776659184926
 `, os.Args[0])
 }
 
@@ -430,7 +464,7 @@ Find all versions of a resource by its id
     -id UINT: ID of a resource
 
 Example:
-    `+os.Args[0]+` resource versions-by-id --id 4098784061040958288
+    `+os.Args[0]+` resource versions-by-id --id 15272451406177245577
 `, os.Args[0])
 }
 
@@ -443,7 +477,7 @@ Find resource using name, type and version of resource
     -version STRING: version of resource
 
 Example:
-    `+os.Args[0]+` resource by-type-name-version --type "task" --name "Nihil eum placeat voluptas et consequuntur." --version "Et enim ut rerum repellat."
+    `+os.Args[0]+` resource by-type-name-version --type "pipeline" --name "Fugiat earum ut sunt est ea." --version "Pariatur quasi."
 `, os.Args[0])
 }
 
@@ -454,7 +488,7 @@ Find a resource using its version's id
     -version-id UINT: Version ID of a resource's version
 
 Example:
-    `+os.Args[0]+` resource by-version-id --version-id 8492161670635965626
+    `+os.Args[0]+` resource by-version-id --version-id 15365295194547401691
 `, os.Args[0])
 }
 
@@ -466,7 +500,7 @@ Find resources using name and type
     -name STRING: Name of resource
 
 Example:
-    `+os.Args[0]+` resource by-type-name --type "task" --name "Ipsum deleniti."
+    `+os.Args[0]+` resource by-type-name --type "pipeline" --name "Eligendi animi sit."
 `, os.Args[0])
 }
 
@@ -477,7 +511,39 @@ Find a resource using it's id
     -id UINT: ID of a resource
 
 Example:
-    `+os.Args[0]+` resource by-id --id 9069823556065941305
+    `+os.Args[0]+` resource by-id --id 1454725131016771342
+`, os.Args[0])
+}
+
+// adminUsage displays the usage of the admin command and its subcommands.
+func adminUsage() {
+	fmt.Fprintf(os.Stderr, `Admin service
+Usage:
+    %s [globalflags] admin COMMAND [flags]
+
+COMMAND:
+    create-agent: Create an agent user with required scopes
+
+Additional help:
+    %s admin COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func adminCreateAgentUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] admin create-agent -body JSON -token STRING
+
+Create an agent user with required scopes
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` admin create-agent --body '{
+      "name": "Voluptas beatae id qui.",
+      "scopes": [
+         "Possimus tempora omnis et nihil aut.",
+         "Quidem magni.",
+         "Nemo sint est omnis."
+      ]
+   }' --token "Sint cupiditate voluptatem ipsum tenetur."
 `, os.Args[0])
 }
 
@@ -503,7 +569,7 @@ Find user's rating for a resource
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` rating get --id 5654750039892505354 --token "Earum expedita."
+    `+os.Args[0]+` rating get --id 10250246472200079372 --token "Alias repudiandae enim ratione molestias quibusdam."
 `, os.Args[0])
 }
 
@@ -517,7 +583,7 @@ Update user's rating for a resource
 
 Example:
     `+os.Args[0]+` rating update --body '{
-      "rating": 4
-   }' --id 4075726782902513524 --token "Quia consequatur possimus tempora omnis et."
+      "rating": 0
+   }' --id 9978331245820481361 --token "Ab placeat facere."
 `, os.Args[0])
 }

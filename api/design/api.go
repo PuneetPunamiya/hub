@@ -29,7 +29,7 @@ var _ = API("hub", func() {
 			URI("http://api.hub.tekton.dev")
 		})
 
-		Services("auth", "category", "rating", "resource", "status", "swagger")
+		Services("admin", "auth", "category", "rating", "resource", "status", "swagger")
 	})
 
 	// TODO: restrict CORS origin | https://github.com/tektoncd/hub/issues/26

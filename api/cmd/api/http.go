@@ -28,8 +28,10 @@ import (
 	httpmdlwr "goa.design/goa/v3/http/middleware"
 	"goa.design/goa/v3/middleware"
 
+	admin "github.com/tektoncd/hub/api/gen/admin"
 	auth "github.com/tektoncd/hub/api/gen/auth"
 	category "github.com/tektoncd/hub/api/gen/category"
+	adminsvr "github.com/tektoncd/hub/api/gen/http/admin/server"
 	authsvr "github.com/tektoncd/hub/api/gen/http/auth/server"
 	categorysvr "github.com/tektoncd/hub/api/gen/http/category/server"
 	ratingsvr "github.com/tektoncd/hub/api/gen/http/rating/server"
@@ -44,6 +46,7 @@ import (
 // handleHTTPServer starts configures and starts a HTTP server on the given
 // URL. It shuts down the server if any error is received in the error channel.
 func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc chan error, debug bool,
+	adminEndpoints *admin.Endpoints,
 	authEndpoints *auth.Endpoints,
 	categoryEndpoints *category.Endpoints,
 	ratingEndpoints *rating.Endpoints,
@@ -72,6 +75,7 @@ func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc 
 	// the service input and output data structures to HTTP requests and
 	// responses.
 	var (
+		adminServer    *adminsvr.Server
 		authServer     *authsvr.Server
 		categoryServer *categorysvr.Server
 		ratingServer   *ratingsvr.Server
@@ -81,6 +85,7 @@ func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc 
 	)
 	{
 		eh := errorHandler(logger)
+		adminServer = adminsvr.New(adminEndpoints, mux, dec, enc, eh, nil)
 		authServer = authsvr.New(authEndpoints, mux, dec, enc, eh, nil)
 		categoryServer = categorysvr.New(categoryEndpoints, mux, dec, enc, eh, nil)
 		ratingServer = ratingsvr.New(ratingEndpoints, mux, dec, enc, eh, nil)
@@ -90,6 +95,7 @@ func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc 
 
 		if debug {
 			servers := goahttp.Servers{
+				adminServer,
 				authServer,
 				categoryServer,
 				ratingServer,
@@ -101,6 +107,7 @@ func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc 
 		}
 	}
 	// Configure the mux.
+	adminsvr.Mount(mux, adminServer)
 	authsvr.Mount(mux, authServer)
 	categorysvr.Mount(mux, categoryServer)
 	ratingsvr.Mount(mux, ratingServer)
@@ -118,6 +125,9 @@ func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc 
 	// Start HTTP server using default configuration, change the code to
 	// configure the server as required by your service.
 	srv := &http.Server{Addr: u.Host, Handler: handler}
+	for _, m := range adminServer.Mounts {
+		logger.Infof("HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
+	}	
 	for _, m := range authServer.Mounts {
 		logger.Infof("HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
