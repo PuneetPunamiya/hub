@@ -24,6 +24,7 @@ import (
 type Data struct {
 	Catalogs   []Catalog
 	Categories []Category
+	Users      []User
 	Default    Default
 }
 
@@ -39,6 +40,11 @@ type Catalog struct {
 	URL        string
 	ContextDir string
 	Revision   string
+}
+
+type User struct {
+	Name   string
+	Scopes []string
 }
 
 type Default struct {

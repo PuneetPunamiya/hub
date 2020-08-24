@@ -2,6 +2,7 @@ package initializer
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
@@ -34,6 +35,9 @@ func (i *Initializer) Run() error {
 		return err
 	}
 	if err := i.addCatalogs(); err != nil {
+		return err
+	}
+	if err := i.addUsers(); err != nil {
 		return err
 	}
 	return nil
@@ -90,6 +94,52 @@ func (i *Initializer) addCatalogs() error {
 			Error; err != nil {
 			i.log.Error(err)
 			return err
+		}
+	}
+	return nil
+}
+
+func (i *Initializer) addUsers() error {
+
+	db := i.db
+	// Checks if tables exists
+	if !db.HasTable(&model.User{}) || !db.HasTable(model.Scope{}) {
+		return fmt.Errorf("user or scope table not found")
+	}
+
+	for _, u := range i.data.Users {
+
+		// If user does not exists then skip and move to next one
+		user := &model.User{}
+		if err := db.Where("LOWER(github_login) = ?", strings.ToLower(u.Name)).
+			First(&user).Error; err != nil {
+			if gorm.IsRecordNotFoundError(err) {
+				i.log.Errorf("user %s not found: %s", u.Name, err)
+				continue
+			}
+			i.log.Error(err)
+			return err
+		}
+		for _, s := range u.Scopes {
+
+			// If scope does not exists then return
+			scope := &model.Scope{}
+			if err := db.Where("name = ?", strings.ToLower(s)).
+				First(&scope).Error; err != nil {
+				if gorm.IsRecordNotFoundError(err) {
+					i.log.Errorf("scope (%s) does not exist: %s", s, err)
+					return fmt.Errorf("invalid-scope")
+				}
+				i.log.Error(err)
+				return err
+			}
+
+			us := model.UserScope{UserID: user.ID, ScopeID: scope.ID}
+			if err := db.Model(&model.UserScope{}).Where(&us).
+				FirstOrCreate(&us).Error; err != nil {
+				i.log.Error(err)
+				return err
+			}
 		}
 	}
 	return nil
