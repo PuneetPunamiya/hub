@@ -16,25 +16,26 @@ package design
 
 import (
 	. "goa.design/goa/v3/dsl"
-	cors "goa.design/plugins/v3/cors/dsl"
 )
 
-var _ = API("hub", func() {
-	Title("Tekton Hub")
-	Description("HTTP services for managing Tekton Hub")
-	Version("0.1")
-	Meta("swagger:example", "false")
-	Server("hub", func() {
-		Host("production", func() {
-			URI("http://api.hub.tekton.dev")
+var _ = Service("refresh", func() {
+	Description("Catalog refresh")
+
+	Method("CatalogRefresh", func() {
+		Description("Dummy api for cron job testing")
+		Security(JWTAuth, func() {
+			Scope("catalog:refresh")
 		})
 
-		Services("admin", "auth", "category", "rating", "refresh", "resource", "status", "swagger")
-	})
+		Payload(func() {
+			Token("token", String, "JWT of an agent")
+			Required("token")
+		})
+		HTTP(func() {
+			PUT("/catalog/refresh")
+			Header("token:Authorization")
 
-	// TODO: restrict CORS origin | https://github.com/tektoncd/hub/issues/26
-	cors.Origin("*", func() {
-		cors.Headers("Content-Type")
-		cors.Methods("GET", "POST", "PUT")
+			Response(StatusOK)
+		})
 	})
 })

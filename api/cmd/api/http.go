@@ -35,10 +35,12 @@ import (
 	authsvr "github.com/tektoncd/hub/api/gen/http/auth/server"
 	categorysvr "github.com/tektoncd/hub/api/gen/http/category/server"
 	ratingsvr "github.com/tektoncd/hub/api/gen/http/rating/server"
+	refreshsvr "github.com/tektoncd/hub/api/gen/http/refresh/server"
 	resourcesvr "github.com/tektoncd/hub/api/gen/http/resource/server"
 	statussvr "github.com/tektoncd/hub/api/gen/http/status/server"
 	swaggersvr "github.com/tektoncd/hub/api/gen/http/swagger/server"
 	rating "github.com/tektoncd/hub/api/gen/rating"
+	refresh "github.com/tektoncd/hub/api/gen/refresh"
 	resource "github.com/tektoncd/hub/api/gen/resource"
 	status "github.com/tektoncd/hub/api/gen/status"
 )
@@ -50,6 +52,7 @@ func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc 
 	authEndpoints *auth.Endpoints,
 	categoryEndpoints *category.Endpoints,
 	ratingEndpoints *rating.Endpoints,
+	refreshEndpoints *refresh.Endpoints,
 	resourceEndpoints *resource.Endpoints,
 	statusEndpoints *status.Endpoints,
 	logger *zap.SugaredLogger) {
@@ -79,6 +82,7 @@ func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc 
 		authServer     *authsvr.Server
 		categoryServer *categorysvr.Server
 		ratingServer   *ratingsvr.Server
+		refreshServer  *refreshsvr.Server
 		resourceServer *resourcesvr.Server
 		statusServer   *statussvr.Server
 		swaggerServer  *swaggersvr.Server
@@ -89,6 +93,7 @@ func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc 
 		authServer = authsvr.New(authEndpoints, mux, dec, enc, eh, nil)
 		categoryServer = categorysvr.New(categoryEndpoints, mux, dec, enc, eh, nil)
 		ratingServer = ratingsvr.New(ratingEndpoints, mux, dec, enc, eh, nil)
+		refreshServer = refreshsvr.New(refreshEndpoints, mux, dec, enc, eh, nil)
 		resourceServer = resourcesvr.New(resourceEndpoints, mux, dec, enc, eh, nil)
 		statusServer = statussvr.New(statusEndpoints, mux, dec, enc, eh, nil)
 		swaggerServer = swaggersvr.New(nil, mux, dec, enc, eh, nil)
@@ -99,6 +104,7 @@ func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc 
 				authServer,
 				categoryServer,
 				ratingServer,
+				refreshServer,
 				resourceServer,
 				statusServer,
 				swaggerServer,
@@ -111,6 +117,7 @@ func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc 
 	authsvr.Mount(mux, authServer)
 	categorysvr.Mount(mux, categoryServer)
 	ratingsvr.Mount(mux, ratingServer)
+	refreshsvr.Mount(mux, refreshServer)
 	resourcesvr.Mount(mux, resourceServer)
 	statussvr.Mount(mux, statusServer)
 	swaggersvr.Mount(mux, swaggerServer)
@@ -127,7 +134,7 @@ func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc 
 	srv := &http.Server{Addr: u.Host, Handler: handler}
 	for _, m := range adminServer.Mounts {
 		logger.Infof("HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
-	}	
+	}
 	for _, m := range authServer.Mounts {
 		logger.Infof("HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
@@ -135,6 +142,9 @@ func handleHTTPServer(ctx context.Context, u *url.URL, wg *sync.WaitGroup, errc 
 		logger.Infof("HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
 	for _, m := range ratingServer.Mounts {
+		logger.Infof("HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
+	}
+	for _, m := range refreshServer.Mounts {
 		logger.Infof("HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
 	for _, m := range resourceServer.Mounts {

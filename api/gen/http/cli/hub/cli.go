@@ -17,6 +17,7 @@ import (
 	authc "github.com/tektoncd/hub/api/gen/http/auth/client"
 	categoryc "github.com/tektoncd/hub/api/gen/http/category/client"
 	ratingc "github.com/tektoncd/hub/api/gen/http/rating/client"
+	refreshc "github.com/tektoncd/hub/api/gen/http/refresh/client"
 	resourcec "github.com/tektoncd/hub/api/gen/http/resource/client"
 	statusc "github.com/tektoncd/hub/api/gen/http/status/client"
 	goahttp "goa.design/goa/v3/http"
@@ -34,23 +35,24 @@ status status
 resource (query|list|versions-by-id|by-type-name-version|by-version-id|by-type-name|by-id)
 admin create-agent
 rating (get|update)
+refresh catalog-refresh
 `
 }
 
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` category list` + "\n" +
-		os.Args[0] + ` auth authenticate --code "Est error eaque quos."` + "\n" +
+		os.Args[0] + ` auth authenticate --code "Rerum harum ut tenetur laborum."` + "\n" +
 		os.Args[0] + ` status status` + "\n" +
-		os.Args[0] + ` resource query --name "Voluptatibus numquam rerum." --type "pipeline" --limit 9315258255542775101` + "\n" +
+		os.Args[0] + ` resource query --name "Modi facere cumque omnis non." --type "" --limit 13169616829073425518` + "\n" +
 		os.Args[0] + ` admin create-agent --body '{
-      "name": "Voluptas beatae id qui.",
+      "name": "Est omnis nesciunt sint cupiditate voluptatem ipsum.",
       "scopes": [
-         "Possimus tempora omnis et nihil aut.",
-         "Quidem magni.",
-         "Nemo sint est omnis."
+         "Et amet eum.",
+         "Rerum consequatur explicabo enim adipisci rerum ipsa.",
+         "Ut aut dolor sit."
       ]
-   }' --token "Sint cupiditate voluptatem ipsum tenetur."` + "\n" +
+   }' --token "Qui alias repudiandae enim ratione."` + "\n" +
 		""
 }
 
@@ -121,6 +123,11 @@ func ParseEndpoint(
 		ratingUpdateBodyFlag  = ratingUpdateFlags.String("body", "REQUIRED", "")
 		ratingUpdateIDFlag    = ratingUpdateFlags.String("id", "REQUIRED", "ID of a resource")
 		ratingUpdateTokenFlag = ratingUpdateFlags.String("token", "REQUIRED", "")
+
+		refreshFlags = flag.NewFlagSet("refresh", flag.ContinueOnError)
+
+		refreshCatalogRefreshFlags     = flag.NewFlagSet("catalog-refresh", flag.ExitOnError)
+		refreshCatalogRefreshTokenFlag = refreshCatalogRefreshFlags.String("token", "REQUIRED", "")
 	)
 	categoryFlags.Usage = categoryUsage
 	categoryListFlags.Usage = categoryListUsage
@@ -146,6 +153,9 @@ func ParseEndpoint(
 	ratingFlags.Usage = ratingUsage
 	ratingGetFlags.Usage = ratingGetUsage
 	ratingUpdateFlags.Usage = ratingUpdateUsage
+
+	refreshFlags.Usage = refreshUsage
+	refreshCatalogRefreshFlags.Usage = refreshCatalogRefreshUsage
 
 	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
 		return nil, nil, err
@@ -174,6 +184,8 @@ func ParseEndpoint(
 			svcf = adminFlags
 		case "rating":
 			svcf = ratingFlags
+		case "refresh":
+			svcf = refreshFlags
 		default:
 			return nil, nil, fmt.Errorf("unknown service %q", svcn)
 		}
@@ -249,6 +261,13 @@ func ParseEndpoint(
 
 			case "update":
 				epf = ratingUpdateFlags
+
+			}
+
+		case "refresh":
+			switch epn {
+			case "catalog-refresh":
+				epf = refreshCatalogRefreshFlags
 
 			}
 
@@ -335,6 +354,13 @@ func ParseEndpoint(
 				endpoint = c.Update()
 				data, err = ratingc.BuildUpdatePayload(*ratingUpdateBodyFlag, *ratingUpdateIDFlag, *ratingUpdateTokenFlag)
 			}
+		case "refresh":
+			c := refreshc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "catalog-refresh":
+				endpoint = c.CatalogRefresh()
+				data, err = refreshc.BuildCatalogRefreshPayload(*refreshCatalogRefreshTokenFlag)
+			}
 		}
 	}
 	if err != nil {
@@ -387,7 +413,7 @@ Authenticates users against GitHub OAuth
     -code STRING: 
 
 Example:
-    `+os.Args[0]+` auth authenticate --code "Est error eaque quos."
+    `+os.Args[0]+` auth authenticate --code "Rerum harum ut tenetur laborum."
 `, os.Args[0])
 }
 
@@ -442,7 +468,7 @@ Find resources by a combination of name, type
     -limit UINT: 
 
 Example:
-    `+os.Args[0]+` resource query --name "Voluptatibus numquam rerum." --type "pipeline" --limit 9315258255542775101
+    `+os.Args[0]+` resource query --name "Modi facere cumque omnis non." --type "" --limit 13169616829073425518
 `, os.Args[0])
 }
 
@@ -453,7 +479,7 @@ List all resources sorted by rating and name
     -limit UINT: 
 
 Example:
-    `+os.Args[0]+` resource list --limit 18080844776659184926
+    `+os.Args[0]+` resource list --limit 2075759956887257808
 `, os.Args[0])
 }
 
@@ -464,7 +490,7 @@ Find all versions of a resource by its id
     -id UINT: ID of a resource
 
 Example:
-    `+os.Args[0]+` resource versions-by-id --id 15272451406177245577
+    `+os.Args[0]+` resource versions-by-id --id 4202314011148833490
 `, os.Args[0])
 }
 
@@ -477,7 +503,7 @@ Find resource using name, type and version of resource
     -version STRING: version of resource
 
 Example:
-    `+os.Args[0]+` resource by-type-name-version --type "pipeline" --name "Fugiat earum ut sunt est ea." --version "Pariatur quasi."
+    `+os.Args[0]+` resource by-type-name-version --type "pipeline" --name "Omnis aut beatae reiciendis accusantium distinctio." --version "Ipsum deleniti."
 `, os.Args[0])
 }
 
@@ -488,7 +514,7 @@ Find a resource using its version's id
     -version-id UINT: Version ID of a resource's version
 
 Example:
-    `+os.Args[0]+` resource by-version-id --version-id 15365295194547401691
+    `+os.Args[0]+` resource by-version-id --version-id 9069823556065941305
 `, os.Args[0])
 }
 
@@ -500,7 +526,7 @@ Find resources using name and type
     -name STRING: Name of resource
 
 Example:
-    `+os.Args[0]+` resource by-type-name --type "pipeline" --name "Eligendi animi sit."
+    `+os.Args[0]+` resource by-type-name --type "pipeline" --name "Deleniti voluptatem distinctio distinctio voluptas beatae id."
 `, os.Args[0])
 }
 
@@ -511,7 +537,7 @@ Find a resource using it's id
     -id UINT: ID of a resource
 
 Example:
-    `+os.Args[0]+` resource by-id --id 1454725131016771342
+    `+os.Args[0]+` resource by-id --id 13155557772247415738
 `, os.Args[0])
 }
 
@@ -537,13 +563,13 @@ Create an agent user with required scopes
 
 Example:
     `+os.Args[0]+` admin create-agent --body '{
-      "name": "Voluptas beatae id qui.",
+      "name": "Est omnis nesciunt sint cupiditate voluptatem ipsum.",
       "scopes": [
-         "Possimus tempora omnis et nihil aut.",
-         "Quidem magni.",
-         "Nemo sint est omnis."
+         "Et amet eum.",
+         "Rerum consequatur explicabo enim adipisci rerum ipsa.",
+         "Ut aut dolor sit."
       ]
-   }' --token "Sint cupiditate voluptatem ipsum tenetur."
+   }' --token "Qui alias repudiandae enim ratione."
 `, os.Args[0])
 }
 
@@ -569,7 +595,7 @@ Find user's rating for a resource
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` rating get --id 10250246472200079372 --token "Alias repudiandae enim ratione molestias quibusdam."
+    `+os.Args[0]+` rating get --id 185948843419266754 --token "Iusto et dolor vitae voluptatem."
 `, os.Args[0])
 }
 
@@ -583,7 +609,31 @@ Update user's rating for a resource
 
 Example:
     `+os.Args[0]+` rating update --body '{
-      "rating": 0
-   }' --id 9978331245820481361 --token "Ab placeat facere."
+      "rating": 2
+   }' --id 9448030143307574637 --token "Eaque maiores ipsa."
+`, os.Args[0])
+}
+
+// refreshUsage displays the usage of the refresh command and its subcommands.
+func refreshUsage() {
+	fmt.Fprintf(os.Stderr, `Catalog refresh
+Usage:
+    %s [globalflags] refresh COMMAND [flags]
+
+COMMAND:
+    catalog-refresh: Dummy api for cron job testing
+
+Additional help:
+    %s refresh COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func refreshCatalogRefreshUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] refresh catalog-refresh -token STRING
+
+Dummy api for cron job testing
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` refresh catalog-refresh --token "Laborum ut."
 `, os.Args[0])
 }

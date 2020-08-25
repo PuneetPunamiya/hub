@@ -30,6 +30,7 @@ import (
 	auth "github.com/tektoncd/hub/api/gen/auth"
 	category "github.com/tektoncd/hub/api/gen/category"
 	rating "github.com/tektoncd/hub/api/gen/rating"
+	refresh "github.com/tektoncd/hub/api/gen/refresh"
 	resource "github.com/tektoncd/hub/api/gen/resource"
 	status "github.com/tektoncd/hub/api/gen/status"
 	"github.com/tektoncd/hub/api/pkg/app"
@@ -38,6 +39,7 @@ import (
 	authsvc "github.com/tektoncd/hub/api/pkg/service/auth"
 	categorysvc "github.com/tektoncd/hub/api/pkg/service/category"
 	ratingsvc "github.com/tektoncd/hub/api/pkg/service/rating"
+	refreshsvc "github.com/tektoncd/hub/api/pkg/service/refresh"
 	resourcesvc "github.com/tektoncd/hub/api/pkg/service/resource"
 	statussvc "github.com/tektoncd/hub/api/pkg/service/status"
 )
@@ -82,6 +84,7 @@ func main() {
 		authSvc     auth.Service
 		categorySvc category.Service
 		ratingSvc   rating.Service
+		refreshSvc  refresh.Service
 		resourceSvc resource.Service
 		statusSvc   status.Service
 	)
@@ -90,6 +93,7 @@ func main() {
 		authSvc = authsvc.New(api)
 		categorySvc = categorysvc.New(api)
 		ratingSvc = ratingsvc.New(api)
+		refreshSvc = refreshsvc.New(api)
 		resourceSvc = resourcesvc.New(api)
 		statusSvc = statussvc.New()
 	}
@@ -101,6 +105,7 @@ func main() {
 		authEndpoints     *auth.Endpoints
 		categoryEndpoints *category.Endpoints
 		ratingEndpoints   *rating.Endpoints
+		refreshEndpoints  *refresh.Endpoints
 		resourceEndpoints *resource.Endpoints
 		statusEndpoints   *status.Endpoints
 	)
@@ -109,6 +114,7 @@ func main() {
 		authEndpoints = auth.NewEndpoints(authSvc)
 		categoryEndpoints = category.NewEndpoints(categorySvc)
 		ratingEndpoints = rating.NewEndpoints(ratingSvc)
+		refreshEndpoints = refresh.NewEndpoints(refreshSvc)
 		resourceEndpoints = resource.NewEndpoints(resourceSvc)
 		statusEndpoints = status.NewEndpoints(statusSvc)
 	}
@@ -153,7 +159,7 @@ func main() {
 			handleHTTPServer(
 				ctx, u, &wg, errc, *dbgF,
 				adminEndpoints, authEndpoints, categoryEndpoints,
-				ratingEndpoints, resourceEndpoints, statusEndpoints,
+				ratingEndpoints, refreshEndpoints, resourceEndpoints, statusEndpoints,
 				logger,
 			)
 		}

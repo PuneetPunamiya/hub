@@ -279,4 +279,5 @@ var JWTAuth = JWTSecurity("jwt", func() {
 	Scope("api:read", "Read-only access")
 	Scope("api:write", "Read and write access")
 	Scope("agent:create", "Agent create access")
+	Scope("catalog:refresh", "Refresh the catalog")
 })

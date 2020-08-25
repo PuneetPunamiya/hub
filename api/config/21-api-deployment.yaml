@@ -80,3 +80,18 @@ spec:
                 configMapKeyRef:
                   name: api
                   key: CONFIG_FILE_URL
+            - name: GH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: api
+                  key: GH_CLIENT_ID
+            - name: GH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: api
+                  key: GH_CLIENT_SECRET
+            - name: JWT_SIGNING_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: api
+                  key: JWT_SIGNING_KEY
