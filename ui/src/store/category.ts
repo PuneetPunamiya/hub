@@ -20,6 +20,7 @@ export const Category = types
 	}));
 
 export type ICategory = Instance<typeof Category>;
+export type ICategoryStore = Instance<typeof CategoryStore>;
 
 export const CategoryStore = types
 	.model("CategoryStore", {
@@ -35,11 +36,6 @@ export const CategoryStore = types
 
 		get count() {
 			return self.categories.length;
-		},
-
-		get listCategories() {
-			const { categories } = self;
-			return categories;
 		},
 
 		get filteredTags() {
@@ -58,13 +54,13 @@ export const CategoryStore = types
 			self.isLoading = l;
 		},
 
-		toggleSelectedCategory(id: number) {
-			self.categories.forEach((c: ICategory) => {
-				if (c.id === id) {
-					c.toggle();
-				}
-			});
-		},
+		// toggleSelected(id: number) {
+		// 	self.categories.forEach((c: ICategory) => {
+		// 		if (c.id === id) {
+		// 			c.toggle();
+		// 		}
+		// 	});
+		// },
 
 		clearAll() {
 			self.categories.map((c: ICategory) => (c.selected = false));

@@ -56,8 +56,8 @@ describe("Store functions", () => {
 				expect(store.count).toBe(5);
 				expect(store.isLoading).toBe(false);
 
-				store.toggleSelectedCategory(1);
-				store.toggleSelectedCategory(3);
+				store.categories[0].toggle();
+
 				expect(store.categories[0].selected).toBe(true);
 
 				done();
@@ -76,8 +76,8 @@ describe("Store functions", () => {
 				expect(store.count).toBe(5);
 				expect(store.isLoading).toBe(false);
 
-				store.toggleSelectedCategory(1);
-				store.toggleSelectedCategory(2);
+				store.categories[0].toggle();
+				store.categories[1].toggle();
 
 				const tags = store.filteredTags;
 				expect(tags[0]).toBe("build-tool");
@@ -98,8 +98,8 @@ describe("Store functions", () => {
 				expect(store.count).toBe(5);
 				expect(store.isLoading).toBe(false);
 
-				store.toggleSelectedCategory(1);
-				store.toggleSelectedCategory(3);
+				store.categories[0].toggle();
+				store.categories[2].toggle();
 				store.clearAll();
 
 				expect(store.categories).toEqual(
