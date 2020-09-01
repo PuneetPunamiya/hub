@@ -1,19 +1,22 @@
-import { CatalogTypeStore } from "./catalogType";
+import { CatalogStore, Catalog } from "./catalogType";
 
 describe("CatalogType", () => {
-  it("can create a store and add a type", done => {
-    const store = CatalogTypeStore.create();
-    store.add({ name: "abc", selected: false });
-    expect(store.count).toBe(4);
+	it("can create a store and add a type", (done) => {
+		const store = Catalog.create({
+			name: "abc",
+			selected: false,
+		});
 
-    done();
-  });
+		expect(store.name).toBe("abc");
 
-  it("it can toggle a type", () => {
-    const store = CatalogTypeStore.create();
-    store.setSelectedCatalogType("verified");
-    expect(
-      store.catalogtypelist.filter((type: any) => type.name === "verified")
-    ).toStrictEqual([{ name: "verified", selected: true }]);
-  });
+		done();
+	});
+
+	it("it can toggle a type", (done) => {
+		const store = CatalogStore.create();
+		store.selectedCatalogType("verified");
+		expect(store.catalogtypelist[1].selected).toBe(true);
+
+		done();
+	});
 });

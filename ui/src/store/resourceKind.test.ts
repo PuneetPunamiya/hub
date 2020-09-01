@@ -1,19 +1,18 @@
-import { ResourceKindStore } from "./resourceKind";
+import { KindStore, Kind } from "./resourceKind";
 
 describe("ResourceKind", () => {
-  it("can create a store and add a kind", done => {
-    const store = ResourceKindStore.create();
-    store.add({ name: "bcd" });
-    expect(store.count).toBe(3);
+	it("can create a store and add a kind", (done) => {
+		const store = Kind.create({
+			name: "bcd",
+		});
+		expect(store.name).toBe("bcd");
 
-    done();
-  });
+		done();
+	});
 
-  it("it can toggle a kind", () => {
-    const store = ResourceKindStore.create();
-    store.setSelectedKind("pipeline");
-    expect(
-      store.resourcekindlist.filter((kind: any) => kind.name === "pipeline")
-    ).toStrictEqual([{ name: "pipeline", selected: true }]);
-  });
+	it("it can toggle a kind", () => {
+		const store = KindStore.create();
+		store.selectedKind("pipeline");
+		expect(store.resourcekindlist[1].selected).toBe(true);
+	});
 });
