@@ -49,9 +49,10 @@ func New(api app.BaseConfig) resource.Service {
 func (s *service) Query(ctx context.Context, p *resource.QueryPayload) (res resource.ResourceCollection, err error) {
 
 	q := s.db.Scopes(
+		filterByTags(p.Tags),
+		filterByKinds(p.Kinds),
+		queryByName(p.Name, p.Exact),
 		withResourceDetails,
-		filterByKind(p.Kind),
-		matchesName(p.Name),
 	).Limit(p.Limit)
 
 	return s.resourcesForQuery(q)
@@ -346,6 +347,38 @@ func filterByKind(t string) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
+func filterByKinds(t []string) func(db *gorm.DB) *gorm.DB {
+	if len(t) == 0 {
+		return noop
+	}
+
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Where("LOWER(kind) IN (?)", t)
+	}
+}
+
+func filterByTags(t []string) func(db *gorm.DB) *gorm.DB {
+	if t == nil {
+		return noop
+	}
+
+	return func(db *gorm.DB) *gorm.DB {
+		rows, _ := db.Model(&model.Resource{}).Select("DISTINCT(resources.id)").
+			Joins("JOIN resource_tags on resource_tags.resource_id = resources.id").
+			Joins("JOIN tags on tags.id = resource_tags.tag_id").
+			Where("tags.name in (?)", t).Rows()
+
+		var ID []uint
+		for rows.Next() {
+			var id uint
+			rows.Scan(&id)
+			ID = append(ID, id)
+		}
+		return db.Where("id IN (?)", ID)
+
+	}
+}
+
 func filterByResourceID(id uint) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Where("resource_id = ?", id)
@@ -378,6 +411,16 @@ func matchesName(name string) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Where("LOWER(name) LIKE ?", likeName)
 	}
+}
+
+func queryByName(name string, exact bool) func(db *gorm.DB) *gorm.DB {
+	if name == "" {
+		return noop
+	}
+	if exact {
+		return filterByName(name)
+	}
+	return matchesName(name)
 }
 
 func noop(db *gorm.DB) *gorm.DB {

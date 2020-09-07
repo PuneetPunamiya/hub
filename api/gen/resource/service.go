@@ -46,10 +46,14 @@ var MethodNames = [7]string{"Query", "List", "VersionsByID", "ByKindNameVersion"
 type QueryPayload struct {
 	// Name of resource
 	Name string
-	// Kind of resource
-	Kind string
+	// Type of resource
+	Kinds []string
+	// Tags
+	Tags []string
 	// Maximum number of resources to be returned
 	Limit uint
+	// Find the exact resource
+	Exact bool
 }
 
 // ResourceCollection is the result type of the resource service Query method.

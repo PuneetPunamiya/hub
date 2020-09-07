@@ -8,6 +8,7 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -17,7 +18,7 @@ import (
 
 // BuildQueryPayload builds the payload for the resource Query endpoint from
 // CLI flags.
-func BuildQueryPayload(resourceQueryName string, resourceQueryKind string, resourceQueryLimit string) (*resource.QueryPayload, error) {
+func BuildQueryPayload(resourceQueryName string, resourceQueryKinds string, resourceQueryTags string, resourceQueryLimit string, resourceQueryExact string) (*resource.QueryPayload, error) {
 	var err error
 	var name string
 	{
@@ -25,15 +26,21 @@ func BuildQueryPayload(resourceQueryName string, resourceQueryKind string, resou
 			name = resourceQueryName
 		}
 	}
-	var kind string
+	var kinds []string
 	{
-		if resourceQueryKind != "" {
-			kind = resourceQueryKind
-			if !(kind == "task" || kind == "pipeline" || kind == "") {
-				err = goa.MergeErrors(err, goa.InvalidEnumValueError("kind", kind, []interface{}{"task", "pipeline", ""}))
-			}
+		if resourceQueryKinds != "" {
+			err = json.Unmarshal([]byte(resourceQueryKinds), &kinds)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("invalid JSON for kinds, example of valid JSON:\n%s", "'[\n      \"Quos distinctio ipsam eos.\",\n      \"Magnam illum ut nihil eum placeat.\",\n      \"Et consequuntur voluptas et enim ut rerum.\",\n      \"Aut eos qui fugiat.\"\n   ]'")
+			}
+		}
+	}
+	var tags []string
+	{
+		if resourceQueryTags != "" {
+			err = json.Unmarshal([]byte(resourceQueryTags), &tags)
+			if err != nil {
+				return nil, fmt.Errorf("invalid JSON for tags, example of valid JSON:\n%s", "'[\n      \"Sunt est.\",\n      \"Reiciendis pariatur quasi illo voluptate corrupti.\",\n      \"Aut beatae reiciendis accusantium.\",\n      \"Qui ipsum deleniti corrupti non quo velit.\"\n   ]'")
 			}
 		}
 	}
@@ -48,10 +55,21 @@ func BuildQueryPayload(resourceQueryName string, resourceQueryKind string, resou
 			}
 		}
 	}
+	var exact bool
+	{
+		if resourceQueryExact != "" {
+			exact, err = strconv.ParseBool(resourceQueryExact)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for exact, must be BOOL")
+			}
+		}
+	}
 	v := &resource.QueryPayload{}
 	v.Name = name
-	v.Kind = kind
+	v.Kinds = kinds
+	v.Tags = tags
 	v.Limit = limit
+	v.Exact = exact
 
 	return v, nil
 }

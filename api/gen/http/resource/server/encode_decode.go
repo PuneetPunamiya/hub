@@ -35,21 +35,18 @@ func DecodeQueryRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.D
 	return func(r *http.Request) (interface{}, error) {
 		var (
 			name  string
-			kind  string
+			kinds []string
+			tags  []string
 			limit uint
+			exact bool
 			err   error
 		)
 		nameRaw := r.URL.Query().Get("name")
 		if nameRaw != "" {
 			name = nameRaw
 		}
-		kindRaw := r.URL.Query().Get("kind")
-		if kindRaw != "" {
-			kind = kindRaw
-		}
-		if !(kind == "task" || kind == "pipeline" || kind == "") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("kind", kind, []interface{}{"task", "pipeline", ""}))
-		}
+		kinds = r.URL.Query()["kinds"]
+		tags = r.URL.Query()["tags"]
 		{
 			limitRaw := r.URL.Query().Get("limit")
 			if limitRaw == "" {
@@ -62,10 +59,20 @@ func DecodeQueryRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.D
 				limit = uint(v)
 			}
 		}
+		{
+			exactRaw := r.URL.Query().Get("exact")
+			if exactRaw != "" {
+				v, err2 := strconv.ParseBool(exactRaw)
+				if err2 != nil {
+					err = goa.MergeErrors(err, goa.InvalidFieldTypeError("exact", exactRaw, "boolean"))
+				}
+				exact = v
+			}
+		}
 		if err != nil {
 			return nil, err
 		}
-		payload := NewQueryPayload(name, kind, limit)
+		payload := NewQueryPayload(name, kinds, tags, limit, exact)
 
 		return payload, nil
 	}

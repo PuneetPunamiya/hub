@@ -30,12 +30,13 @@ var _ = Service("resource", func() {
 			Attribute("name", String, "Name of resource", func() {
 				Default("")
 			})
-			Attribute("kind", String, "Kind of resource", func() {
-				Enum("task", "pipeline", "")
-				Default("")
-			})
+			Attribute("kinds", ArrayOf(String), "Type of resource")
+			Attribute("tags", ArrayOf(String), "Tags")
 			Attribute("limit", UInt, "Maximum number of resources to be returned", func() {
 				Default(100)
+			})
+			Attribute("exact", Boolean, "Find the exact resource", func() {
+				Default(false)
 			})
 		})
 		Result(CollectionOf(Resource), func() {
@@ -45,8 +46,10 @@ var _ = Service("resource", func() {
 		HTTP(func() {
 			GET("/query")
 			Param("name")
-			Param("kind")
+			Param("kinds")
+			Param("tags")
 			Param("limit")
+			Param("exact")
 
 			Response(StatusOK)
 			Response("internal-error", StatusInternalServerError)
