@@ -1,13 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import App from './components/main/App';
 import * as serviceWorker from './serviceWorker';
+import {CategoryStore} from './store/category';
+import {Provider} from "mobx-react"
+import {Hub} from './api';
+
+const api = new Hub()
+export const Store = CategoryStore.create({}, {api});
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Provider>
+    <App store={Store} />,
+  </Provider>,
   document.getElementById('root')
 );
 
