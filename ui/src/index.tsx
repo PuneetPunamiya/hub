@@ -4,15 +4,13 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { Hub } from './api';
-import { RootStore } from './store/rootStore';
 import { getSnapshot } from 'mobx-state-tree';
 import { KindStore } from "./store/kind";
 import { CatalogStore } from "./store/catalog";
 import { CategoryStore } from "./store/category";
+import {ResourceStore} from './store/resources';
 
-export const StoreContext = React.createContext(RootStore.create());
-
-const store = RootStore.create({}, {
+const store = ResourceStore.create({}, {
   api: new Hub(),
   kindStore: KindStore.create({}),
   catalogStore: CatalogStore.create({}),
@@ -20,23 +18,21 @@ const store = RootStore.create({}, {
 
 });
 setInterval(function () {
-  // store.resourceStore.kindStore.toggleKind('Task');
-  // store.resourceStore.catalogStore.toggleCatalogType('official');
-  // store.resourceStore.categoryStore.list[3].toggle();
-  console.log("categorylist", getSnapshot(store.resourceStore.categoryStore.list));
-  console.log("kindlist", getSnapshot(store.resourceStore.kindStore.list));
-  console.log("cataloglist", getSnapshot(store.resourceStore.catalogStore.list));
 
-  console.log("resourcelist", getSnapshot(store.resourceStore.resourceList));
+  console.log("categorylist", getSnapshot(store.categoryStore.list));
+  console.log("kindlist", getSnapshot(store.kindStore.list));
+  console.log("cataloglist", getSnapshot(store.catalogStore.list));
 
-  // console.log("999", getSnapshot(store.resourceStore.catalogStore.catalogList))
-  // store.resourceStore.setSearchText('arg');
-  // console.log("searchtext", store.resourceStore.searchedText);
-  // console.log("selectedtags", store.resourceStore.categoryStore.tags)
-  // console.log("resourcelist", getSnapshot(store.resourceStore.resources));
-  // console.log("selectedkind", store.resourceStore.kindStore.selectedkind);
-  // console.log("selectedcatalog", store.resourceStore.catalogStore.selectedCatalogType);
-  // console.log("filteredresources", store.resourceStore.list);
+  console.log("resourcelist", getSnapshot(store.resourceList));
+  console.log(store.count)
+
+
+  store.kindStore.add({"name": "Pipeline"})
+  console.log("kindlist", getSnapshot(store.kindStore.list));
+  store.kindStore.kindList[1].toggle()
+  store.categoryStore.categories[3].toggle()
+  console.log(store.list)
+
 }, 6000);
 
 ReactDOM.render(

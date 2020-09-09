@@ -1,4 +1,4 @@
-import { types, getEnv, flow, Instance, getSnapshot } from "mobx-state-tree";
+import { types, getEnv, flow, Instance } from "mobx-state-tree";
 import { Api } from "../api";
 import { ICategoryStore, Tag } from "./category";
 import { IKindStore } from "./kind";
@@ -57,7 +57,7 @@ export const ResourceStore = types
     get count() {
       return self.resources.length;
     },
-    get searchedText() {
+    get searchResource() {
       const { searchText } = self;
       return searchText;
     },
@@ -68,13 +68,13 @@ export const ResourceStore = types
   }))
 
   .actions(self => ({
-    add(item: any) {
+    add(item: IResource) {
       self.resources.push(item);
     },
     setLoading(l: boolean) {
       self.isLoading = l;
     },
-    setSearchText(text: string) {
+    search(text: string) {
       self.searchText = text;
     }
   }))
@@ -97,12 +97,10 @@ export const ResourceStore = types
 
         [...kindItem].forEach((kindName: string) => {
           self.kindStore.add({ name: kindName });
-          //  console.log("00", getSnapshot(self.kindStore.list));
         });
 
         [...catalogItem].forEach((catalogName: string) => {
           self.catalogStore.add({ name: catalogName });
-          // console.log("11", getSnapshot(self.catalogStore.list));
         });
       } catch (err) {
         self.err = err.toString();
@@ -120,14 +118,14 @@ export const ResourceStore = types
       const tag = new Set(self.categoryStore.tags);
       const catalog = new Set(self.catalogStore.selectedCatalogType);
 
-      let filterResources = getSnapshot(resources).filter((r: any) =>
-        tag.size > 0
+      const filterResources = resources.filter((r: any) =>
+        (tag.size > 0
           ? r.tags.some((t: any) => tag.has(t.name))
-          : true && catalog.size > 0
+          : true) && (catalog.size > 0
           ? catalog.has(r.catalog.type)
-          : true && kind.size > 0
+          : true) && (kind.size > 0
           ? kind.has(r.kind)
-          : true
+          : true)
       );
       return searchText !== ""
         ? fuzzysort

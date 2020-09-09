@@ -1,6 +1,10 @@
 import { ResourceStore, Resource } from "./resources";
 import { FakeHub } from "../api/testutil";
 import { when } from "mobx";
+import {getSnapshot} from "mobx-state-tree";
+import {KindStore} from "./kind";
+import {CatalogStore} from "./catalog";
+import {CategoryStore} from "./category";
 
 const TESTDATA_DIR = `${__dirname}/testdata`;
 const api = new FakeHub(TESTDATA_DIR);
@@ -43,18 +47,71 @@ describe("Resources", () => {
 });
 
 describe("Store functions", () => {
-  it("can create a store", done => {
-    const store = ResourceStore.create({}, { api });
+  it("can create a store", (done) => {
+    const store = ResourceStore.create({}, {api});
     expect(store.count).toBe(0);
     expect(store.isLoading).toBe(true);
 
     when(
       () => !store.isLoading,
       () => {
-        expect(store.count).toBe(0);
+        expect(store.count).toBe(5);
         expect(store.isLoading).toBe(false);
 
-        expect(store.resources[0].name).toBe("asd");
+        expect(store.resources[0].name).toBe("buildah");
+        expect(getSnapshot(store.resources)).toMatchSnapshot()
+
+        done();
+      }
+    );
+  });
+
+  it("can search a resource", (done) => {
+    const store = ResourceStore.create({}, {
+      api,
+      kindStore: KindStore.create({}),
+      catalogStore: CatalogStore.create({}),
+      categoryStore: CategoryStore.create({}, { api})
+    });
+    expect(store.count).toBe(0);
+    expect(store.isLoading).toBe(true);
+
+    when(
+      () => !store.isLoading,
+      () => {
+        expect(store.count).toBe(5);
+        expect(store.isLoading).toBe(false);
+
+        store.search("argo")
+        expect(store.searchResource).toBe("argo")
+        expect(store.list.length).toBe(1)
+
+        done();
+      }
+    );
+  });
+
+  it("can filter on resources", (done) => {
+    const store = ResourceStore.create({}, {
+      api,
+      kindStore: KindStore.create({}),
+      catalogStore: CatalogStore.create({}),
+      categoryStore: CategoryStore.create({}, { api})
+    });
+    expect(store.count).toBe(0);
+    expect(store.isLoading).toBe(true);
+
+    when(
+      () => !store.isLoading,
+      () => {
+        expect(store.count).toBe(5);
+        expect(store.isLoading).toBe(false);
+
+        store.kindStore.add({"name": "Pipeline"})
+        store.kindStore.kindList[0].toggle()
+        store.catalogStore.list[0].toggle()
+        store.categoryStore.categories[3].toggle()
+        expect(store.list.length).toBe(2)
 
         done();
       }

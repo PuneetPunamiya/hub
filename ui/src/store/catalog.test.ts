@@ -1,42 +1,68 @@
+import {getSnapshot} from "mobx-state-tree";
+import { when } from "mobx";
 import { CatalogStore, Catalog } from "./catalog";
-import { RootStore } from "./rootStore";
+import {CategoryStore} from "./category";
 import { FakeHub } from "../api/testutil";
+import {KindStore} from "./kind";
+import { ResourceStore } from "./resources";
+
 const TESTDATA_DIR = `${__dirname}/testdata`;
 const api = new FakeHub(TESTDATA_DIR);
 
-describe("Catalog store", () => {
-  it("can create a store and add a type", done => {
+describe("Kind", () => {
+  it("can create a catalog object", (done) => {
     const store = Catalog.create({
-      name: "abc",
-      selected: false
+      name: "official"
     });
-
-    expect(store.name).toBe("abc");
-
-    done();
-  });
-
-  it("it can toggle a type", done => {
-    const store = CatalogStore.create();
-    store.add({ name: "x" });
-    store.add({ name: "y" });
-    store.toggleCatalogType("x");
-    expect(store.catalogList[0].selected).toBe(true);
+    expect(store.name).toBe("official");
 
     done();
   });
 });
-describe("test catalog store view and actions", () => {
-  it("it can test catalog store view and actions", done => {
-    const store = RootStore.create(
-      {},
-      {
-        api: api,
-        kindStore: CatalogStore.create({})
+
+describe("Kind Store", () => {
+	it("can create a store", (done) => {
+		const store = ResourceStore.create({}, {
+			api,
+			kindStore: KindStore.create({}),
+  		catalogStore: CatalogStore.create({}),
+  		categoryStore: CategoryStore.create({}, { api })
+		})
+
+    when(
+      () => !store.isLoading,
+      () => {
+        expect(store.count).toBe(5);
+        expect(store.isLoading).toBe(false);
+
+				expect(store.catalogStore.count).toBe(1)
+				expect(store.catalogStore.catalogList[0].name).toBe("official")
+				expect(getSnapshot(store.catalogStore.catalogList)).toMatchSnapshot()
+
+        done();
       }
     );
-    
+	})
 
-    done();
-  });
-});
+	it("can toggle the selected catalog", (done) => {
+		const store = ResourceStore.create({}, {
+			api,
+			kindStore: KindStore.create({}),
+  		catalogStore: CatalogStore.create({}),
+  		categoryStore: CategoryStore.create({}, { api })
+		})
+
+    when(
+      () => !store.isLoading,
+      () => {
+        expect(store.count).toBe(5);
+        expect(store.isLoading).toBe(false);
+
+				store.catalogStore.catalogList[0].toggle()
+				expect(store.catalogStore.catalogList[0].selected).toBe(true)
+
+        done();
+      }
+    );
+	})
+})
