@@ -353,6 +353,7 @@ func filterByKinds(t []string) func(db *gorm.DB) *gorm.DB {
 	}
 
 	return func(db *gorm.DB) *gorm.DB {
+		t = lower(t)
 		return db.Where("LOWER(kind) IN (?)", t)
 	}
 }
@@ -363,18 +364,16 @@ func filterByTags(t []string) func(db *gorm.DB) *gorm.DB {
 	}
 
 	return func(db *gorm.DB) *gorm.DB {
-		rows, _ := db.Model(&model.Resource{}).Select("DISTINCT(resources.id)").
+		t = lower(t)
+		query := db.Model(&model.Resource{}).Select("DISTINCT(resources.id)").
 			Joins("JOIN resource_tags on resource_tags.resource_id = resources.id").
 			Joins("JOIN tags on tags.id = resource_tags.tag_id").
-			Where("tags.name in (?)", t).Rows()
+			Where("tags.name in (?)", t)
 
-		var ID []uint
-		for rows.Next() {
-			var id uint
-			rows.Scan(&id)
-			ID = append(ID, id)
-		}
-		return db.Where("id IN (?)", ID)
+		var resID []uint
+		query.Pluck("resources.id", &resID)
+
+		return db.Where("id IN (?)", resID)
 
 	}
 }
@@ -421,6 +420,15 @@ func queryByName(name string, exact bool) func(db *gorm.DB) *gorm.DB {
 		return filterByName(name)
 	}
 	return matchesName(name)
+}
+
+// This function lowercase the first letter
+// of all the elements of an array
+func lower(t []string) []string {
+	for i := range t {
+		t[i] = strings.ToLower(t[i])
+	}
+	return t
 }
 
 func noop(db *gorm.DB) *gorm.DB {
