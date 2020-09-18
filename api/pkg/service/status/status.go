@@ -18,19 +18,29 @@ import (
 	"context"
 
 	"github.com/tektoncd/hub/api/gen/status"
+	"github.com/tektoncd/hub/api/pkg/app"
 )
 
 // status service implementation.
-type service struct{}
+type service struct {
+	app.Service
+}
 
 // New returns the status service implementation.
-func New() status.Service {
-	return &service{}
+func New(api app.BaseConfig) status.Service {
+	return &service{api.Service("status")}
 }
 
 // Return status 'ok' when the server has started successfully
 func (s *service) Status(ctx context.Context) (res *status.StatusResult, err error) {
 
+	db := s.DB(ctx).DB()
+	log := s.Logger(ctx)
+
+	if err := db.Ping(); err != nil {
+		log.Error(err)
+		return nil, err
+	}
 	res = &status.StatusResult{
 		Status: "ok",
 	}

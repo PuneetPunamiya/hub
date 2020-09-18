@@ -24,15 +24,18 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tektoncd/hub/api/gen/http/status/server"
 	"github.com/tektoncd/hub/api/gen/status"
+	"github.com/tektoncd/hub/api/pkg/testutils"
 )
 
 func TestOk_http(t *testing.T) {
+	tc := testutils.Setup(t)
+	testutils.LoadFixtures(t, tc.FixturePath())
 
 	checker := goahttpcheck.New()
 	checker.Mount(
 		server.NewStatusHandler,
 		server.MountStatusHandler,
-		status.NewStatusEndpoint(New()),
+		status.NewStatusEndpoint(New(tc)),
 	)
 
 	checker.Test(t, http.MethodGet, "/").Check().
