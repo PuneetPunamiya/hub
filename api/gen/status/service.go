@@ -14,7 +14,7 @@ import (
 // Describes the status of the server
 type Service interface {
 	// Return status 'ok' when the server has started successfully
-	Status(context.Context) (res *StatusResult, err error)
+	Status(context.Context) (res []*Server, err error)
 }
 
 // ServiceName is the name of the service as defined in the design. This is the
@@ -27,8 +27,15 @@ const ServiceName = "status"
 // MethodKey key.
 var MethodNames = [1]string{"Status"}
 
-// StatusResult is the result type of the status service Status method.
-type StatusResult struct {
-	// Status of server
+type Server struct {
+	// List of tags associated with the category
+	Services []*Services
+}
+
+// Describes the services and their status
+type Services struct {
+	// Name of the service
+	Name string
+	// Status of the service
 	Status string
 }

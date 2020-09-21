@@ -19,9 +19,60 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StatusResponseBody'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Server'
+                example:
+                - services:
+                  - name: api
+                    status: ok
+                  - name: api
+                    status: ok
+                  - name: api
+                    status: ok
+                - services:
+                  - name: api
+                    status: ok
+                  - name: api
+                    status: ok
+                  - name: api
+                    status: ok
+                - services:
+                  - name: api
+                    status: ok
+                  - name: api
+                    status: ok
+                  - name: api
+                    status: ok
+                - services:
+                  - name: api
+                    status: ok
+                  - name: api
+                    status: ok
+                  - name: api
+                    status: ok
               example:
-                status: ok
+              - services:
+                - name: api
+                  status: ok
+                - name: api
+                  status: ok
+                - name: api
+                  status: ok
+              - services:
+                - name: api
+                  status: ok
+                - name: api
+                  status: ok
+                - name: api
+                  status: ok
+              - services:
+                - name: api
+                  status: ok
+                - name: api
+                  status: ok
+                - name: api
+                  status: ok
   /auth/login:
     post:
       tags:
@@ -38,8 +89,8 @@ paths:
         schema:
           type: string
           description: OAuth Authorization code of User
-          example: Est enim.
-        example: Nesciunt rerum tempora quasi porro ipsa facere.
+          example: Officiis ducimus laborum est eum eos totam.
+        example: Explicabo quo.
       responses:
         "200":
           description: ""
@@ -48,7 +99,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthenticateResponseBody'
               example:
-                token: Commodi rerum harum ut tenetur laborum tempore.
+                token: Rerum harum ut tenetur laborum.
         "400":
           description: ""
           content:
@@ -61,21 +112,8 @@ paths:
                 message: parameter 'p' must be an integer
                 name: bad_request
                 temporary: true
-                timeout: false
-        "401":
-          description: ""
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                fault: true
-                id: 123abc
-                message: parameter 'p' must be an integer
-                name: bad_request
-                temporary: false
                 timeout: true
-        "403":
+        "401":
           description: ""
           content:
             application/vnd.goa.error:
@@ -88,6 +126,19 @@ paths:
                 name: bad_request
                 temporary: true
                 timeout: false
+        "403":
+          description: ""
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                fault: false
+                id: 123abc
+                message: parameter 'p' must be an integer
+                name: bad_request
+                temporary: true
+                timeout: true
         "500":
           description: ""
           content:
@@ -100,7 +151,7 @@ paths:
                 message: parameter 'p' must be an integer
                 name: bad_request
                 temporary: false
-                timeout: true
+                timeout: false
   /categories:
     get:
       tags:
@@ -161,6 +212,13 @@ paths:
                   name: image-build
                 - id: 2
                   name: kaniko
+              - id: 1
+                name: Image Builder
+                tags:
+                - id: 1
+                  name: image-build
+                - id: 2
+                  name: kaniko
         "500":
           description: ""
           content:
@@ -190,8 +248,8 @@ paths:
           type: string
           description: Name of resource
           default: ""
-          example: Ut quos voluptas molestiae quia expedita.
-        example: Quibusdam optio officiis ducimus laborum est.
+          example: Illo voluptate est dolores numquam animi vel.
+        example: Expedita culpa.
       - name: kinds
         in: query
         description: Kinds of resource to filter by
@@ -200,16 +258,15 @@ paths:
           type: array
           items:
             type: string
-            example: Eos totam autem explicabo.
+            example: Mollitia architecto quia beatae sed sit voluptas.
           description: Kinds of resource to filter by
           example:
-          - Illo voluptate est dolores numquam animi vel.
-          - Expedita culpa.
-          - Mollitia architecto quia beatae sed sit voluptas.
-          - Voluptatem fugiat corrupti rem dolorum ducimus tempora.
+          - Fugiat corrupti rem dolorum ducimus tempora tenetur.
+          - Blanditiis at qui deleniti sit.
         example:
-        - Blanditiis at qui deleniti sit.
-        - Est dolor saepe odit voluptatum et non.
+        - Dolor saepe.
+        - Voluptatum et non nobis.
+        - Iusto quis labore reprehenderit ut.
       - name: tags
         in: query
         description: Tags associated with a resource to filter by
@@ -218,17 +275,15 @@ paths:
           type: array
           items:
             type: string
-            example: Delectus iusto quis labore reprehenderit ut dolorem.
+            example: Vero vel error nisi quam inventore et.
           description: Tags associated with a resource to filter by
           example:
-          - Error nisi quam.
-          - Et incidunt maxime voluptas.
-          - Velit sed sapiente libero sit id.
+          - Voluptas eos velit sed sapiente libero sit.
+          - Et nam quia incidunt accusamus.
         example:
-        - Quia incidunt accusamus dolor non.
-        - Praesentium corrupti et qui nam eos esse.
-        - Sint tempora dolorem.
-        - Maxime nesciunt sed.
+        - Eum praesentium corrupti et qui.
+        - Eos esse enim sint tempora.
+        - Neque maxime nesciunt.
       - name: limit
         in: query
         description: Maximum number of resources to be returned
@@ -237,8 +292,8 @@ paths:
           type: integer
           description: Maximum number of resources to be returned
           default: 100
-          example: 10709164047780276614
-        example: 10029816606962171454
+          example: 10073368524753982514
+        example: 10709164047780276614
       - name: match
         in: query
         description: Strategy used to find matching resources
@@ -377,8 +432,8 @@ paths:
         schema:
           type: integer
           description: ID of a resource
-          example: 3357069084186866254
-        example: 13108708062972131929
+          example: 6985782719166842104
+        example: 11858317022027964462
       responses:
         "200":
           description: ""
@@ -452,8 +507,8 @@ paths:
         schema:
           type: integer
           description: ID of a resource
-          example: 1901741410125219193
-        example: 1775143685620788290
+          example: 11929803235502470516
+        example: 16680912479532482244
       responses:
         "200":
           description: ""
@@ -533,8 +588,8 @@ paths:
         schema:
           type: integer
           description: ID of a resource
-          example: 96226974050869931
-        example: 5784126447885838359
+          example: 5930871646879379148
+        example: 17720500469993030029
       requestBody:
         required: true
         content:
@@ -620,8 +675,8 @@ paths:
         schema:
           type: integer
           description: ID of a resource
-          example: 9643880626929977783
-        example: 9288553673740893061
+          example: 14601011742367513823
+        example: 9643880626929977783
       responses:
         "200":
           description: ""
@@ -689,7 +744,7 @@ paths:
           enum:
           - task
           - pipeline
-        example: task
+        example: pipeline
       - name: name
         in: path
         description: Name of resource
@@ -697,8 +752,8 @@ paths:
         schema:
           type: string
           description: Name of resource
-          example: Consequatur omnis.
-        example: Aut sed voluptas animi molestiae nam.
+          example: Suscipit fuga nam.
+        example: Eveniet qui sint omnis consequatur omnis.
       responses:
         "200":
           description: ""
@@ -824,7 +879,7 @@ paths:
         schema:
           type: string
           description: kind of resource
-          example: task
+          example: pipeline
           enum:
           - task
           - pipeline
@@ -836,8 +891,8 @@ paths:
         schema:
           type: string
           description: name of resource
-          example: Possimus reiciendis aut repellat veritatis qui accusantium.
-        example: Ea rem aperiam ipsam sapiente.
+          example: Itaque possimus.
+        example: Aut repellat.
       - name: version
         in: path
         description: version of resource
@@ -845,8 +900,8 @@ paths:
         schema:
           type: string
           description: version of resource
-          example: Assumenda qui sequi officiis mollitia dolorem laudantium.
-        example: Amet suscipit fuga nam.
+          example: Qui accusantium nulla ea rem.
+        example: Ipsam sapiente labore assumenda qui sequi officiis.
       responses:
         "200":
           description: ""
@@ -915,8 +970,8 @@ paths:
         schema:
           type: integer
           description: Version ID of a resource's version
-          example: 17319893058013126476
-        example: 14555283174767719615
+          example: 4419648050839368861
+        example: 8257605382696551331
       responses:
         "200":
           description: ""
@@ -986,8 +1041,8 @@ paths:
           type: integer
           description: Maximum number of resources to be returned
           default: 100
-          example: 5074260106294516982
-        example: 14601011742367513823
+          example: 16586134167331504924
+        example: 5074260106294516982
       responses:
         "200":
           description: ""
@@ -1103,9 +1158,9 @@ components:
         token:
           type: string
           description: JWT
-          example: Voluptas omnis optio saepe.
+          example: Sapiente eum sunt consequuntur aut est enim.
       example:
-        token: Debitis quo.
+        token: Nesciunt rerum tempora quasi porro ipsa facere.
       required:
       - token
     ByIDResponseBody:
@@ -1315,7 +1370,7 @@ components:
         fault:
           type: boolean
           description: Is the error a server-side fault?
-          example: false
+          example: true
         id:
           type: string
           description: ID is a unique identifier for this particular occurrence of the problem.
@@ -1331,11 +1386,11 @@ components:
         temporary:
           type: boolean
           description: Is the error temporary?
-          example: true
+          example: false
         timeout:
           type: boolean
           description: Is the error a timeout?
-          example: false
+          example: true
       description: Internal Server Error
       example:
         fault: true
@@ -1343,7 +1398,7 @@ components:
         message: parameter 'p' must be an integer
         name: bad_request
         temporary: false
-        timeout: false
+        timeout: true
       required:
       - name
       - id
@@ -1357,10 +1412,10 @@ components:
         rating:
           type: integer
           description: User rating for resource
-          example: 5861118801756650279
+          example: 2028750598180025313
           format: int64
       example:
-        rating: 4252947343240285848
+        rating: 7777745290466234045
       required:
       - rating
     Resource:
@@ -1596,35 +1651,46 @@ components:
         tags:
         - id: 1
           name: image-build
-      - catalog:
-          id: 1
-          type: community
-        id: 1
-        kind: task
-        latestVersion:
-          description: Buildah task builds source into a container image and then pushes it to a container registry.
-          displayName: Buildah
-          id: 1
-          minPipelinesVersion: 0.12.1
-          rawURL: https://raw.githubusercontent.com/tektoncd/catalog/master/task/buildah/0.1/buildah.yaml
-          updatedAt: 2020-01-01 12:00:00 +0000 UTC
-          version: "0.1"
-          webURL: https://github.com/tektoncd/catalog/blob/master/task/buildah/0.1/buildah.yaml
-        name: buildah
-        rating: 4.3
-        tags:
-        - id: 1
-          name: image-build
-    StatusResponseBody:
+    Server:
       type: object
       properties:
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Services'
+          description: List of tags associated with the category
+          example:
+          - name: api
+            status: ok
+          - name: api
+            status: ok
+      example:
+        services:
+        - name: api
+          status: ok
+        - name: api
+          status: ok
+        - name: api
+          status: ok
+      required:
+      - services
+    Services:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the service
+          example: api
         status:
           type: string
-          description: Status of server
+          description: Status of the service
           example: ok
+      description: Describes the services and their status
       example:
+        name: api
         status: ok
       required:
+      - name
       - status
     Tag:
       type: object
@@ -1649,11 +1715,11 @@ components:
         rating:
           type: integer
           description: User rating for resource
-          example: 2
+          example: 4
           minimum: 0
           maximum: 5
       example:
-        rating: 1
+        rating: 3
       required:
       - rating
     Version:

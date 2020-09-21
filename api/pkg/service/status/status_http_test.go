@@ -15,13 +15,15 @@
 package status
 
 import (
-	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"testing"
 
 	"github.com/ikawaha/goahttpcheck"
 	"github.com/stretchr/testify/assert"
+	"gotest.tools/golden"
+
 	"github.com/tektoncd/hub/api/gen/http/status/server"
 	"github.com/tektoncd/hub/api/gen/status"
 	"github.com/tektoncd/hub/api/pkg/testutils"
@@ -44,10 +46,35 @@ func TestOk_http(t *testing.T) {
 		assert.NoError(t, readErr)
 		defer r.Body.Close()
 
-		var jsonMap map[string]interface{}
-		marshallErr := json.Unmarshal([]byte(b), &jsonMap)
-		assert.NoError(t, marshallErr)
+		res, err := testutils.FormatJSON(b)
+		assert.NoError(t, err)
 
-		assert.Equal(t, "ok", jsonMap["status"])
+		golden.Assert(t, res, fmt.Sprintf("%s.golden", t.Name()))
+	})
+}
+
+func TestNotOk_http(t *testing.T) {
+	tc := testutils.Setup(t)
+	// testutils.LoadFixtures(t, tc.FixturePath())
+
+	tc.DB().Close()
+
+	checker := goahttpcheck.New()
+	checker.Mount(
+		server.NewStatusHandler,
+		server.MountStatusHandler,
+		status.NewStatusEndpoint(New(tc)),
+	)
+
+	checker.Test(t, http.MethodGet, "/").Check().
+		HasStatus(http.StatusOK).Cb(func(r *http.Response) {
+		b, readErr := ioutil.ReadAll(r.Body)
+		assert.NoError(t, readErr)
+		defer r.Body.Close()
+
+		res, err := testutils.FormatJSON(b)
+		assert.NoError(t, err)
+
+		golden.Assert(t, res, fmt.Sprintf("%s.golden", t.Name()))
 	})
 }

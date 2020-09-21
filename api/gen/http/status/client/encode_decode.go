@@ -14,7 +14,9 @@ import (
 	"net/http"
 	"net/url"
 
+	status "github.com/tektoncd/hub/api/gen/status"
 	goahttp "goa.design/goa/v3/http"
+	goa "goa.design/goa/v3/pkg"
 )
 
 // BuildStatusRequest instantiates a HTTP request object with method and path
@@ -59,15 +61,44 @@ func DecodeStatusResponse(decoder func(*http.Response) goahttp.Decoder, restoreB
 			if err != nil {
 				return nil, goahttp.ErrDecodingError("status", "Status", err)
 			}
-			err = ValidateStatusResponseBody(&body)
+			for _, e := range body {
+				if e != nil {
+					if err2 := ValidateServerResponse(e); err2 != nil {
+						err = goa.MergeErrors(err, err2)
+					}
+				}
+			}
 			if err != nil {
 				return nil, goahttp.ErrValidationError("status", "Status", err)
 			}
-			res := NewStatusResultOK(&body)
+			res := NewStatusServerOK(body)
 			return res, nil
 		default:
 			body, _ := ioutil.ReadAll(resp.Body)
 			return nil, goahttp.ErrInvalidResponse("status", "Status", resp.StatusCode, string(body))
 		}
 	}
+}
+
+// unmarshalServerResponseToStatusServer builds a value of type *status.Server
+// from a value of type *ServerResponse.
+func unmarshalServerResponseToStatusServer(v *ServerResponse) *status.Server {
+	res := &status.Server{}
+	res.Services = make([]*status.Services, len(v.Services))
+	for i, val := range v.Services {
+		res.Services[i] = unmarshalServicesResponseToStatusServices(val)
+	}
+
+	return res
+}
+
+// unmarshalServicesResponseToStatusServices builds a value of type
+// *status.Services from a value of type *ServicesResponse.
+func unmarshalServicesResponseToStatusServices(v *ServicesResponse) *status.Services {
+	res := &status.Services{
+		Name:   *v.Name,
+		Status: *v.Status,
+	}
+
+	return res
 }

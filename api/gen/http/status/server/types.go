@@ -13,16 +13,28 @@ import (
 
 // StatusResponseBody is the type of the "status" service "Status" endpoint
 // HTTP response body.
-type StatusResponseBody struct {
-	// Status of server
+type StatusResponseBody []*ServerResponse
+
+// ServerResponse is used to define fields on response body types.
+type ServerResponse struct {
+	// List of tags associated with the category
+	Services []*ServicesResponse `form:"services" json:"services" xml:"services"`
+}
+
+// ServicesResponse is used to define fields on response body types.
+type ServicesResponse struct {
+	// Name of the service
+	Name string `form:"name" json:"name" xml:"name"`
+	// Status of the service
 	Status string `form:"status" json:"status" xml:"status"`
 }
 
 // NewStatusResponseBody builds the HTTP response body from the result of the
 // "Status" endpoint of the "status" service.
-func NewStatusResponseBody(res *status.StatusResult) *StatusResponseBody {
-	body := &StatusResponseBody{
-		Status: res.Status,
+func NewStatusResponseBody(res []*status.Server) StatusResponseBody {
+	body := make([]*ServerResponse, len(res))
+	for i, val := range res {
+		body[i] = marshalStatusServerToServerResponse(val)
 	}
 	return body
 }

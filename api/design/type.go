@@ -279,3 +279,21 @@ var JWTAuth = JWTSecurity("jwt", func() {
 	Scope("rating:read", "Read-only access to rating")
 	Scope("rating:write", "Read and write access to rating")
 })
+
+var services = Type("services", func() {
+	Description("Describes the services and their status")
+	Attribute("name", String, "Name of the service", func() {
+		Example("name", "api")
+	})
+	Attribute("status", String, "Status of the service", func() {
+		Example("status", "ok")
+	})
+
+	Required("name", "status")
+})
+
+var server = Type("server", func() {
+	Attribute("services", ArrayOf(services), "List of tags associated with the category")
+
+	Required("services")
+})

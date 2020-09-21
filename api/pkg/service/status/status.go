@@ -32,17 +32,21 @@ func New(api app.BaseConfig) status.Service {
 }
 
 // Return status 'ok' when the server has started successfully
-func (s *service) Status(ctx context.Context) (res *status.StatusResult, err error) {
+func (s *service) Status(ctx context.Context) (res []*status.Server, err error) {
+
+	service := []*status.Services{}
+	service = append(service, &status.Services{Name: "api", Status: "ok"})
 
 	db := s.DB(ctx).DB()
-	log := s.Logger(ctx)
 
 	if err := db.Ping(); err != nil {
-		log.Error(err)
-		return nil, err
+		service = append(service, &status.Services{Name: "db", Status: err.Error()})
+		res = append(res, &status.Server{Services: service})
+		return res, nil
 	}
-	res = &status.StatusResult{
-		Status: "ok",
-	}
+
+	service = append(service, &status.Services{Name: "db", Status: "ok"})
+
+	res = append(res, &status.Server{Services: service})
 	return res, nil
 }

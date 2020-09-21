@@ -14,23 +14,52 @@ import (
 
 // StatusResponseBody is the type of the "status" service "Status" endpoint
 // HTTP response body.
-type StatusResponseBody struct {
-	// Status of server
+type StatusResponseBody []*ServerResponse
+
+// ServerResponse is used to define fields on response body types.
+type ServerResponse struct {
+	// List of tags associated with the category
+	Services []*ServicesResponse `form:"services,omitempty" json:"services,omitempty" xml:"services,omitempty"`
+}
+
+// ServicesResponse is used to define fields on response body types.
+type ServicesResponse struct {
+	// Name of the service
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// Status of the service
 	Status *string `form:"status,omitempty" json:"status,omitempty" xml:"status,omitempty"`
 }
 
-// NewStatusResultOK builds a "status" service "Status" endpoint result from a
+// NewStatusServerOK builds a "status" service "Status" endpoint result from a
 // HTTP "OK" response.
-func NewStatusResultOK(body *StatusResponseBody) *status.StatusResult {
-	v := &status.StatusResult{
-		Status: *body.Status,
+func NewStatusServerOK(body []*ServerResponse) []*status.Server {
+	v := make([]*status.Server, len(body))
+	for i, val := range body {
+		v[i] = unmarshalServerResponseToStatusServer(val)
 	}
-
 	return v
 }
 
-// ValidateStatusResponseBody runs the validations defined on StatusResponseBody
-func ValidateStatusResponseBody(body *StatusResponseBody) (err error) {
+// ValidateServerResponse runs the validations defined on serverResponse
+func ValidateServerResponse(body *ServerResponse) (err error) {
+	if body.Services == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("services", "body"))
+	}
+	for _, e := range body.Services {
+		if e != nil {
+			if err2 := ValidateServicesResponse(e); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
+		}
+	}
+	return
+}
+
+// ValidateServicesResponse runs the validations defined on servicesResponse
+func ValidateServicesResponse(body *ServicesResponse) (err error) {
+	if body.Name == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
+	}
 	if body.Status == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("status", "body"))
 	}

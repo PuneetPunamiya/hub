@@ -19,10 +19,35 @@ import (
 // Status endpoint.
 func EncodeStatusResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
 	return func(ctx context.Context, w http.ResponseWriter, v interface{}) error {
-		res := v.(*status.StatusResult)
+		res := v.([]*status.Server)
 		enc := encoder(ctx, w)
 		body := NewStatusResponseBody(res)
 		w.WriteHeader(http.StatusOK)
 		return enc.Encode(body)
 	}
+}
+
+// marshalStatusServerToServerResponse builds a value of type *ServerResponse
+// from a value of type *status.Server.
+func marshalStatusServerToServerResponse(v *status.Server) *ServerResponse {
+	res := &ServerResponse{}
+	if v.Services != nil {
+		res.Services = make([]*ServicesResponse, len(v.Services))
+		for i, val := range v.Services {
+			res.Services[i] = marshalStatusServicesToServicesResponse(val)
+		}
+	}
+
+	return res
+}
+
+// marshalStatusServicesToServicesResponse builds a value of type
+// *ServicesResponse from a value of type *status.Services.
+func marshalStatusServicesToServicesResponse(v *status.Services) *ServicesResponse {
+	res := &ServicesResponse{
+		Name:   v.Name,
+		Status: v.Status,
+	}
+
+	return res
 }

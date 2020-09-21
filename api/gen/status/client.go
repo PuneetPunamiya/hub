@@ -26,11 +26,11 @@ func NewClient(status goa.Endpoint) *Client {
 }
 
 // Status calls the "Status" endpoint of the "status" service.
-func (c *Client) Status(ctx context.Context) (res *StatusResult, err error) {
+func (c *Client) Status(ctx context.Context) (res []*Server, err error) {
 	var ires interface{}
 	ires, err = c.StatusEndpoint(ctx, nil)
 	if err != nil {
 		return
 	}
-	return ires.(*StatusResult), nil
+	return ires.([]*Server), nil
 }

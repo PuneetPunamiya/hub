@@ -29,20 +29,19 @@ import (
 func UsageCommands() string {
 	return `category list
 auth authenticate
-status status
 resource (query|list|versions-by-id|by-kind-name-version|by-version-id|by-kind-name|by-id)
 rating (get|update)
+status status
 `
 }
 
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` category list` + "\n" +
-		os.Args[0] + ` auth authenticate --code "Autem ut est error eaque."` + "\n" +
-		os.Args[0] + ` status status` + "\n" +
-		os.Args[0] + ` resource query --name "Cumque omnis non." --kinds '[
-      "Quos distinctio ipsam eos.",
-      "Magnam illum ut nihil eum placeat.",
+		os.Args[0] + ` auth authenticate --code "Est error eaque quos."` + "\n" +
+		os.Args[0] + ` resource query --name "Facere cumque omnis non ut aut." --kinds '[
+      "Ipsam eos aut magnam.",
+      "Ut nihil eum placeat.",
       "Et consequuntur voluptas et enim ut rerum.",
       "Aut eos qui fugiat."
    ]' --tags '[
@@ -52,6 +51,7 @@ func UsageExamples() string {
       "Qui ipsum deleniti corrupti non quo velit."
    ]' --limit 17876575713650742907 --match "contains"` + "\n" +
 		os.Args[0] + ` rating get --id 3376298804373115607 --token "Placeat facere."` + "\n" +
+		os.Args[0] + ` status status` + "\n" +
 		""
 }
 
@@ -73,10 +73,6 @@ func ParseEndpoint(
 
 		authAuthenticateFlags    = flag.NewFlagSet("authenticate", flag.ExitOnError)
 		authAuthenticateCodeFlag = authAuthenticateFlags.String("code", "REQUIRED", "")
-
-		statusFlags = flag.NewFlagSet("status", flag.ContinueOnError)
-
-		statusStatusFlags = flag.NewFlagSet("status", flag.ExitOnError)
 
 		resourceFlags = flag.NewFlagSet("resource", flag.ContinueOnError)
 
@@ -118,15 +114,16 @@ func ParseEndpoint(
 		ratingUpdateBodyFlag  = ratingUpdateFlags.String("body", "REQUIRED", "")
 		ratingUpdateIDFlag    = ratingUpdateFlags.String("id", "REQUIRED", "ID of a resource")
 		ratingUpdateTokenFlag = ratingUpdateFlags.String("token", "REQUIRED", "")
+
+		statusFlags = flag.NewFlagSet("status", flag.ContinueOnError)
+
+		statusStatusFlags = flag.NewFlagSet("status", flag.ExitOnError)
 	)
 	categoryFlags.Usage = categoryUsage
 	categoryListFlags.Usage = categoryListUsage
 
 	authFlags.Usage = authUsage
 	authAuthenticateFlags.Usage = authAuthenticateUsage
-
-	statusFlags.Usage = statusUsage
-	statusStatusFlags.Usage = statusStatusUsage
 
 	resourceFlags.Usage = resourceUsage
 	resourceQueryFlags.Usage = resourceQueryUsage
@@ -140,6 +137,9 @@ func ParseEndpoint(
 	ratingFlags.Usage = ratingUsage
 	ratingGetFlags.Usage = ratingGetUsage
 	ratingUpdateFlags.Usage = ratingUpdateUsage
+
+	statusFlags.Usage = statusUsage
+	statusStatusFlags.Usage = statusStatusUsage
 
 	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
 		return nil, nil, err
@@ -160,12 +160,12 @@ func ParseEndpoint(
 			svcf = categoryFlags
 		case "auth":
 			svcf = authFlags
-		case "status":
-			svcf = statusFlags
 		case "resource":
 			svcf = resourceFlags
 		case "rating":
 			svcf = ratingFlags
+		case "status":
+			svcf = statusFlags
 		default:
 			return nil, nil, fmt.Errorf("unknown service %q", svcn)
 		}
@@ -192,13 +192,6 @@ func ParseEndpoint(
 			switch epn {
 			case "authenticate":
 				epf = authAuthenticateFlags
-
-			}
-
-		case "status":
-			switch epn {
-			case "status":
-				epf = statusStatusFlags
 
 			}
 
@@ -237,6 +230,13 @@ func ParseEndpoint(
 
 			}
 
+		case "status":
+			switch epn {
+			case "status":
+				epf = statusStatusFlags
+
+			}
+
 		}
 	}
 	if epf == nil {
@@ -270,13 +270,6 @@ func ParseEndpoint(
 			case "authenticate":
 				endpoint = c.Authenticate()
 				data, err = authc.BuildAuthenticatePayload(*authAuthenticateCodeFlag)
-			}
-		case "status":
-			c := statusc.NewClient(scheme, host, doer, enc, dec, restore)
-			switch epn {
-			case "status":
-				endpoint = c.Status()
-				data = nil
 			}
 		case "resource":
 			c := resourcec.NewClient(scheme, host, doer, enc, dec, restore)
@@ -312,6 +305,13 @@ func ParseEndpoint(
 			case "update":
 				endpoint = c.Update()
 				data, err = ratingc.BuildUpdatePayload(*ratingUpdateBodyFlag, *ratingUpdateIDFlag, *ratingUpdateTokenFlag)
+			}
+		case "status":
+			c := statusc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "status":
+				endpoint = c.Status()
+				data = nil
 			}
 		}
 	}
@@ -365,30 +365,7 @@ Authenticates users against GitHub OAuth
     -code STRING: 
 
 Example:
-    `+os.Args[0]+` auth authenticate --code "Autem ut est error eaque."
-`, os.Args[0])
-}
-
-// statusUsage displays the usage of the status command and its subcommands.
-func statusUsage() {
-	fmt.Fprintf(os.Stderr, `Describes the status of the server
-Usage:
-    %s [globalflags] status COMMAND [flags]
-
-COMMAND:
-    status: Return status 'ok' when the server has started successfully
-
-Additional help:
-    %s status COMMAND --help
-`, os.Args[0], os.Args[0])
-}
-func statusStatusUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] status status
-
-Return status 'ok' when the server has started successfully
-
-Example:
-    `+os.Args[0]+` status status
+    `+os.Args[0]+` auth authenticate --code "Est error eaque quos."
 `, os.Args[0])
 }
 
@@ -422,9 +399,9 @@ Find resources by a combination of name, kind and tags
     -match STRING: 
 
 Example:
-    `+os.Args[0]+` resource query --name "Cumque omnis non." --kinds '[
-      "Quos distinctio ipsam eos.",
-      "Magnam illum ut nihil eum placeat.",
+    `+os.Args[0]+` resource query --name "Facere cumque omnis non ut aut." --kinds '[
+      "Ipsam eos aut magnam.",
+      "Ut nihil eum placeat.",
       "Et consequuntur voluptas et enim ut rerum.",
       "Aut eos qui fugiat."
    ]' --tags '[
@@ -543,5 +520,28 @@ Example:
     `+os.Args[0]+` rating update --body '{
       "rating": 0
    }' --id 7378417340401583056 --token "Accusamus et."
+`, os.Args[0])
+}
+
+// statusUsage displays the usage of the status command and its subcommands.
+func statusUsage() {
+	fmt.Fprintf(os.Stderr, `Describes the status of the server
+Usage:
+    %s [globalflags] status COMMAND [flags]
+
+COMMAND:
+    status: Return status 'ok' when the server has started successfully
+
+Additional help:
+    %s status COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func statusStatusUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] status status
+
+Return status 'ok' when the server has started successfully
+
+Example:
+    `+os.Args[0]+` status status
 `, os.Args[0])
 }

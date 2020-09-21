@@ -23,12 +23,7 @@ var _ = Service("status", func() {
 
 	Method("Status", func() {
 		Description("Return status 'ok' when the server has started successfully")
-		Result(func() {
-			Attribute("status", String, "Status of server", func() {
-				Example("status", "ok")
-			})
-			Required("status")
-		})
+		Result(ArrayOf(server))
 
 		HTTP(func() {
 			GET("/")
