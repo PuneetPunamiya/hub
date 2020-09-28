@@ -15,7 +15,7 @@ import (
 // AuthenticateResponseBody is the type of the "auth" service "Authenticate"
 // endpoint HTTP response body.
 type AuthenticateResponseBody struct {
-	// JWT
+	// JWT token with user details
 	Token *string `form:"token,omitempty" json:"token,omitempty" xml:"token,omitempty"`
 }
 

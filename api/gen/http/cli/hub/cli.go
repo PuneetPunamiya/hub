@@ -38,16 +38,16 @@ rating (get|update)
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` category list` + "\n" +
-		os.Args[0] + ` auth authenticate --code "Rerum non iure modi facere cumque omnis."` + "\n" +
+		os.Args[0] + ` auth authenticate --code "5628b69ec09c09512eef"` + "\n" +
 		os.Args[0] + ` status status` + "\n" +
-		os.Args[0] + ` resource query --name "Ut rerum repellat aut eos qui." --kinds '[
-      "Ut sunt est ea reiciendis.",
-      "Quasi illo voluptate."
+		os.Args[0] + ` resource query --name "buildah" --kinds '[
+      "task",
+      "pipelines"
    ]' --tags '[
-      "Aut beatae reiciendis accusantium.",
-      "Qui ipsum deleniti corrupti non quo velit."
-   ]' --limit 17876575713650742907 --match "contains"` + "\n" +
-		os.Args[0] + ` rating get --id 7378417340401583056 --token "Accusamus et."` + "\n" +
+      "image",
+      "build"
+   ]' --limit 100 --match "exact"` + "\n" +
+		os.Args[0] + ` rating get --id 989687786003471143 --token "Ullam quia nihil officia itaque non."` + "\n" +
 		""
 }
 
@@ -363,7 +363,7 @@ Authenticates users against GitHub OAuth
     -code STRING: 
 
 Example:
-    `+os.Args[0]+` auth authenticate --code "Rerum non iure modi facere cumque omnis."
+    `+os.Args[0]+` auth authenticate --code "5628b69ec09c09512eef"
 `, os.Args[0])
 }
 
@@ -420,13 +420,13 @@ Find resources by a combination of name, kind and tags
     -match STRING: 
 
 Example:
-    `+os.Args[0]+` resource query --name "Ut rerum repellat aut eos qui." --kinds '[
-      "Ut sunt est ea reiciendis.",
-      "Quasi illo voluptate."
+    `+os.Args[0]+` resource query --name "buildah" --kinds '[
+      "task",
+      "pipelines"
    ]' --tags '[
-      "Aut beatae reiciendis accusantium.",
-      "Qui ipsum deleniti corrupti non quo velit."
-   ]' --limit 17876575713650742907 --match "contains"
+      "image",
+      "build"
+   ]' --limit 100 --match "exact"
 `, os.Args[0])
 }
 
@@ -437,7 +437,7 @@ List all resources sorted by rating and name
     -limit UINT: 
 
 Example:
-    `+os.Args[0]+` resource list --limit 8773123889721374510
+    `+os.Args[0]+` resource list --limit 100
 `, os.Args[0])
 }
 
@@ -448,7 +448,7 @@ Find all versions of a resource by its id
     -id UINT: ID of a resource
 
 Example:
-    `+os.Args[0]+` resource versions-by-id --id 16313197953130531523
+    `+os.Args[0]+` resource versions-by-id --id 1
 `, os.Args[0])
 }
 
@@ -462,7 +462,7 @@ Find resource using name of catalog & name, kind and version of resource
     -version STRING: version of resource
 
 Example:
-    `+os.Args[0]+` resource by-catalog-kind-name-version --catalog "Nemo sint est omnis." --kind "task" --name "Cupiditate voluptatem." --version "Tenetur unde."
+    `+os.Args[0]+` resource by-catalog-kind-name-version --catalog "tektoncd" --kind "task" --name "buildah" --version "0.1"
 `, os.Args[0])
 }
 
@@ -473,7 +473,7 @@ Find a resource using its version's id
     -version-id UINT: Version ID of a resource's version
 
 Example:
-    `+os.Args[0]+` resource by-version-id --version-id 8741701717887354389
+    `+os.Args[0]+` resource by-version-id --version-id 1
 `, os.Args[0])
 }
 
@@ -486,7 +486,7 @@ Find resources using name of catalog, resource name and kind of resource
     -name STRING: Name of resource
 
 Example:
-    `+os.Args[0]+` resource by-catalog-kind-name --catalog "Facilis beatae itaque et nostrum." --kind "task" --name "Quis nostrum et ab placeat facere."
+    `+os.Args[0]+` resource by-catalog-kind-name --catalog "tektoncd" --kind "pipeline" --name "buildah"
 `, os.Args[0])
 }
 
@@ -497,7 +497,7 @@ Find a resource using it's id
     -id UINT: ID of a resource
 
 Example:
-    `+os.Args[0]+` resource by-id --id 14491545834747945803
+    `+os.Args[0]+` resource by-id --id 1
 `, os.Args[0])
 }
 
@@ -523,7 +523,7 @@ Find user's rating for a resource
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` rating get --id 7378417340401583056 --token "Accusamus et."
+    `+os.Args[0]+` rating get --id 989687786003471143 --token "Ullam quia nihil officia itaque non."
 `, os.Args[0])
 }
 
@@ -537,7 +537,7 @@ Update user's rating for a resource
 
 Example:
     `+os.Args[0]+` rating update --body '{
-      "rating": 4
-   }' --id 8673375329227215362 --token "Ut quidem architecto rerum id quia quia."
+      "rating": 1
+   }' --id 2583862062577786198 --token "Harum ut tenetur."
 `, os.Args[0])
 }
