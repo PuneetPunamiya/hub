@@ -3,11 +3,12 @@ import '@patternfly/react-core/dist/styles/base.css';
 import {
   PageHeader,
   Brand,
-  PageHeaderToolsGroup,
-  PageHeaderToolsItem,
-  PageHeaderTools
+  PageHeaderTools,
+  Text,
+  TextVariants,
+  GridItem,
+  Grid
 } from '@patternfly/react-core';
-import { GithubIcon, UserIcon } from '@patternfly/react-icons';
 import logo from '../../assets/logo/logo.png';
 import SearchBar from '../searchbar/SearchBar';
 
@@ -19,28 +20,12 @@ const Header: React.FC = () => {
 
   const headerTools = (
     <PageHeaderTools>
-      <PageHeaderToolsGroup
-        visibility={{
-          default: 'visible',
-          md: 'visible'
-        }}
-      >
-        <PageHeaderToolsItem>
+      <Grid>
+        <GridItem span={8}>
           <SearchBar />
-        </PageHeaderToolsItem>
-
-        <PageHeaderToolsItem>
-          <span style={{ marginRight: '1em', fontWeight: 'bold', fontSize: '1em' }}> Login</span>
-        </PageHeaderToolsItem>
-
-        <PageHeaderToolsItem>
-          <UserIcon size="md" style={{ marginRight: '1em' }} />
-        </PageHeaderToolsItem>
-
-        <PageHeaderToolsItem>
-          <GithubIcon size="md" />
-        </PageHeaderToolsItem>
-      </PageHeaderToolsGroup>
+        </GridItem>
+      </Grid>
+      <Text component={TextVariants.h3}>Login</Text>
     </PageHeaderTools>
   );
 

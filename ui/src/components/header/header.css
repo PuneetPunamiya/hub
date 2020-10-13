@@ -5,11 +5,10 @@
   font-size: '1em';
 }
 
-.pf-c-page__header-tools{
+.pf-c-page__header-tools {
   grid-column: 2/4 !important;
 }
 
-.pf-c-page__header-tools-item{
+.pf-c-page__header-tools-item {
   margin-right: 20em;
 }
-
