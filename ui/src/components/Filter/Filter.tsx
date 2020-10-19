@@ -21,11 +21,21 @@ interface FilterList {
   header: string;
 }
 
+/**
+ * To convert the first letter of the input word to Upper Case
+ * @param str {String}
+ */
+function toTitleCase(str: string) {
+  return str.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+}
+
 const checkboxes = (items: Filterable[]) =>
   items.map((c: Filterable) => (
     <Checkbox
       key={c.id}
-      label={c.name}
+      label={toTitleCase(c.name)}
       isChecked={c.selected}
       onChange={() => c.toggle()}
       aria-label="controlled checkbox"
