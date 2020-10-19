@@ -1,0 +1,103 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<header
+  className="pf-c-page__header"
+>
+  <div
+    className="pf-c-page__header-brand"
+  >
+    <div
+      className="pf-c-page__header-brand-toggle"
+    >
+      <button
+        aria-controls="page-sidebar"
+        aria-disabled={false}
+        aria-expanded="true"
+        aria-label="Global navigation"
+        className="pf-c-button pf-m-plain"
+        data-ouia-component-id="OUIA-Generated-Button-plain-1"
+        data-ouia-component-type="PF4/Button"
+        data-ouia-safe={true}
+        disabled={false}
+        id="nav-toggle"
+        onClick={[Function]}
+        type="button"
+      >
+        <svg
+          aria-hidden={true}
+          aria-labelledby={null}
+          fill="currentColor"
+          height="1em"
+          role="img"
+          style={
+            Object {
+              "verticalAlign": "-0.125em",
+            }
+          }
+          viewBox="0 0 448 512"
+          width="1em"
+        >
+          <path
+            d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"
+          />
+        </svg>
+      </button>
+    </div>
+    <a
+      className="pf-c-page__header-brand-link"
+      href="/"
+      target=""
+    >
+      <img
+        alt="Tekton Hub Logo"
+        className="pf-c-brand"
+        src="logo.png"
+      />
+    </a>
+  </div>
+  <div
+    className="pf-c-page__header-tools"
+  >
+    <div
+      className="pf-l-grid"
+    >
+      <div
+        className="pf-l-grid__item pf-m-8-col"
+      >
+        <input
+          aria-invalid={false}
+          aria-label="text input example"
+          className="pf-c-form-control"
+          disabled={false}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          placeholder="Search for resources..."
+          readOnly={false}
+          required={false}
+          spellCheck="false"
+          style={
+            Object {
+              "background": "white",
+              "border": "0px",
+              "borderRadius": "4px",
+              "color": "black",
+              "fontStyle": "italic",
+              "width": "20em",
+            }
+          }
+          type="search"
+          value=""
+        />
+      </div>
+    </div>
+    <h3
+      className=""
+      data-pf-content={true}
+    >
+      Login
+    </h3>
+  </div>
+</header>
+`;

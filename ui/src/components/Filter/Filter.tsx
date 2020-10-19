@@ -49,7 +49,7 @@ const Filter: React.FC<FilterList> = ({ store, header }) => {
     <div className="Filter">
       <Grid sm={6} md={4} lg={3} xl2={1}>
         <GridItem className="Text-Header" span={1} rowSpan={2}>
-          <Text component={TextVariants.h1} style={{ fontWeight: 'bold' }}>
+          <Text component={TextVariants.h1} style={{ fontWeight: 'bold', width: '4em' }}>
             {header}
           </Text>
         </GridItem>

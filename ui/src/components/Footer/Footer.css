@@ -1,0 +1,11 @@
+:root {
+  --footer-card-background--Color: #151515;
+}
+
+.pf-c-card {
+  --pf-c-card--BackgroundColor: var(--footer-card-background--Color);
+}
+
+img.logo-size {
+  height: 6em;
+}
