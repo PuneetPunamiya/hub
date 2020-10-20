@@ -2,7 +2,7 @@ import React from 'react';
 import { FakeHub } from '../../api/testutil';
 import { when } from 'mobx';
 import { shallow } from 'enzyme';
-import Filter, { titleCase } from './Filter';
+import Filter from './Filter';
 import { CategoryStore } from '../../store/category';
 
 const TESTDATA_DIR = `src/store/testdata`;
@@ -53,12 +53,5 @@ describe('Filter component', () => {
         done();
       }
     );
-  });
-});
-
-describe('Test TitleCase function', () => {
-  it('Test titleCase function', () => {
-    const val = titleCase('test value');
-    expect(val).toEqual('Test Value');
   });
 });
