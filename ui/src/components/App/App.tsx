@@ -22,7 +22,7 @@ const App = observer(({ store }: store) => {
         <Route exact path="/" component={Background} />
         <PageSection>
           <Grid hasGutter>
-            <GridItem span={1} rowSpan={1}>
+            <GridItem span={1} rowSpan={1} style={{ marginRight: '-1.5em' }}>
               <Route exact patch="/" component={() => <LeftPane store={store} />}></Route>
             </GridItem>
             <GridItem span={10} rowSpan={2} style={{ marginLeft: '7em' }}>

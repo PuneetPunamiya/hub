@@ -12,27 +12,11 @@ const SortByFilter: React.FC<store> = (props: store) => {
   const store = props.store;
   const [sort, setSort] = useState('Name');
   const [isOpen, set] = useState(false);
-  let tempArr: any = [];
   function sortByName(event: any) {
     setSort(event.target.text);
-    const taskarr = tempArr.sort((first: any, second: any) => {
-      if (first.name.toLowerCase() > second.name.toLowerCase()) {
-        return 1;
-      } else {
-        return -1;
-      }
-    });
   }
-  // eslint-disable-next-line require-jsdoc
   function sortByRatings(event: any) {
     setSort(event.target.text);
-    const taskarr = tempArr.sort((first: any, second: any) => {
-      if (first.rating < second.rating) {
-        return 1;
-      } else {
-        return -1;
-      }
-    });
   }
   const dropdownItems = [
     <DropdownItem key="name" onClick={sortByName}>

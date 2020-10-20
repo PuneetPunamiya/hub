@@ -4,6 +4,7 @@ import { when } from 'mobx';
 import { shallow } from 'enzyme';
 import Filter from './Filter';
 import { CategoryStore } from '../../store/category';
+import { titleCase } from './Filter';
 
 const TESTDATA_DIR = `src/store/testdata`;
 const api = new FakeHub(TESTDATA_DIR);
@@ -53,5 +54,12 @@ describe('Filter component', () => {
         done();
       }
     );
+  });
+});
+
+describe('Test TitleCase function', () => {
+  it('Test titleCase function', () => {
+    const val = titleCase('test value');
+    expect(val).toEqual('Test Value');
   });
 });
