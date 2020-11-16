@@ -6,6 +6,7 @@ import { Tag, ICategoryStore, ITag } from './category';
 import { Api } from '../api';
 import { Catalog, CatalogStore } from './catalog';
 import { Kind, KindStore } from './kind';
+import { DropDownItems } from './utils';
 
 export const updatedAt = types.custom<string, Moment>({
   name: 'momentDate',
@@ -71,6 +72,9 @@ export const ResourceStore = types
     },
     get categories(): ICategoryStore {
       return getEnv(self).categories;
+    },
+    get dropDownItems() {
+      return DropDownItems;
     }
   }))
 

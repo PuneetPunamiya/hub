@@ -1,11 +1,7 @@
-.Filter {
-  margin: 3em;
+.pf-c-check__label {
+  color: rgb(0, 0, 0);
 }
-
-.Text-Header {
-  width: 10em;
-}
-
-.Checkboxes {
-  padding-left: 0.7em;
+.hub-filter-header {
+  font-weight: bold;
+  padding-top: 0.3em;
 }
