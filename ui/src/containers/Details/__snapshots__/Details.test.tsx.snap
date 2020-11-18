@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render the details component 1`] = `
+<div
+  className="pf-l-grid__item pf-m-12-col"
+>
+  Add Resources detail here
+</div>
+`;
