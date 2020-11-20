@@ -1,5 +1,48 @@
 .hub-resource-card {
   background-color: white;
-  height: 15em;
-  width: 15em;
+  height: 23em;
+  width: 18.5em;
+  color: black;
+  border-radius: 0.5em;
+}
+
+.hub-rating-icon {
+  color: #484848;
+  height: 1.7em;
+  width: 1.7em;
+}
+
+.hub-resource-name {
+  font-weight: normal;
+  font-size: 1.5em;
+}
+
+.hub-resource-version {
+  padding-left: 0.7em;
+  font-weight: normal;
+  margin-top: 0.7em;
+}
+
+.hub-resource-time-ago {
+  margin-bottom: 0.5em;
+  margin-top: -1em;
+}
+
+.hub-tags {
+  margin-right: 0.3em;
+  margin-bottom: 0.5em;
+}
+
+.div {
+  color: black;
+}
+
+.hub-resource-body {
+  display: -webkit-box;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  margin-bottom: 1em;
+  word-break: break-all;
 }
