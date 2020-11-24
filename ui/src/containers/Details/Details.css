@@ -1,0 +1,27 @@
+.hub-details-description-heading {
+  font-size: 1.3em;
+}
+
+.hub-details-build-icon {
+  right: -8em;
+  position: relative;
+  top: 0.7em;
+}
+
+.hub-details-ok-icon {
+  margin-right: 1em;
+}
+
+.hub-details-button {
+  width: 8em;
+}
+
+.hub-details-card-footer {
+  left: 12.5em;
+  position: relative;
+}
+
+.hub-details-hyperlink {
+  left: 1em;
+  position: relative;
+}

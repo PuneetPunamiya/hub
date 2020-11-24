@@ -23,7 +23,7 @@ const App: React.FC = observer(() => {
           <PageSection>
             <Grid hasGutter>
               <Grid>
-                <Route exact path="/resource/name" component={Details}></Route>
+                <Route exact path="/details" component={Details}></Route>
               </Grid>
               <GridItem span={2} rowSpan={1}>
                 <Route exact path="/" component={() => <LeftPane />}></Route>
