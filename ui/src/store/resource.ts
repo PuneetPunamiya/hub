@@ -6,6 +6,7 @@ import { Tag, ICategoryStore, ITag } from './category';
 import { Api } from '../api';
 import { Catalog, CatalogStore } from './catalog';
 import { Kind, KindStore } from './kind';
+import { assert } from './utils';
 
 export const updatedAt = types.custom<string, Moment>({
   name: 'momentDate',
@@ -29,12 +30,12 @@ export const updatedAt = types.custom<string, Moment>({
 const Version = types.model('Version', {
   id: types.identifierNumber,
   version: types.string,
-  displayName: types.string,
-  description: types.string,
-  minPipelinesVersion: types.string,
+  displayName: types.optional(types.string, ''),
+  description: types.optional(types.string, ''),
+  minPipelinesVersion: types.optional(types.string, ''),
   rawURL: types.string,
   webURL: types.string,
-  updatedAt: updatedAt
+  updatedAt: types.optional(updatedAt, '')
 });
 
 export const Resource = types
@@ -44,6 +45,7 @@ export const Resource = types
     catalog: types.reference(Catalog),
     kind: types.reference(Kind),
     latestVersion: types.reference(Version),
+    displayVersion: types.reference(Version),
     tags: types.array(types.reference(Tag)), // ["1", "2"]
     rating: types.number,
     versions: types.array(types.reference(Version)),
@@ -55,6 +57,24 @@ export const Resource = types
         return self.displayName;
       }
       return self.name;
+    },
+    get webURL() {
+      let index = self.displayVersion.webURL.lastIndexOf('/');
+      return self.displayVersion.webURL.substring(0, index + 1);
+    },
+    get shortDescription() {
+      let index = self.displayVersion.description.indexOf('\n');
+      return self.displayVersion.description.substring(0, index) || self.displayVersion.description;
+    },
+    get detailDescription() {
+      return self.displayVersion.description.indexOf('\n') !== -1
+        ? self.displayVersion.description
+            .substring(self.displayVersion.description.indexOf('\n') + 1)
+            .trim()
+        : '';
+    },
+    get installCommand() {
+      return `kubectl apply -f ${self.displayVersion.rawURL}`;
     }
   }));
 
@@ -107,6 +127,62 @@ export const ResourceStore = types
   }))
 
   .actions((self) => ({
+    versionInfo: flow(function* (resourceName: string) {
+      try {
+        self.setLoading(true);
+
+        const { api } = self;
+        const resource = self.resources.get(resourceName);
+        assert(resource);
+        const resId = String(resource.id);
+        const json = yield api.resourceVersion(resId);
+
+        const versions: IVersion[] = json.data.versions.map((v: IVersion) => ({
+          id: v.id,
+          version: v.version,
+          webURL: v.webURL,
+          rawURL: v.rawURL
+        }));
+
+        versions.forEach((v: IVersion) => {
+          if (!self.versions.has(String(v.id))) {
+            self.versions.put(v);
+            if (self.resources.has(resourceName)) {
+              const resource = self.resources.get(resourceName);
+              assert(resource);
+              resource.versions.push(v.id);
+            }
+          }
+        });
+      } catch (err) {
+        self.err = err.toString();
+      }
+      self.setLoading(false);
+    }),
+    versionUpdate: flow(function* (versionId: string) {
+      try {
+        self.setLoading(true);
+
+        const { api } = self;
+        const json = yield api.versionUpdate(versionId);
+
+        const version: IVersion = {
+          id: json.data.id,
+          version: json.data.version,
+          displayName: json.data.displayName,
+          description: json.data.description,
+          minPipelinesVersion: json.data.minPipelinesVersion,
+          webURL: json.data.webURL,
+          rawURL: json.data.rawURL,
+          updatedAt: json.data.updatedAt
+        };
+
+        self.versions.put(version);
+      } catch (err) {
+        self.err = err.toString();
+      }
+      self.setLoading(false);
+    }),
     load: flow(function* () {
       try {
         self.setLoading(true);
@@ -133,6 +209,7 @@ export const ResourceStore = types
           catalog: r.catalog.id,
           kind: r.kind,
           latestVersion: r.latestVersion.id,
+          displayVersion: r.latestVersion.id,
           tags: r.tags != null ? r.tags.map((tag: ITag) => tag.id) : [],
           rating: r.rating,
           versions: [],
@@ -153,6 +230,16 @@ export const ResourceStore = types
   .actions((self) => ({
     afterCreate() {
       self.load();
+    },
+    setDisplayVersion(resourceName: string, versionId: string) {
+      const resource = self.resources.get(resourceName);
+      assert(resource);
+      const version = self.versions.get(versionId);
+      assert(version);
+      if (version.id !== resource.displayVersion.id) {
+        resource.displayVersion = version;
+        self.versionUpdate(String(version.id));
+      }
     }
   }))
 

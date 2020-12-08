@@ -15,6 +15,50 @@ exports[`Resources should render the resources 1`] = `
           <CardActions>
             <StarIcon color=\\"currentColor\\" size=\\"sm\\" noVerticalAlign={false} />
             <TextContent className=\\"text\\">
+              4
+            </TextContent>
+          </CardActions>
+        </CardHeader>
+        <CardTitle>
+          <span className=\\"hub-resource-name\\">
+            buildah
+          </span>
+          <span className=\\"hub-resource-version\\">
+            v
+            0.2
+          </span>
+        </CardTitle>
+        <CardBody className=\\"hub-resource-body fade\\">
+          Buildah task builds source into a container image and then pushes it to a container registry.
+          Buildah Task builds source into a container image using Project Atomic&#39;s Buildah build tool.It uses Buildah&#39;s support for building from Dockerfiles, using its buildah bud command.This command executes the directives in the Dockerfile to assemble a container image, then pushes that image to a container registry.
+        </CardBody>
+        <CardFooter>
+          <TextContent className=\\"hub-resource-updatedAt\\">
+            Updated 
+            a month ago
+          </TextContent>
+          <div style={{...}}>
+            <Badge className=\\"hub-tags\\">
+              image-build
+            </Badge>
+          </div>
+        </CardFooter>
+      </Card>
+    </Link>
+  </GalleryItem>
+  <GalleryItem>
+    <Link to={{...}} className=\\"hub-card-link\\">
+      <Card className=\\"hub-resource-card\\">
+        <CardHeader>
+          <span className=\\"hub-kind-icon\\">
+            <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
+          </span>
+          <span className=\\"hub-catalog-icon\\">
+            <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
+          </span>
+          <CardActions>
+            <StarIcon color=\\"currentColor\\" size=\\"sm\\" noVerticalAlign={false} />
+            <TextContent className=\\"text\\">
               5
             </TextContent>
           </CardActions>
