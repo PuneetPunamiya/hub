@@ -245,26 +245,34 @@ export const ResourceStore = types
 
   .views((self) => ({
     get filteredResources() {
-      const { resources, kinds, catalogs, categories, search } = self;
+      const { resources, kinds, catalogs, categories, search, sortBy } = self;
       const { selectedTags } = categories;
 
-      const filtered: IResource[] = [];
+      let filteredItems: IResource[] = [];
       resources.forEach((r: IResource) => {
         const matchesKind = kinds.selected.size === 0 || kinds.selected.has(r.kind.name);
         const matchesCatalogs = catalogs.selected.size === 0 || catalogs.selected.has(r.catalog.id);
         const matchesTags = selectedTags.size === 0 || r.tags.some((t) => selectedTags.has(t.id));
 
         if (matchesKind && matchesCatalogs && matchesTags) {
-          filtered.push(r);
+          filteredItems.push(r);
         }
       });
 
       if (search.trim() !== '') {
-        return fuzzysort
-          .go(search, filtered, { keys: ['name', 'displayName'] })
+        filteredItems = fuzzysort
+          .go(search, filteredItems, { keys: ['name', 'displayName'] })
           .map((resource: Fuzzysort.KeysResult<IResource>) => resource.obj);
       }
-      return filtered;
+      if (sortBy === 'Rating') {
+        return filteredItems.sort((first: IResource, second: IResource) =>
+          first.rating < second.rating ? 1 : -1
+        );
+      }
+
+      return filteredItems.sort((first: IResource, second: IResource) =>
+        first.name > second.name ? 1 : -1
+      );
     }
   }));
 

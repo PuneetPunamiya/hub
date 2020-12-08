@@ -37,16 +37,17 @@ Array [
               aria-invalid={false}
               aria-label="text input example"
               className="pf-c-form-control hub-search"
+              defaultValue=""
               disabled={false}
               onBlur={[Function]}
               onChange={[Function]}
               onFocus={[Function]}
+              onKeyPress={[Function]}
               placeholder="Search for resources..."
               readOnly={false}
               required={false}
               spellCheck="false"
               type="search"
-              value=""
             />
           </div>
         </div>
