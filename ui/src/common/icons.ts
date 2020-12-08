@@ -5,5 +5,6 @@ export enum Icons {
   User = 'user',
   Build = 'build',
   Domain = 'domain',
-  Github = 'github'
+  Github = 'github',
+  Star = 'star'
 }

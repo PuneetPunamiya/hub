@@ -1,19 +1,31 @@
 import React from 'react';
+import renderer from 'react-test-renderer';
+import { BrowserRouter as Router } from 'react-router-dom';
 import Resources from '.';
+import Cards from '../../components/Cards';
+import { GalleryItem } from '@patternfly/react-core';
 import { FakeHub } from '../../api/testutil';
 import { createProviderAndStore } from '../../store/root';
 import { mount } from 'enzyme';
 import { when } from 'mobx';
-import { BrowserRouter as Router } from 'react-router-dom';
-import Cards from '../../components/Cards';
-import { GalleryItem } from '@patternfly/react-core';
 
 const TESTDATA_DIR = `src/store/testdata`;
 const api = new FakeHub(TESTDATA_DIR);
 const { Provider, root } = createProviderAndStore(api);
 
 describe('Resource Component', () => {
-  it('should render the resources component', (done) => {
+  it('should render the resources component', () => {
+    const tree = renderer
+      .create(
+        <Router>
+          <Resources />
+        </Router>
+      )
+      .toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
+  it('should render the resources component', () => {
     const component = mount(
       <Provider>
         <Router>
@@ -41,9 +53,7 @@ describe('Resource Component', () => {
 
           const c = component.find(Cards);
           expect(c.find(GalleryItem).length).toBe(7);
-
-          done();
-        }, 0);
+        });
       }
     );
   });

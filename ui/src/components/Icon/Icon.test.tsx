@@ -38,4 +38,9 @@ describe('Icon Component', () => {
     expect(component.debug()).toMatchSnapshot();
     expect(component.find('GithubIcon[label="Github"]').length).toEqual(1);
   });
+  it('should render icon for Rating', () => {
+    const component = shallow(<Icon id={Icons.Star} size="sm" label="Rating" />);
+    expect(component.debug()).toMatchSnapshot();
+    expect(component.find('StarIcon[label="Rating"]').length).toEqual(1);
+  });
 });

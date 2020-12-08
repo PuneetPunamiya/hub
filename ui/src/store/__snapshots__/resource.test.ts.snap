@@ -497,10 +497,10 @@ Object {
     "name": "jib-maven",
     "rating": 5,
     "tags": Array [
-      8,
+      10,
     ],
     "versions": Array [
-      57,
+      1,
     ],
   },
 }

@@ -12,10 +12,11 @@ import {
   Spinner
 } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
-import { StarIcon, IconSize } from '@patternfly/react-icons';
+import { IconSize } from '@patternfly/react-icons';
 import { IResource } from '../../store/resource';
 import { ITag } from '../../store/category';
 import Icon from '../Icon';
+import { Icons } from '../../common/icons';
 import './Cards.css';
 
 interface Props {
@@ -52,8 +53,8 @@ const Cards: React.FC<Props> = (resources) => {
                 </span>
 
                 <CardActions>
-                  <StarIcon />
-                  <TextContent className="text">{resource.rating}</TextContent>
+                  <Icon id={Icons.Star} size={IconSize.sm} label={String(resource.rating)} />
+                  <TextContent className="hub-rating">{resource.rating}</TextContent>
                 </CardActions>
               </CardHeader>
 

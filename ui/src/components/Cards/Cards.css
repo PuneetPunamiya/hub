@@ -6,10 +6,8 @@
   border-radius: 0.5em;
 }
 
-.hub-rating-icon {
-  color: #484848;
-  height: 1.7em;
-  width: 1.7em;
+.hub-rating {
+  margin-top: 0.32em;
 }
 
 .hub-resource-name {
