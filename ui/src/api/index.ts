@@ -8,6 +8,7 @@ export interface Api {
   resources(): Promise<IResource>;
   resourceVersion(resourceId: string): Promise<IVersion>;
   versionUpdate(versionId: string): Promise<IVersion>;
+  authentication(authCode: string): Promise<any>;
 }
 
 export class Hub implements Api {
@@ -21,7 +22,15 @@ export class Hub implements Api {
 
   async resources() {
     try {
-      return axios.get(`${API_URL}/resources`).then((response) => response.data);
+      return axios.get(`https://api.hub.tekton.dev/resources`).then((response) => response.data);
+    } catch (err) {
+      return err.response;
+    }
+  }
+
+  async authentication(authCode: string) {
+    try {
+      return axios.post(`${API_URL}/auth/login?code=${authCode}`).then((response) => response.data);
     } catch (err) {
       return err.response;
     }

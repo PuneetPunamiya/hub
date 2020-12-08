@@ -55,7 +55,26 @@ Array [
           className=""
           data-pf-content={true}
         >
-          Login
+          <a
+            href="/authentication"
+            onClick={[Function]}
+            style={
+              Object {
+                "textDecoration": "none",
+              }
+            }
+          >
+            <span
+              style={
+                Object {
+                  "color": "white",
+                  "fontSize": "1em",
+                }
+              }
+            >
+              Login
+            </span>
+          </a>
         </h3>
       </div>
     </header>

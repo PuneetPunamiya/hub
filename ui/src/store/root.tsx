@@ -3,6 +3,8 @@ import { types, getEnv, Instance } from 'mobx-state-tree';
 import { CategoryStore } from './category';
 import { ResourceStore } from './resource';
 import { Hub, Api } from '../api';
+import { AuthStore } from './user';
+import { persist } from 'mst-persist';
 
 export const Root = types.model('Root', {}).views((self) => ({
   get api(): Api {
@@ -13,6 +15,9 @@ export const Root = types.model('Root', {}).views((self) => ({
   },
   get resources() {
     return getEnv(self).resources;
+  },
+  get user() {
+    return getEnv(self).user;
   }
 }));
 
@@ -21,7 +26,15 @@ type IRoot = Instance<typeof Root>;
 const initRootStore = (api: Api) => {
   const categories = CategoryStore.create({}, { api });
   const resources = ResourceStore.create({}, { api, categories });
-  return Root.create({}, { api, categories, resources });
+  const user = AuthStore.create({ accessTokenInfo: {}, refreshTokenInfo: {} }, { api });
+
+  persist('authStore', user, {
+    storage: localStorage,
+
+    whitelist: ['accessTokenInfo', 'refreshTokenInfo', 'isAuthenticated']
+  });
+
+  return Root.create({}, { api, categories, resources, user });
 };
 
 interface Props {
@@ -33,6 +46,7 @@ export const useMst = () => React.useContext(RootContext);
 
 export const createProviderAndStore = (api?: Api) => {
   const root = initRootStore(api || new Hub());
+
   RootContext = React.createContext(root);
 
   const Provider = ({ children }: Props) => (

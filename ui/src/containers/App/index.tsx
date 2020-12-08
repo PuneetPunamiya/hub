@@ -5,12 +5,13 @@ import { Grid, GridItem, Page, PageSection } from '@patternfly/react-core';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import LeftPane from '../../components/LeftPane';
 import Background from '../../components/Background';
-import Header from '../../components/Header';
+import Header from '../../containers/Header';
 import Footer from '../../components/Footer';
 import Resources from '../Resources';
 import Details from '../Details';
 import { createProvider } from '../../store/root';
 import './App.css';
+import Authentication from '../../containers/Authentication';
 
 const Provider = createProvider();
 
@@ -24,6 +25,7 @@ const App: React.FC = observer(() => {
             <Grid hasGutter>
               <GridItem span={12}>
                 <Route exact path="/:catalog/:kind/:name" component={Details}></Route>
+                <Route exact path="/authentication" component={Authentication}></Route>
               </GridItem>
               <GridItem span={2}>
                 <Route exact path="/" component={LeftPane}></Route>
