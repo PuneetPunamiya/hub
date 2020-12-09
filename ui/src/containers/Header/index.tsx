@@ -1,7 +1,7 @@
 import React from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
 import { Link } from 'react-router-dom';
-import { useObserver } from 'mobx-react';
+import { observer } from 'mobx-react';
 import {
   PageHeader,
   Brand,
@@ -17,12 +17,12 @@ import Search from '../../containers/Search';
 import UserProfile from '../UserProfile';
 import { useMst } from '../../store/root';
 import './Header.css';
-
-const Header: React.FC = () => {
+const Header: React.FC = observer(() => {
   const history = useHistory();
-
   const { user } = useMst();
-
+  if (user.isAuthenticated === true) {
+    history.push('/');
+  }
   const search = (
     <Grid>
       <GridItem span={11}>
@@ -30,7 +30,6 @@ const Header: React.FC = () => {
       </GridItem>
     </Grid>
   );
-
   const logoutHeader = (
     <PageHeaderTools>
       {search}
@@ -39,7 +38,6 @@ const Header: React.FC = () => {
       </Text>
     </PageHeaderTools>
   );
-
   const loginHeader = (
     <PageHeaderTools>
       {search}
@@ -57,15 +55,13 @@ const Header: React.FC = () => {
       </Text>
     </PageHeaderTools>
   );
-
-  return useObserver(() => (
+  return (
     <React.Fragment>
       <PageHeader
         logo={<Brand src={logo} alt="Tekton Hub Logo" onClick={() => history.push('/')} />}
         headerTools={user.isAuthenticated === false ? loginHeader : logoutHeader}
       />
     </React.Fragment>
-  ));
-};
-
+  );
+});
 export default Header;

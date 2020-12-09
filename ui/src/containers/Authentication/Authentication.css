@@ -11,3 +11,7 @@
 .hub-authentication-card__body {
   text-align: center;
 }
+
+.hub-authentication-card__body button {
+  background-color: #1e66cc;
+}

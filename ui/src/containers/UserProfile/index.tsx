@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import {
   Avatar,
   ClipboardCopy,
@@ -11,25 +10,16 @@ import {
 } from '@patternfly/react-core';
 import imgAvatar from '../../assets/logo/imgAvatar.png';
 import { useMst } from '../../store/root';
-
 import './UserProfile.css';
-
 const UserProfile: React.FC = () => {
   const { user } = useMst();
-
-  const history = useHistory();
-  history.push('/');
-
   const logout = () => {
     localStorage.clear();
     user.setIsAuthenticated(false);
   };
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpen, set] = useState(false);
-
   const onToggle = (isOpen: React.SetStateAction<boolean>) => set(isOpen);
-
   const dropdownItems = [
     <DropdownItem key="copyToken" onClick={() => setIsModalOpen(!isModalOpen)}>
       Copy Hub Token
@@ -38,18 +28,7 @@ const UserProfile: React.FC = () => {
       Logout
     </DropdownItem>
   ];
-
-  const userLogo: React.ReactNode = (
-    <Avatar
-      style={{
-        width: '1.5em',
-        height: '1.5em'
-      }}
-      src={imgAvatar}
-      alt=""
-    />
-  );
-
+  const userLogo: React.ReactNode = <Avatar className="userlogo-size" src={imgAvatar} alt="" />;
   return (
     <React.Fragment>
       <Dropdown
