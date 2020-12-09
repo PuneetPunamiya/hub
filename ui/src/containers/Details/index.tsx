@@ -1,10 +1,27 @@
 import React from 'react';
+import { useObserver } from 'mobx-react';
+import { useParams } from 'react-router-dom';
+import { Spinner } from '@patternfly/react-core';
+import { useMst } from '../../store/root';
+import HeaderCard from '../HeaderCard';
 
 const Details: React.FC = () => {
-  return (
-    <React.Fragment>
-      <span>Add Resources detail here</span>
-    </React.Fragment>
+  const { resources } = useMst();
+  const { name } = useParams();
+
+  const updateVersions = () => {
+    resources.versionInfo(name);
+  };
+
+  return useObserver(() =>
+    resources.resources.size === 0 ? (
+      <Spinner className="hub-spinner" />
+    ) : (
+      <React.Fragment>
+        {updateVersions()}
+        <HeaderCard />
+      </React.Fragment>
+    )
   );
 };
 export default Details;

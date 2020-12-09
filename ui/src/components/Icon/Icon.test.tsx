@@ -33,4 +33,9 @@ describe('Icon Component', () => {
     const component = shallow(<Icon id={Icons.Unknown} size="sm" label="CLI" />);
     expect(component.debug()).toMatchSnapshot();
   });
+  it('should render icon for Github', () => {
+    const component = shallow(<Icon id={Icons.Github} size="sm" label="Github" />);
+    expect(component.debug()).toMatchSnapshot();
+    expect(component.find('GithubIcon[label="Github"]').length).toEqual(1);
+  });
 });
