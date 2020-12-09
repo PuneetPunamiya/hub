@@ -34,7 +34,7 @@ exports[`Resources should render the resources 1`] = `
         <CardFooter>
           <TextContent className=\\"hub-resource-updatedAt\\">
             Updated 
-            a month ago
+            2 months ago
           </TextContent>
           <div style={{...}}>
             <Badge className=\\"hub-tags\\">
@@ -77,7 +77,7 @@ exports[`Resources should render the resources 1`] = `
         <CardFooter>
           <TextContent className=\\"hub-resource-updatedAt\\">
             Updated 
-            a month ago
+            2 months ago
           </TextContent>
           <div style={{...}}>
             <Badge className=\\"hub-tags\\">
@@ -120,7 +120,7 @@ exports[`Resources should render the resources 1`] = `
         <CardFooter>
           <TextContent className=\\"hub-resource-updatedAt\\">
             Updated 
-            a month ago
+            2 months ago
           </TextContent>
           <div style={{...}}>
             <Badge className=\\"hub-tags\\">
@@ -163,7 +163,7 @@ exports[`Resources should render the resources 1`] = `
         <CardFooter>
           <TextContent className=\\"hub-resource-updatedAt\\">
             Updated 
-            a month ago
+            2 months ago
           </TextContent>
           <div style={{...}}>
             <Badge className=\\"hub-tags\\">
@@ -206,7 +206,7 @@ exports[`Resources should render the resources 1`] = `
         <CardFooter>
           <TextContent className=\\"hub-resource-updatedAt\\">
             Updated 
-            a month ago
+            2 months ago
           </TextContent>
           <div style={{...}}>
             <Badge className=\\"hub-tags\\">
@@ -253,7 +253,7 @@ exports[`Resources should render the resources 1`] = `
         <CardFooter>
           <TextContent className=\\"hub-resource-updatedAt\\">
             Updated 
-            a month ago
+            2 months ago
           </TextContent>
           <div style={{...}}>
             <Badge className=\\"hub-tags\\">

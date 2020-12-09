@@ -118,8 +118,10 @@ export const ResourceStore = types
         kinds.forEach((k) => self.kinds.add(k));
 
         json.data.forEach((r: IResource) => {
+          // const x = r.tags[0];
           self.catalogs.add(r.catalog);
           self.versions.put(r.latestVersion);
+          // self.tags.put(x);
         });
 
         // adding the tags to the store - normalized
@@ -144,6 +146,7 @@ export const ResourceStore = types
           self.add(r);
         });
       } catch (err) {
+        console.log(err);
         self.err = err.toString();
       }
       self.setLoading(false);

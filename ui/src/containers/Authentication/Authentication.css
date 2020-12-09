@@ -1,0 +1,13 @@
+.hub-authentication-card--size {
+  max-width: 30em;
+  margin: auto;
+}
+
+.hub-authentication-card__header {
+  font-size: 2em;
+  justify-content: center;
+}
+
+.hub-authentication-card__body {
+  text-align: center;
+}

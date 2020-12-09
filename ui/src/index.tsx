@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom';
 
 import App from './containers/App';
 import * as serviceWorker from './serviceWorker';
+// setInterval(() => {
+//   console.log('000', getSnapshot(m.resources));
+// }, 5000);
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
