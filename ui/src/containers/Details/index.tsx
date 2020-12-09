@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Spinner } from '@patternfly/react-core';
 import { useMst } from '../../store/root';
 import HeaderCard from '../HeaderCard';
+import Description from './Description';
 
 const Details: React.FC = () => {
   const { resources } = useMst();
@@ -20,6 +21,7 @@ const Details: React.FC = () => {
       <React.Fragment>
         {updateVersions()}
         <HeaderCard />
+        <Description name={name} />
       </React.Fragment>
     )
   );
