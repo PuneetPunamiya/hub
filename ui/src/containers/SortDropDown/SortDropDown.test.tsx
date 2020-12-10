@@ -21,8 +21,8 @@ describe('Sort DropDown', () => {
     const item = component.find(Dropdown).props().dropdownItems;
     assert(item);
 
-    expect(item.length).toBe(2);
-    expect(item[0].key).toBe('Name');
+    expect(item.length).toBe(3);
+    expect(item[0].key).toBe('None');
     expect(component.debug()).toMatchSnapshot();
   });
 });

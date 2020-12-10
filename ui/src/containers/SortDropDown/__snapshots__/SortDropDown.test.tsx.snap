@@ -12,7 +12,7 @@ exports[`Sort DropDown should render the dropdown 1`] = `
               <Toggle onEnter={[Function: onEnter]} id=\\"pf-dropdown-toggle-id-0\\" className=\\"\\" isOpen={false} parentRef={{...}} getMenuRef={[Function (anonymous)]} isActive={false} isDisabled={false} isPlain={false} isPrimary={false} onToggle={[Function: onToggle]} aria-haspopup={true} isSplitButton={false} bubbleEvent={false}>
                 <button id=\\"pf-dropdown-toggle-id-0\\" className=\\"pf-c-dropdown__toggle\\" type=\\"button\\" onClick={[Function: onClick]} aria-expanded={false} aria-haspopup={true} onKeyDown={[Function: onKeyDown]} disabled={false}>
                   <span className=\\"pf-c-dropdown__toggle-text\\">
-                    Name
+                    None
                   </span>
                   <span className=\\"pf-c-dropdown__toggle-icon\\">
                     <CaretDownIcon color=\\"currentColor\\" size=\\"sm\\" noVerticalAlign={false}>

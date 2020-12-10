@@ -3,12 +3,12 @@ import { DropdownItem, Dropdown, DropdownToggle } from '@patternfly/react-core';
 import { useObserver } from 'mobx-react';
 import './SortDropDown.css';
 import { useMst } from '../../store/root';
-import { sortByFields } from '../../store/resource';
+import { SortByFields } from '../../store/resource';
 
 const Sort: React.FC = () => {
   const { resources } = useMst();
 
-  const items: Array<string> = Object.values(sortByFields);
+  const items: Array<string> = Object.values(SortByFields);
 
   const [isOpen, set] = useState(false);
 

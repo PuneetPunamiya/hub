@@ -1,4 +1,4 @@
-import { ResourceStore, Resource } from './resource';
+import { ResourceStore, Resource, SortByFields } from './resource';
 import { getSnapshot } from 'mobx-state-tree';
 import { when } from 'mobx';
 import { FakeHub } from '../api/testutil';
@@ -240,7 +240,7 @@ describe('Store functions', () => {
     );
   });
 
-  it('it should return displayName', (done) => {
+  it('should filter resources based on search', (done) => {
     const store = ResourceStore.create(
       {},
       {
@@ -252,12 +252,37 @@ describe('Store functions', () => {
     when(
       () => !store.isLoading,
       () => {
-        expect(store.isLoading).toBe(false);
-        expect(store.resources.size).toBe(6);
+        store.setSearch('golang');
+        expect(store.filteredResources[0].name).toBe('golang-build');
 
-        const displayName = store.resources.get('aws-cli')?.resourceName;
+        done();
+      }
+    );
+  });
 
-        expect(displayName).toBe('aws cli');
+  it('should sort resources based on selected key', (done) => {
+    const store = ResourceStore.create(
+      {},
+      {
+        api,
+        categories: CategoryStore.create({}, { api })
+      }
+    );
+    expect(store.isLoading).toBe(true);
+    when(
+      () => !store.isLoading,
+      () => {
+        const rating: SortByFields = SortByFields[SortByFields.Rating];
+        store.setSortBy(rating);
+
+        expect(store.filteredResources[0].rating).toBe(5);
+        expect(store.filteredResources[0].name).toBe('aws-cli');
+
+        const name: SortByFields = SortByFields[SortByFields.Name];
+        store.setSortBy(name);
+
+        expect(store.filteredResources[0].name).toBe('ansible-runner');
+
         done();
       }
     );

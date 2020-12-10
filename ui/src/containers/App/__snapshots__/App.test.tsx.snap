@@ -41,6 +41,7 @@ Array [
               onBlur={[Function]}
               onChange={[Function]}
               onFocus={[Function]}
+              onKeyPress={[Function]}
               placeholder="Search for resources..."
               readOnly={false}
               required={false}
@@ -130,7 +131,7 @@ Array [
                       <span
                         className="pf-c-dropdown__toggle-text"
                       >
-                        Name
+                        None
                       </span>
                       <span
                         className="pf-c-dropdown__toggle-icon"
