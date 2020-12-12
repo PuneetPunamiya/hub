@@ -20,6 +20,21 @@ describe('Store Object', () => {
 });
 
 describe('Store functions', () => {
-  // it('can create a  auth store', (done) => {
-  // });
+  it('can create a  auth store', (done) => {
+    const store = AuthStore.create({ accessTokenInfo: {}, refreshTokenInfo: {} }, { api });
+
+    expect(store.isLoading).toBe(true);
+
+    const code = {
+      code: 'foo'
+    };
+    store.authenticate(code, 'foo');
+    when(
+      () => !store.isLoading,
+      () => {
+        console.log(store.isAuthenticated);
+        done();
+      }
+    );
+  });
 });

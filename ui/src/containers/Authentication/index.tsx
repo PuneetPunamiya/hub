@@ -17,6 +17,8 @@ const Authentication: React.FC = () => {
 
   const onFailure = (err: any) => {
     console.log('errrror', err);
+    // history.push('/');
+    // window.location.reload();
   };
 
   return (

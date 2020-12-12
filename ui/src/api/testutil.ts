@@ -29,6 +29,7 @@ export class FakeHub implements Api {
   }
 
   async authentication(authCode: string) {
+    console.log(authCode);
     const data = `${this.dataDir}/authentication.json`;
 
     const ret = () => JSON.parse(fs.readFileSync(data).toString());
