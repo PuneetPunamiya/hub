@@ -45,7 +45,7 @@ export class Hub implements Api {
 
   async resources() {
     try {
-      return axios.get(`${API_URL}/resources`).then((response) => response.data);
+      return axios.get(`https://api.hub.tekton.dev/resources`).then((response) => response.data);
     } catch (err) {
       return err.response;
     }

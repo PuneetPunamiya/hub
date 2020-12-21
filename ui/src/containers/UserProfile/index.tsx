@@ -19,6 +19,7 @@ const UserProfile: React.FC = () => {
     localStorage.clear();
     user.setIsAuthenticated(false);
     user.setLoading(true);
+    user.setUserRating(0);
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
