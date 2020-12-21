@@ -60,4 +60,58 @@ describe('Store functions', () => {
       }
     );
   });
+
+  it('can get the rating for a resource', (done) => {
+    const store = AuthStore.create({ accessTokenInfo: {}, refreshTokenInfo: {} }, { api });
+
+    expect(store.isLoading).toBe(true);
+
+    const code = {
+      code: 'foo'
+    };
+
+    store.authenticate(code);
+    when(
+      () => !store.isLoading,
+      () => {
+        expect(store.isAuthenticated).toBe(true);
+        store.getRating(13);
+
+        when(
+          () => !store.isLoading,
+          () => {
+            expect(store.userRating).toBe(2);
+            done();
+          }
+        );
+      }
+    );
+  });
+
+  it('can set the rating for a resource', (done) => {
+    const store = AuthStore.create({ accessTokenInfo: {}, refreshTokenInfo: {} }, { api });
+
+    expect(store.isLoading).toBe(true);
+
+    const code = {
+      code: 'foo'
+    };
+
+    store.authenticate(code);
+    when(
+      () => !store.isLoading,
+      () => {
+        expect(store.isAuthenticated).toBe(true);
+        store.setRating(13, 3);
+
+        when(
+          () => !store.isLoading,
+          () => {
+            expect(store.userRating).toBe(3);
+            done();
+          }
+        );
+      }
+    );
+  });
 });

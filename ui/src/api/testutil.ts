@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { ICategory } from '../store/category';
 import { IResource, IVersion } from '../store/resource';
-import { Api, AuthResponse } from './';
+import { Api, AuthResponse, Rating } from './';
 
 export class FakeHub implements Api {
   dataDir: string;
@@ -75,4 +75,16 @@ export class FakeHub implements Api {
       setTimeout(() => resolve(ret()), 1000);
     });
   }
+
+  async getRating(resourceId: number, _: string) {
+    const data = `${this.dataDir}/rating_resource_${resourceId}.json`;
+
+    const ret = () => JSON.parse(fs.readFileSync(data).toString());
+
+    return new Promise<Rating>((resolve) => {
+      setTimeout(() => resolve(ret()), 1000);
+    });
+  }
+
+  async setRating(resourceId: number, token: string, rating: number) {}
 }
