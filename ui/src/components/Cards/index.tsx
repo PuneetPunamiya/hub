@@ -8,7 +8,8 @@ import {
   TextContent,
   Badge,
   CardFooter,
-  GalleryItem
+  GalleryItem,
+  Tooltip
 } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
 import { IconSize } from '@patternfly/react-icons';
@@ -16,6 +17,7 @@ import { IResource } from '../../store/resource';
 import { ITag } from '../../store/category';
 import Icon from '../Icon';
 import { Icons } from '../../common/icons';
+import { titleCase } from '../../common/titlecase';
 import './Cards.css';
 
 interface Props {
@@ -35,18 +37,20 @@ const Cards: React.FC<Props> = (resources) => {
           >
             <Card className="hub-resource-card">
               <CardHeader>
-                <span className="hub-kind-icon">
-                  <Icon id={resource.kind.icon} size={IconSize.sm} label={resource.kind.name} />
-                </span>
-
-                <span className="hub-catalog-icon">
-                  <Icon
-                    id={resource.catalog.icon}
-                    size={IconSize.sm}
-                    label={resource.catalog.name}
-                  />
-                </span>
-
+                <Tooltip content={<b> {resource.kind.name}</b>}>
+                  <span className="hub-kind-icon">
+                    <Icon id={resource.kind.icon} size={IconSize.sm} label={resource.kind.name} />
+                  </span>
+                </Tooltip>
+                <Tooltip content={<b>{titleCase(resource.catalog.name)} </b>}>
+                  <span className="hub-catalog-icon">
+                    <Icon
+                      id={resource.catalog.icon}
+                      size={IconSize.sm}
+                      label={resource.catalog.name}
+                    />
+                  </span>
+                </Tooltip>
                 <CardActions>
                   <span className="hub-rating-icon">
                     <Icon id={Icons.Star} size={IconSize.sm} label={String(resource.rating)} />

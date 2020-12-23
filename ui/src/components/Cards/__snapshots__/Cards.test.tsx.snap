@@ -6,12 +6,16 @@ exports[`Cards should render the resources on cards 1`] = `
     <Link to={{...}} className=\\"hub-card-link\\">
       <Card className=\\"hub-resource-card\\">
         <CardHeader>
-          <span className=\\"hub-kind-icon\\">
-            <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
-          </span>
-          <span className=\\"hub-catalog-icon\\">
-            <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
-          </span>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-kind-icon\\">
+              <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
+            </span>
+          </Tooltip>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-catalog-icon\\">
+              <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
+            </span>
+          </Tooltip>
           <CardActions>
             <span className=\\"hub-rating-icon\\">
               <Icon id=\\"star\\" size=\\"sm\\" label=\\"4\\" />
@@ -52,12 +56,16 @@ exports[`Cards should render the resources on cards 1`] = `
     <Link to={{...}} className=\\"hub-card-link\\">
       <Card className=\\"hub-resource-card\\">
         <CardHeader>
-          <span className=\\"hub-kind-icon\\">
-            <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
-          </span>
-          <span className=\\"hub-catalog-icon\\">
-            <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
-          </span>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-kind-icon\\">
+              <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
+            </span>
+          </Tooltip>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-catalog-icon\\">
+              <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
+            </span>
+          </Tooltip>
           <CardActions>
             <span className=\\"hub-rating-icon\\">
               <Icon id=\\"star\\" size=\\"sm\\" label=\\"5\\" />
@@ -97,12 +105,16 @@ exports[`Cards should render the resources on cards 1`] = `
     <Link to={{...}} className=\\"hub-card-link\\">
       <Card className=\\"hub-resource-card\\">
         <CardHeader>
-          <span className=\\"hub-kind-icon\\">
-            <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
-          </span>
-          <span className=\\"hub-catalog-icon\\">
-            <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
-          </span>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-kind-icon\\">
+              <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
+            </span>
+          </Tooltip>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-catalog-icon\\">
+              <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
+            </span>
+          </Tooltip>
           <CardActions>
             <span className=\\"hub-rating-icon\\">
               <Icon id=\\"star\\" size=\\"sm\\" label=\\"5\\" />
@@ -142,12 +154,16 @@ exports[`Cards should render the resources on cards 1`] = `
     <Link to={{...}} className=\\"hub-card-link\\">
       <Card className=\\"hub-resource-card\\">
         <CardHeader>
-          <span className=\\"hub-kind-icon\\">
-            <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
-          </span>
-          <span className=\\"hub-catalog-icon\\">
-            <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
-          </span>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-kind-icon\\">
+              <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
+            </span>
+          </Tooltip>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-catalog-icon\\">
+              <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
+            </span>
+          </Tooltip>
           <CardActions>
             <span className=\\"hub-rating-icon\\">
               <Icon id=\\"star\\" size=\\"sm\\" label=\\"5\\" />
@@ -190,12 +206,16 @@ exports[`Cards should render the resources on cards 1`] = `
     <Link to={{...}} className=\\"hub-card-link\\">
       <Card className=\\"hub-resource-card\\">
         <CardHeader>
-          <span className=\\"hub-kind-icon\\">
-            <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
-          </span>
-          <span className=\\"hub-catalog-icon\\">
-            <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
-          </span>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-kind-icon\\">
+              <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
+            </span>
+          </Tooltip>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-catalog-icon\\">
+              <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
+            </span>
+          </Tooltip>
           <CardActions>
             <span className=\\"hub-rating-icon\\">
               <Icon id=\\"star\\" size=\\"sm\\" label=\\"5\\" />
@@ -236,12 +256,16 @@ exports[`Cards should render the resources on cards 1`] = `
     <Link to={{...}} className=\\"hub-card-link\\">
       <Card className=\\"hub-resource-card\\">
         <CardHeader>
-          <span className=\\"hub-kind-icon\\">
-            <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
-          </span>
-          <span className=\\"hub-catalog-icon\\">
-            <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
-          </span>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-kind-icon\\">
+              <Icon id=\\"build\\" size=\\"sm\\" label=\\"Task\\" />
+            </span>
+          </Tooltip>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-catalog-icon\\">
+              <Icon id=\\"user\\" size=\\"sm\\" label=\\"tekton\\" />
+            </span>
+          </Tooltip>
           <CardActions>
             <span className=\\"hub-rating-icon\\">
               <Icon id=\\"star\\" size=\\"sm\\" label=\\"4.5\\" />
@@ -281,12 +305,16 @@ exports[`Cards should render the resources on cards 1`] = `
     <Link to={{...}} className=\\"hub-card-link\\">
       <Card className=\\"hub-resource-card\\">
         <CardHeader>
-          <span className=\\"hub-kind-icon\\">
-            <Icon id=\\"domain\\" size=\\"sm\\" label=\\"Pipeline\\" />
-          </span>
-          <span className=\\"hub-catalog-icon\\">
-            <Icon id=\\"cat\\" size=\\"sm\\" label=\\"tekton-hub\\" />
-          </span>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-kind-icon\\">
+              <Icon id=\\"domain\\" size=\\"sm\\" label=\\"Pipeline\\" />
+            </span>
+          </Tooltip>
+          <Tooltip content={{...}}>
+            <span className=\\"hub-catalog-icon\\">
+              <Icon id=\\"cat\\" size=\\"sm\\" label=\\"tekton-hub\\" />
+            </span>
+          </Tooltip>
           <CardActions>
             <span className=\\"hub-rating-icon\\">
               <Icon id=\\"star\\" size=\\"sm\\" label=\\"4.5\\" />

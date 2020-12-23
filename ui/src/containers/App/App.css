@@ -2,3 +2,7 @@
   position: fixed;
   width: 100%;
 }
+
+.pf-c-alert {
+  margin-top: 3em;
+}
