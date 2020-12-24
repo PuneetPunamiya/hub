@@ -32,6 +32,7 @@ import { Icons } from '../../common/icons';
 import Icon from '../../components/Icon';
 import Rating from '../Rating';
 import './BasicDetails.css';
+import TooltipBro from '../../components/Tooltip';
 
 const BasicDetails: React.FC = () => {
   const { resources } = useMst();
