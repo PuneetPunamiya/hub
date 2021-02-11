@@ -11,8 +11,3 @@ package client
 func ListCategoryPath() string {
 	return "/categories"
 }
-
-// ListCategoryPath2 returns the URL path to the category service list HTTP endpoint.
-func ListCategoryPath2() string {
-	return "/v1/categories"
-}
