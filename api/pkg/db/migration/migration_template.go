@@ -14,18 +14,18 @@
 
 package migration
 
-import (
-	"github.com/go-gormigrate/gormigrate/v2"
-	"github.com/tektoncd/hub/api/gen/log"
-	"gorm.io/gorm"
-)
+// import (
+// 	"github.com/go-gormigrate/gormigrate/v2"
+// 	"github.com/tektoncd/hub/api/gen/log"
+// 	"gorm.io/gorm"
+// )
 
-func migrationTemplate(log *log.Logger) *gormigrate.Migration {
+// func migrationTemplate(log *log.Logger) *gormigrate.Migration {
 
-	return &gormigrate.Migration{
-		ID: "",
-		Migrate: func(db *gorm.DB) error {
-			return nil
-		},
-	}
-}
+// 	return &gormigrate.Migration{
+// 		ID: "",
+// 		Migrate: func(db *gorm.DB) error {
+// 			return nil
+// 		},
+// 	}
+// }
