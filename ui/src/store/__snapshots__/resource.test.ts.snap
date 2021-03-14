@@ -36,79 +36,7 @@ Object {
 
 exports[`Store functions creates a resource store 1`] = `
 Object {
-  "ansible-runner": Object {
-    "catalog": 1,
-    "displayName": "Ansible Runner",
-    "displayVersion": 1,
-    "id": 1,
-    "kind": "Task",
-    "latestVersion": 1,
-    "name": "ansible-runner",
-    "rating": 4.5,
-    "readme": "",
-    "tags": Array [
-      2,
-    ],
-    "versions": Array [
-      1,
-    ],
-    "yaml": "",
-  },
-  "aws-cli": Object {
-    "catalog": 1,
-    "displayName": "aws cli",
-    "displayVersion": 4,
-    "id": 4,
-    "kind": "Task",
-    "latestVersion": 4,
-    "name": "aws-cli",
-    "rating": 5,
-    "readme": "",
-    "tags": Array [
-      2,
-    ],
-    "versions": Array [
-      4,
-    ],
-    "yaml": "",
-  },
-  "buildah": Object {
-    "catalog": 1,
-    "displayName": "",
-    "displayVersion": 105,
-    "id": 13,
-    "kind": "Task",
-    "latestVersion": 105,
-    "name": "buildah",
-    "rating": 4,
-    "readme": "",
-    "tags": Array [
-      8,
-    ],
-    "versions": Array [
-      105,
-    ],
-    "yaml": "",
-  },
-  "golang-build": Object {
-    "catalog": 1,
-    "displayName": "golang build",
-    "displayVersion": 47,
-    "id": 44,
-    "kind": "Task",
-    "latestVersion": 47,
-    "name": "golang-build",
-    "rating": 5,
-    "readme": "",
-    "tags": Array [
-      1,
-    ],
-    "versions": Array [
-      47,
-    ],
-    "yaml": "",
-  },
-  "hub": Object {
+  "tekton-hub/Pipeline/hub": Object {
     "catalog": 2,
     "displayName": "Hub Pipeline",
     "displayVersion": 1,
@@ -121,12 +49,89 @@ Object {
     "tags": Array [
       10,
     ],
+    "uniqueKey": "tekton-hub/Pipeline/hub",
     "versions": Array [
       1,
     ],
     "yaml": "",
   },
-  "jenkins": Object {
+  "tekton/Task/ansible-runner": Object {
+    "catalog": 1,
+    "displayName": "Ansible Runner",
+    "displayVersion": 1,
+    "id": 1,
+    "kind": "Task",
+    "latestVersion": 1,
+    "name": "ansible-runner",
+    "rating": 4.5,
+    "readme": "",
+    "tags": Array [
+      2,
+    ],
+    "uniqueKey": "tekton/Task/ansible-runner",
+    "versions": Array [
+      1,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/aws-cli": Object {
+    "catalog": 1,
+    "displayName": "aws cli",
+    "displayVersion": 4,
+    "id": 4,
+    "kind": "Task",
+    "latestVersion": 4,
+    "name": "aws-cli",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      2,
+    ],
+    "uniqueKey": "tekton/Task/aws-cli",
+    "versions": Array [
+      4,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/buildah": Object {
+    "catalog": 1,
+    "displayName": "",
+    "displayVersion": 105,
+    "id": 13,
+    "kind": "Task",
+    "latestVersion": 105,
+    "name": "buildah",
+    "rating": 4,
+    "readme": "",
+    "tags": Array [
+      8,
+    ],
+    "uniqueKey": "tekton/Task/buildah",
+    "versions": Array [
+      105,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/golang-build": Object {
+    "catalog": 1,
+    "displayName": "golang build",
+    "displayVersion": 47,
+    "id": 44,
+    "kind": "Task",
+    "latestVersion": 47,
+    "name": "golang-build",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      1,
+    ],
+    "uniqueKey": "tekton/Task/golang-build",
+    "versions": Array [
+      47,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/jenkins": Object {
     "catalog": 1,
     "displayName": "jenkins operation",
     "displayVersion": 104,
@@ -140,12 +145,13 @@ Object {
       57,
       56,
     ],
+    "uniqueKey": "tekton/Task/jenkins",
     "versions": Array [
       104,
     ],
     "yaml": "",
   },
-  "jib-maven": Object {
+  "tekton/Task/jib-maven": Object {
     "catalog": 1,
     "displayName": "jib maven",
     "displayVersion": 57,
@@ -158,6 +164,7 @@ Object {
     "tags": Array [
       8,
     ],
+    "uniqueKey": "tekton/Task/jib-maven",
     "versions": Array [
       57,
     ],
@@ -168,79 +175,7 @@ Object {
 
 exports[`Store functions fetch 0.1 version details for buildah resource 1`] = `
 Object {
-  "ansible-runner": Object {
-    "catalog": 1,
-    "displayName": "Ansible Runner",
-    "displayVersion": 1,
-    "id": 1,
-    "kind": "Task",
-    "latestVersion": 1,
-    "name": "ansible-runner",
-    "rating": 4.5,
-    "readme": "",
-    "tags": Array [
-      2,
-    ],
-    "versions": Array [
-      1,
-    ],
-    "yaml": "",
-  },
-  "aws-cli": Object {
-    "catalog": 1,
-    "displayName": "aws cli",
-    "displayVersion": 4,
-    "id": 4,
-    "kind": "Task",
-    "latestVersion": 4,
-    "name": "aws-cli",
-    "rating": 5,
-    "readme": "",
-    "tags": Array [
-      2,
-    ],
-    "versions": Array [
-      4,
-    ],
-    "yaml": "",
-  },
-  "buildah": Object {
-    "catalog": 1,
-    "displayName": "",
-    "displayVersion": 105,
-    "id": 13,
-    "kind": "Task",
-    "latestVersion": 105,
-    "name": "buildah",
-    "rating": 4,
-    "readme": "",
-    "tags": Array [
-      8,
-    ],
-    "versions": Array [
-      105,
-    ],
-    "yaml": "",
-  },
-  "golang-build": Object {
-    "catalog": 1,
-    "displayName": "golang build",
-    "displayVersion": 47,
-    "id": 44,
-    "kind": "Task",
-    "latestVersion": 47,
-    "name": "golang-build",
-    "rating": 5,
-    "readme": "",
-    "tags": Array [
-      1,
-    ],
-    "versions": Array [
-      47,
-    ],
-    "yaml": "",
-  },
-  "hub": Object {
+  "tekton-hub/Pipeline/hub": Object {
     "catalog": 2,
     "displayName": "Hub Pipeline",
     "displayVersion": 1,
@@ -253,12 +188,89 @@ Object {
     "tags": Array [
       10,
     ],
+    "uniqueKey": "tekton-hub/Pipeline/hub",
     "versions": Array [
       1,
     ],
     "yaml": "",
   },
-  "jenkins": Object {
+  "tekton/Task/ansible-runner": Object {
+    "catalog": 1,
+    "displayName": "Ansible Runner",
+    "displayVersion": 1,
+    "id": 1,
+    "kind": "Task",
+    "latestVersion": 1,
+    "name": "ansible-runner",
+    "rating": 4.5,
+    "readme": "",
+    "tags": Array [
+      2,
+    ],
+    "uniqueKey": "tekton/Task/ansible-runner",
+    "versions": Array [
+      1,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/aws-cli": Object {
+    "catalog": 1,
+    "displayName": "aws cli",
+    "displayVersion": 4,
+    "id": 4,
+    "kind": "Task",
+    "latestVersion": 4,
+    "name": "aws-cli",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      2,
+    ],
+    "uniqueKey": "tekton/Task/aws-cli",
+    "versions": Array [
+      4,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/buildah": Object {
+    "catalog": 1,
+    "displayName": "",
+    "displayVersion": 105,
+    "id": 13,
+    "kind": "Task",
+    "latestVersion": 105,
+    "name": "buildah",
+    "rating": 4,
+    "readme": "",
+    "tags": Array [
+      8,
+    ],
+    "uniqueKey": "tekton/Task/buildah",
+    "versions": Array [
+      105,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/golang-build": Object {
+    "catalog": 1,
+    "displayName": "golang build",
+    "displayVersion": 47,
+    "id": 44,
+    "kind": "Task",
+    "latestVersion": 47,
+    "name": "golang-build",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      1,
+    ],
+    "uniqueKey": "tekton/Task/golang-build",
+    "versions": Array [
+      47,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/jenkins": Object {
     "catalog": 1,
     "displayName": "jenkins operation",
     "displayVersion": 104,
@@ -272,12 +284,13 @@ Object {
       57,
       56,
     ],
+    "uniqueKey": "tekton/Task/jenkins",
     "versions": Array [
       104,
     ],
     "yaml": "",
   },
-  "jib-maven": Object {
+  "tekton/Task/jib-maven": Object {
     "catalog": 1,
     "displayName": "jib maven",
     "displayVersion": 57,
@@ -290,6 +303,165 @@ Object {
     "tags": Array [
       8,
     ],
+    "uniqueKey": "tekton/Task/jib-maven",
+    "versions": Array [
+      57,
+    ],
+    "yaml": "",
+  },
+}
+`;
+
+exports[`Store functions makes sure to add resources with same name but from different catalog 1`] = `
+Object {
+  "tekton-hub/Pipeline/hub": Object {
+    "catalog": 2,
+    "displayName": "Hub Pipeline",
+    "displayVersion": 1,
+    "id": 10,
+    "kind": "Pipeline",
+    "latestVersion": 1,
+    "name": "hub",
+    "rating": 4.5,
+    "readme": "",
+    "tags": Array [
+      10,
+    ],
+    "uniqueKey": "tekton-hub/Pipeline/hub",
+    "versions": Array [
+      1,
+    ],
+    "yaml": "",
+  },
+  "tekton-hub/Task/golang-build": Object {
+    "catalog": 2,
+    "displayName": "golang build",
+    "displayVersion": 47,
+    "id": 44,
+    "kind": "Task",
+    "latestVersion": 47,
+    "name": "golang-build",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      1,
+    ],
+    "uniqueKey": "tekton-hub/Task/golang-build",
+    "versions": Array [
+      47,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/ansible-runner": Object {
+    "catalog": 1,
+    "displayName": "Ansible Runner",
+    "displayVersion": 1,
+    "id": 1,
+    "kind": "Task",
+    "latestVersion": 1,
+    "name": "ansible-runner",
+    "rating": 4.5,
+    "readme": "",
+    "tags": Array [
+      2,
+    ],
+    "uniqueKey": "tekton/Task/ansible-runner",
+    "versions": Array [
+      1,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/aws-cli": Object {
+    "catalog": 1,
+    "displayName": "aws cli",
+    "displayVersion": 4,
+    "id": 4,
+    "kind": "Task",
+    "latestVersion": 4,
+    "name": "aws-cli",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      2,
+    ],
+    "uniqueKey": "tekton/Task/aws-cli",
+    "versions": Array [
+      4,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/buildah": Object {
+    "catalog": 1,
+    "displayName": "",
+    "displayVersion": 105,
+    "id": 13,
+    "kind": "Task",
+    "latestVersion": 105,
+    "name": "buildah",
+    "rating": 4,
+    "readme": "",
+    "tags": Array [
+      8,
+    ],
+    "uniqueKey": "tekton/Task/buildah",
+    "versions": Array [
+      105,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/golang-build": Object {
+    "catalog": 1,
+    "displayName": "golang build",
+    "displayVersion": 47,
+    "id": 44,
+    "kind": "Task",
+    "latestVersion": 47,
+    "name": "golang-build",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      1,
+    ],
+    "uniqueKey": "tekton/Task/golang-build",
+    "versions": Array [
+      47,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/jenkins": Object {
+    "catalog": 1,
+    "displayName": "jenkins operation",
+    "displayVersion": 104,
+    "id": 98,
+    "kind": "Task",
+    "latestVersion": 104,
+    "name": "jenkins",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      57,
+      56,
+    ],
+    "uniqueKey": "tekton/Task/jenkins",
+    "versions": Array [
+      104,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/jib-maven": Object {
+    "catalog": 1,
+    "displayName": "jib maven",
+    "displayVersion": 57,
+    "id": 54,
+    "kind": "Task",
+    "latestVersion": 57,
+    "name": "jib-maven",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      8,
+    ],
+    "uniqueKey": "tekton/Task/jib-maven",
     "versions": Array [
       57,
     ],
@@ -300,79 +472,7 @@ Object {
 
 exports[`Store functions makes sure to not add duplicate resources 1`] = `
 Object {
-  "ansible-runner": Object {
-    "catalog": 1,
-    "displayName": "Ansible Runner",
-    "displayVersion": 1,
-    "id": 1,
-    "kind": "Task",
-    "latestVersion": 1,
-    "name": "ansible-runner",
-    "rating": 4.5,
-    "readme": "",
-    "tags": Array [
-      2,
-    ],
-    "versions": Array [
-      1,
-    ],
-    "yaml": "",
-  },
-  "aws-cli": Object {
-    "catalog": 1,
-    "displayName": "aws cli",
-    "displayVersion": 4,
-    "id": 4,
-    "kind": "Task",
-    "latestVersion": 4,
-    "name": "aws-cli",
-    "rating": 5,
-    "readme": "",
-    "tags": Array [
-      2,
-    ],
-    "versions": Array [
-      4,
-    ],
-    "yaml": "",
-  },
-  "buildah": Object {
-    "catalog": 1,
-    "displayName": "",
-    "displayVersion": 105,
-    "id": 13,
-    "kind": "Task",
-    "latestVersion": 105,
-    "name": "buildah",
-    "rating": 4,
-    "readme": "",
-    "tags": Array [
-      8,
-    ],
-    "versions": Array [
-      105,
-    ],
-    "yaml": "",
-  },
-  "golang-build": Object {
-    "catalog": 1,
-    "displayName": "golang build",
-    "displayVersion": 47,
-    "id": 44,
-    "kind": "Task",
-    "latestVersion": 47,
-    "name": "golang-build",
-    "rating": 5,
-    "readme": "",
-    "tags": Array [
-      1,
-    ],
-    "versions": Array [
-      47,
-    ],
-    "yaml": "",
-  },
-  "hub": Object {
+  "tekton-hub/Pipeline/hub": Object {
     "catalog": 2,
     "displayName": "Hub Pipeline",
     "displayVersion": 1,
@@ -385,12 +485,89 @@ Object {
     "tags": Array [
       10,
     ],
+    "uniqueKey": "tekton-hub/Pipeline/hub",
     "versions": Array [
       1,
     ],
     "yaml": "",
   },
-  "jenkins": Object {
+  "tekton/Task/ansible-runner": Object {
+    "catalog": 1,
+    "displayName": "Ansible Runner",
+    "displayVersion": 1,
+    "id": 1,
+    "kind": "Task",
+    "latestVersion": 1,
+    "name": "ansible-runner",
+    "rating": 4.5,
+    "readme": "",
+    "tags": Array [
+      2,
+    ],
+    "uniqueKey": "tekton/Task/ansible-runner",
+    "versions": Array [
+      1,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/aws-cli": Object {
+    "catalog": 1,
+    "displayName": "aws cli",
+    "displayVersion": 4,
+    "id": 4,
+    "kind": "Task",
+    "latestVersion": 4,
+    "name": "aws-cli",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      2,
+    ],
+    "uniqueKey": "tekton/Task/aws-cli",
+    "versions": Array [
+      4,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/buildah": Object {
+    "catalog": 1,
+    "displayName": "",
+    "displayVersion": 105,
+    "id": 13,
+    "kind": "Task",
+    "latestVersion": 105,
+    "name": "buildah",
+    "rating": 4,
+    "readme": "",
+    "tags": Array [
+      8,
+    ],
+    "uniqueKey": "tekton/Task/buildah",
+    "versions": Array [
+      105,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/golang-build": Object {
+    "catalog": 1,
+    "displayName": "golang build",
+    "displayVersion": 47,
+    "id": 44,
+    "kind": "Task",
+    "latestVersion": 47,
+    "name": "golang-build",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      1,
+    ],
+    "uniqueKey": "tekton/Task/golang-build",
+    "versions": Array [
+      47,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/jenkins": Object {
     "catalog": 1,
     "displayName": "jenkins operation",
     "displayVersion": 104,
@@ -404,12 +581,13 @@ Object {
       57,
       56,
     ],
+    "uniqueKey": "tekton/Task/jenkins",
     "versions": Array [
       104,
     ],
     "yaml": "",
   },
-  "jib-maven": Object {
+  "tekton/Task/jib-maven": Object {
     "catalog": 1,
     "displayName": "jib maven",
     "displayVersion": 57,
@@ -422,6 +600,7 @@ Object {
     "tags": Array [
       8,
     ],
+    "uniqueKey": "tekton/Task/jib-maven",
     "versions": Array [
       57,
     ],
@@ -432,79 +611,7 @@ Object {
 
 exports[`Store functions set 0.1 as display version for buildah 1`] = `
 Object {
-  "ansible-runner": Object {
-    "catalog": 1,
-    "displayName": "Ansible Runner",
-    "displayVersion": 1,
-    "id": 1,
-    "kind": "Task",
-    "latestVersion": 1,
-    "name": "ansible-runner",
-    "rating": 4.5,
-    "readme": "",
-    "tags": Array [
-      2,
-    ],
-    "versions": Array [
-      1,
-    ],
-    "yaml": "",
-  },
-  "aws-cli": Object {
-    "catalog": 1,
-    "displayName": "aws cli",
-    "displayVersion": 4,
-    "id": 4,
-    "kind": "Task",
-    "latestVersion": 4,
-    "name": "aws-cli",
-    "rating": 5,
-    "readme": "",
-    "tags": Array [
-      2,
-    ],
-    "versions": Array [
-      4,
-    ],
-    "yaml": "",
-  },
-  "buildah": Object {
-    "catalog": 1,
-    "displayName": "",
-    "displayVersion": 105,
-    "id": 13,
-    "kind": "Task",
-    "latestVersion": 105,
-    "name": "buildah",
-    "rating": 4,
-    "readme": "",
-    "tags": Array [
-      8,
-    ],
-    "versions": Array [
-      105,
-    ],
-    "yaml": "",
-  },
-  "golang-build": Object {
-    "catalog": 1,
-    "displayName": "golang build",
-    "displayVersion": 47,
-    "id": 44,
-    "kind": "Task",
-    "latestVersion": 47,
-    "name": "golang-build",
-    "rating": 5,
-    "readme": "",
-    "tags": Array [
-      1,
-    ],
-    "versions": Array [
-      47,
-    ],
-    "yaml": "",
-  },
-  "hub": Object {
+  "tekton-hub/Pipeline/hub": Object {
     "catalog": 2,
     "displayName": "Hub Pipeline",
     "displayVersion": 1,
@@ -517,12 +624,89 @@ Object {
     "tags": Array [
       10,
     ],
+    "uniqueKey": "tekton-hub/Pipeline/hub",
     "versions": Array [
       1,
     ],
     "yaml": "",
   },
-  "jenkins": Object {
+  "tekton/Task/ansible-runner": Object {
+    "catalog": 1,
+    "displayName": "Ansible Runner",
+    "displayVersion": 1,
+    "id": 1,
+    "kind": "Task",
+    "latestVersion": 1,
+    "name": "ansible-runner",
+    "rating": 4.5,
+    "readme": "",
+    "tags": Array [
+      2,
+    ],
+    "uniqueKey": "tekton/Task/ansible-runner",
+    "versions": Array [
+      1,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/aws-cli": Object {
+    "catalog": 1,
+    "displayName": "aws cli",
+    "displayVersion": 4,
+    "id": 4,
+    "kind": "Task",
+    "latestVersion": 4,
+    "name": "aws-cli",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      2,
+    ],
+    "uniqueKey": "tekton/Task/aws-cli",
+    "versions": Array [
+      4,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/buildah": Object {
+    "catalog": 1,
+    "displayName": "",
+    "displayVersion": 105,
+    "id": 13,
+    "kind": "Task",
+    "latestVersion": 105,
+    "name": "buildah",
+    "rating": 4,
+    "readme": "",
+    "tags": Array [
+      8,
+    ],
+    "uniqueKey": "tekton/Task/buildah",
+    "versions": Array [
+      105,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/golang-build": Object {
+    "catalog": 1,
+    "displayName": "golang build",
+    "displayVersion": 47,
+    "id": 44,
+    "kind": "Task",
+    "latestVersion": 47,
+    "name": "golang-build",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      1,
+    ],
+    "uniqueKey": "tekton/Task/golang-build",
+    "versions": Array [
+      47,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/jenkins": Object {
     "catalog": 1,
     "displayName": "jenkins operation",
     "displayVersion": 104,
@@ -536,12 +720,13 @@ Object {
       57,
       56,
     ],
+    "uniqueKey": "tekton/Task/jenkins",
     "versions": Array [
       104,
     ],
     "yaml": "",
   },
-  "jib-maven": Object {
+  "tekton/Task/jib-maven": Object {
     "catalog": 1,
     "displayName": "jib maven",
     "displayVersion": 57,
@@ -554,6 +739,7 @@ Object {
     "tags": Array [
       8,
     ],
+    "uniqueKey": "tekton/Task/jib-maven",
     "versions": Array [
       57,
     ],
@@ -564,79 +750,7 @@ Object {
 
 exports[`Store functions update versions list for buildah resource 1`] = `
 Object {
-  "ansible-runner": Object {
-    "catalog": 1,
-    "displayName": "Ansible Runner",
-    "displayVersion": 1,
-    "id": 1,
-    "kind": "Task",
-    "latestVersion": 1,
-    "name": "ansible-runner",
-    "rating": 4.5,
-    "readme": "",
-    "tags": Array [
-      2,
-    ],
-    "versions": Array [
-      1,
-    ],
-    "yaml": "",
-  },
-  "aws-cli": Object {
-    "catalog": 1,
-    "displayName": "aws cli",
-    "displayVersion": 4,
-    "id": 4,
-    "kind": "Task",
-    "latestVersion": 4,
-    "name": "aws-cli",
-    "rating": 5,
-    "readme": "",
-    "tags": Array [
-      2,
-    ],
-    "versions": Array [
-      4,
-    ],
-    "yaml": "",
-  },
-  "buildah": Object {
-    "catalog": 1,
-    "displayName": "",
-    "displayVersion": 105,
-    "id": 13,
-    "kind": "Task",
-    "latestVersion": 105,
-    "name": "buildah",
-    "rating": 4,
-    "readme": "",
-    "tags": Array [
-      8,
-    ],
-    "versions": Array [
-      105,
-    ],
-    "yaml": "",
-  },
-  "golang-build": Object {
-    "catalog": 1,
-    "displayName": "golang build",
-    "displayVersion": 47,
-    "id": 44,
-    "kind": "Task",
-    "latestVersion": 47,
-    "name": "golang-build",
-    "rating": 5,
-    "readme": "",
-    "tags": Array [
-      1,
-    ],
-    "versions": Array [
-      47,
-    ],
-    "yaml": "",
-  },
-  "hub": Object {
+  "tekton-hub/Pipeline/hub": Object {
     "catalog": 2,
     "displayName": "Hub Pipeline",
     "displayVersion": 1,
@@ -649,12 +763,89 @@ Object {
     "tags": Array [
       10,
     ],
+    "uniqueKey": "tekton-hub/Pipeline/hub",
     "versions": Array [
       1,
     ],
     "yaml": "",
   },
-  "jenkins": Object {
+  "tekton/Task/ansible-runner": Object {
+    "catalog": 1,
+    "displayName": "Ansible Runner",
+    "displayVersion": 1,
+    "id": 1,
+    "kind": "Task",
+    "latestVersion": 1,
+    "name": "ansible-runner",
+    "rating": 4.5,
+    "readme": "",
+    "tags": Array [
+      2,
+    ],
+    "uniqueKey": "tekton/Task/ansible-runner",
+    "versions": Array [
+      1,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/aws-cli": Object {
+    "catalog": 1,
+    "displayName": "aws cli",
+    "displayVersion": 4,
+    "id": 4,
+    "kind": "Task",
+    "latestVersion": 4,
+    "name": "aws-cli",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      2,
+    ],
+    "uniqueKey": "tekton/Task/aws-cli",
+    "versions": Array [
+      4,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/buildah": Object {
+    "catalog": 1,
+    "displayName": "",
+    "displayVersion": 105,
+    "id": 13,
+    "kind": "Task",
+    "latestVersion": 105,
+    "name": "buildah",
+    "rating": 4,
+    "readme": "",
+    "tags": Array [
+      8,
+    ],
+    "uniqueKey": "tekton/Task/buildah",
+    "versions": Array [
+      105,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/golang-build": Object {
+    "catalog": 1,
+    "displayName": "golang build",
+    "displayVersion": 47,
+    "id": 44,
+    "kind": "Task",
+    "latestVersion": 47,
+    "name": "golang-build",
+    "rating": 5,
+    "readme": "",
+    "tags": Array [
+      1,
+    ],
+    "uniqueKey": "tekton/Task/golang-build",
+    "versions": Array [
+      47,
+    ],
+    "yaml": "",
+  },
+  "tekton/Task/jenkins": Object {
     "catalog": 1,
     "displayName": "jenkins operation",
     "displayVersion": 104,
@@ -668,12 +859,13 @@ Object {
       57,
       56,
     ],
+    "uniqueKey": "tekton/Task/jenkins",
     "versions": Array [
       104,
     ],
     "yaml": "",
   },
-  "jib-maven": Object {
+  "tekton/Task/jib-maven": Object {
     "catalog": 1,
     "displayName": "jib maven",
     "displayVersion": 57,
@@ -686,6 +878,7 @@ Object {
     "tags": Array [
       8,
     ],
+    "uniqueKey": "tekton/Task/jib-maven",
     "versions": Array [
       57,
     ],
