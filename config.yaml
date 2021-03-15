@@ -53,6 +53,12 @@ catalogs:
     url: https://github.com/tektoncd/catalog
     revision: master
 
+  - name: openshift
+    org: pipeline
+    type: community
+    url: https://github.com/openshift/pipelines-catalog
+    revision: master
+
 scopes:
   - name: agent:create
     users: [pratap0007, puneetpunamiya, sm43, sthaha, vdemeester]
