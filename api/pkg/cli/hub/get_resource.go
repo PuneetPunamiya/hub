@@ -20,6 +20,8 @@ import (
 	"net/http"
 
 	rclient "github.com/tektoncd/hub/api/gen/http/resource/client"
+	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
+	"gopkg.in/yaml.v2"
 )
 
 // ResourceOption defines option associated with API to fetch a
@@ -178,4 +180,31 @@ func (rr *ResourceResult) MinPipelinesVersion() (string, error) {
 		return *rr.resourceWithVersionData.MinPipelinesVersion, nil
 	}
 	return *rr.resourceData.LatestVersion.MinPipelinesVersion, nil
+}
+
+func (rr *ResourceResult) Tasks() ([]string, error) {
+
+	type Yaml struct {
+		APIVersion string `json:"apiVersion"`
+		Kind       string `json:"kind"`
+		MetaData   v1beta1.PipelineTaskMetadata
+		Spec       v1beta1.PipelineSpec
+	}
+	var y Yaml
+	data, err := rr.Manifest()
+
+	if err != nil {
+		return nil, err
+	}
+	err = yaml.Unmarshal(data, &y)
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+		return nil, err
+	}
+	var tasks []string
+	for i := 0; i < len(y.Spec.Tasks); i++ {
+		tasks = append(tasks, y.Spec.Tasks[i].Name)
+	}
+
+	return tasks, nil
 }

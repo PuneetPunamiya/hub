@@ -24,6 +24,7 @@ import (
 	"github.com/tektoncd/hub/api/pkg/cli/formatter"
 	"github.com/tektoncd/hub/api/pkg/cli/hub"
 	"github.com/tektoncd/hub/api/pkg/cli/printer"
+	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 )
 
 var cmdExamples string = `
@@ -38,7 +39,7 @@ Display info of a %S of name 'foo' of version '0.3':
     tkn hub info %s foo --version 0.3
 `
 
-const resTemplate = `{{ icon "name" }}Name: {{ .Resource.Name }} 
+const resTemplate = `{{ icon "name" }}Name: {{ .Resource.Name }}
 {{ $n := .ResVersion.DisplayName }}{{ if ne (default $n "") "" }}
 {{ icon "displayName" }}Display Name: {{ $n }}
 {{ end }}
@@ -54,6 +55,13 @@ const resTemplate = `{{ icon "name" }}Name: {{ .Resource.Name }}
 {{- icon "tags" }}Tags
  {{- range $p := .Resource.Tags }}
   {{ icon "bullet" }}{{ $p.Name }}
+ {{- end }}
+{{- end }}
+
+{{ $t := len .Tasks }}{{ if ne $t 0 }}
+{{ icon "tasks" }}Tasks
+ {{- range $p := .Tasks }}
+  {{ icon "bullet" }}{{ $p }}
  {{- end }}
 {{- end }}
 
@@ -73,9 +81,17 @@ var (
 	tmpl = template.Must(template.New("Resource Info").Funcs(funcMap).Parse(resTemplate))
 )
 
+type Yaml struct {
+	APIVersion string `json:"apiVersion"`
+	Kind       string `json:"kind"`
+	MetaData   v1beta1.PipelineTaskMetadata
+	Spec       v1beta1.PipelineSpec
+}
+
 type templateData struct {
 	Resource   *hub.ResourceData
 	ResVersion *hub.ResourceWithVersionData
+	Tasks      []string
 	Latest     bool
 }
 
@@ -102,6 +118,9 @@ func Command(cli app.CLI) *cobra.Command {
 	}
 	cmd.AddCommand(
 		commandForKind("task", opts),
+	)
+	cmd.AddCommand(
+		commandForKind("pipeline", opts),
 	)
 
 	cmd.PersistentFlags().StringVar(&opts.from, "from", "tekton", "Name of Catalog to which resource belongs.")
@@ -151,6 +170,11 @@ func (opts *options) run() error {
 		return err
 	}
 
+	tasks, err := res.Tasks()
+	if err != nil {
+		return err
+	}
+
 	out := opts.cli.Stream().Out
 
 	if opts.version != "" {
@@ -158,6 +182,7 @@ func (opts *options) run() error {
 		tmplData := templateData{
 			ResVersion: &resVersion,
 			Resource:   resVersion.Resource,
+			Tasks:      tasks,
 			Latest:     false,
 		}
 		return printer.New(out).Tabbed(tmpl, tmplData)
@@ -167,6 +192,7 @@ func (opts *options) run() error {
 	tmplData := templateData{
 		Resource:   &hubRes,
 		ResVersion: hubRes.LatestVersion,
+		Tasks:      tasks,
 		Latest:     true,
 	}
 	return printer.New(out).Tabbed(tmpl, tmplData)

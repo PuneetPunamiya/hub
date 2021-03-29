@@ -33,6 +33,7 @@ var icons = map[string]string{
 	"rating":             "⭐ ️",
 	"tags":               "🏷 ",
 	"install":            "⚒ ",
+	"tasks":              "🗒 ",
 }
 
 // FormatName returns name of resource with its latest version
@@ -108,6 +109,7 @@ func breakString(desc string, width, titleLength int) string {
 	for i := firstLineEnd; i < descLength; i = i + spaceIndex {
 		if descLength < i+width {
 			sb.WriteString(desc[i:])
+			break
 		} else {
 			spaceIndex = findSpaceIndexFromLast(desc[i : i+width])
 			sb.WriteString(desc[i:i+spaceIndex] + "\n")
