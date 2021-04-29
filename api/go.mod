@@ -3,6 +3,7 @@ module github.com/tektoncd/hub/api
 go 1.14
 
 require (
+	github.com/AlecAivazis/survey/v2 v2.2.12
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dimfeld/httptreemux/v5 v5.3.0 // indirect
 	github.com/fatih/color v1.7.0
