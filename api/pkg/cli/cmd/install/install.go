@@ -139,15 +139,18 @@ func (opts *options) run() error {
 		res = append(res, *templateData.Resources[i].Name)
 	}
 
-	// Ask the resource name
-	resourceName, err := Ask(opts.kind, res)
-	if err != nil {
-		return err
+	name := opts.name()
+	if name == "" {
+		// Ask the resource name
+		name, err = Ask(opts.kind, res)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Get the resource versions
 	opts.hubResVersionsRes = hubClient.GetResourceVersions(hub.ResourceOption{
-		Name:    resourceName,
+		Name:    name,
 		Catalog: "tekton",
 		Kind:    opts.kind,
 		// Version: existingVersion,
@@ -165,7 +168,7 @@ func (opts *options) run() error {
 
 	if len(ver) == 1 {
 		opts.version = ver[0]
-	} else {
+	} else if opts.version == "" {
 		// Ask the version
 		opts.version, err = Ask("version", ver)
 		if err != nil {
@@ -174,7 +177,7 @@ func (opts *options) run() error {
 	}
 
 	opts.hubRes = hubClient.GetResource(hub.ResourceOption{
-		Name:    resourceName,
+		Name:    name,
 		Catalog: opts.from,
 		Kind:    opts.kind,
 		Version: opts.version,
@@ -226,7 +229,14 @@ func (opts *options) validate() error {
 	return flag.ValidateVersion(opts.version)
 }
 
+// func (opts *options) name() string {
+// 	return strings.TrimSpace(opts.args[0])
+// }
+
 func (opts *options) name() string {
+	if len(opts.args) == 0 {
+		return ""
+	}
 	return strings.TrimSpace(opts.args[0])
 }
 
