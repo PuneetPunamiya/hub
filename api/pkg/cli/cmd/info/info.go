@@ -15,9 +15,11 @@
 package info
 
 import (
+	"fmt"
 	"strings"
 	"text/template"
 
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
 	"github.com/tektoncd/hub/api/pkg/cli/app"
 	"github.com/tektoncd/hub/api/pkg/cli/flag"
@@ -38,7 +40,7 @@ Display info of a %S of name 'foo' of version '0.3':
     tkn hub info %s foo --version 0.3
 `
 
-const resTemplate = `{{ icon "name" }}Name: {{ .Resource.Name }} 
+const resTemplate = `{{ icon "name" }}Name: {{ .Resource.Name }}
 {{ $n := .ResVersion.DisplayName }}{{ if ne (default $n "") "" }}
 {{ icon "displayName" }}Display Name: {{ $n }}
 {{ end }}
@@ -80,11 +82,13 @@ type templateData struct {
 }
 
 type options struct {
-	cli     app.CLI
-	from    string
-	version string
-	kind    string
-	args    []string
+	cli               app.CLI
+	from              string
+	version           string
+	kind              string
+	args              []string
+	hubResVersionsRes hub.ResourceVersionResult
+	hubResVersions    *hub.ResVersions
 }
 
 func Command(cli app.CLI) *cobra.Command {
@@ -123,7 +127,7 @@ func commandForKind(kind string, opts *options) *cobra.Command {
 		Annotations: map[string]string{
 			"commandType": "main",
 		},
-		Args: cobra.ExactArgs(1),
+		// Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts.kind = kind
 			opts.args = args
@@ -138,9 +142,69 @@ func (opts *options) run() error {
 		return err
 	}
 
+	// Get all resources
 	hubClient := opts.cli.Hub()
+	result := hubClient.Search(hub.SearchOption{
+		Kinds: []string{opts.kind},
+	})
+
+	typed, err := result.Typed()
+	if err != nil {
+		return err
+	}
+
+	var data = struct {
+		Resources hub.SearchResponse
+	}{
+		Resources: typed,
+	}
+
+	// Get all resource names
+	var resources []string
+	for i := range data.Resources {
+		resources = append(resources, *data.Resources[i].Name)
+	}
+
+	name := opts.name()
+	if name == "" {
+		// Ask the resource name
+		name, err = Ask(opts.kind, resources)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Get the resource versions
+	opts.hubResVersionsRes = hubClient.GetResourceVersions(hub.ResourceOption{
+		Name:    name,
+		Catalog: "tekton",
+		Kind:    opts.kind,
+		// Version: existingVersion,
+	})
+
+	opts.hubResVersions, err = opts.hubResVersionsRes.ResourceVersions()
+	if err != nil {
+		return err
+	}
+
+	var ver []string
+	for i := range opts.hubResVersions.Versions {
+		ver = append(ver, *opts.hubResVersions.Versions[i].Version)
+	}
+
+	if len(ver) == 1 {
+		opts.version = ver[0]
+	} else if opts.version == "" {
+		// Ask the version
+		opts.version, err = Ask("version", ver)
+		if err != nil {
+			return err
+		}
+	}
+
+	hubClient = opts.cli.Hub()
 	res := hubClient.GetResource(hub.ResourceOption{
-		Name:    opts.name(),
+		Name:    name,
 		Catalog: opts.from,
 		Kind:    opts.kind,
 		Version: opts.version,
@@ -176,11 +240,37 @@ func (opts *options) validate() error {
 	return flag.ValidateVersion(opts.version)
 }
 
+// func (opts *options) name() string {
+// 	return strings.TrimSpace(opts.args[0])
+// }
+
 func (opts *options) name() string {
+	if len(opts.args) == 0 {
+		return ""
+	}
 	return strings.TrimSpace(opts.args[0])
 }
 
 func examples(kind string) string {
 	replacer := strings.NewReplacer("%s", kind, "%S", strings.Title(kind))
 	return replacer.Replace(cmdExamples)
+}
+
+func Ask(resource string, options []string) (string, error) {
+	var ans string
+	var qs = []*survey.Question{
+		{
+			Name: resource,
+			Prompt: &survey.Select{
+				Message: fmt.Sprintf("Select %s:", resource),
+				Options: options,
+			},
+		},
+	}
+
+	if err := survey.Ask(qs, &ans); err != nil {
+		return "", err
+	}
+
+	return ans, nil
 }
