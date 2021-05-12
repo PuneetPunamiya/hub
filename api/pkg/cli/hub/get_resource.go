@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 
 	rclient "github.com/tektoncd/hub/api/gen/http/resource/client"
@@ -185,4 +186,60 @@ func (rr *ResourceResult) MinPipelinesVersion() (string, error) {
 		return *rr.resourceWithVersionData.MinPipelinesVersion, nil
 	}
 	return *rr.resourceData.LatestVersion.MinPipelinesVersion, nil
+}
+
+func (hubClient *client) GetResourcesList(so SearchOption) ([]string, error) {
+	// Get all resources
+	result := hubClient.Search(SearchOption{
+		Kinds:   so.Kinds,
+		Catalog: so.Catalog,
+	})
+
+	typed, err := result.Typed()
+	if err != nil {
+		return nil, err
+	}
+
+	var data = struct {
+		Resources SearchResponse
+	}{
+		Resources: typed,
+	}
+
+	// Get all resource names
+	var resources []string
+	for i := range data.Resources {
+		resources = append(resources, *data.Resources[i].Name)
+	}
+
+	return resources, nil
+}
+
+func (hubClient *client) GetResourceVersionslist(r ResourceOption) ([]string, error) {
+	type options struct {
+		hubResVersionsRes ResourceVersionResult
+		hubResVersions    *ResVersions
+	}
+
+	opts := &options{}
+	// Get the resource versions
+	opts.hubResVersionsRes = hubClient.GetResourceVersions(ResourceOption{
+		Name:    r.Name,
+		Catalog: r.Catalog,
+		Kind:    r.Kind,
+	})
+
+	var err error
+	opts.hubResVersions, err = opts.hubResVersionsRes.ResourceVersions()
+	if err != nil {
+		return nil, err
+	}
+
+	var ver []string
+	for i := range opts.hubResVersions.Versions {
+		ver = append(ver, *opts.hubResVersions.Versions[i].Version)
+	}
+	sort.Sort(sort.Reverse(sort.StringSlice(ver)))
+
+	return ver, nil
 }
