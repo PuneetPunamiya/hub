@@ -19,9 +19,12 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/Netflix/go-expect"
 	"github.com/stretchr/testify/assert"
 	res "github.com/tektoncd/hub/api/gen/resource"
 	"github.com/tektoncd/hub/api/pkg/cli/test"
+	"github.com/tektoncd/hub/api/pkg/cli/test/prompt"
+
 	cat "github.com/tektoncd/hub/api/v1/gen/catalog"
 	goa "goa.design/goa/v3/pkg"
 	"gopkg.in/h2non/gock.v1"
@@ -268,18 +271,41 @@ func TestGetResource_WithNewVersion(t *testing.T) {
 	buf := new(bytes.Buffer)
 	cli.SetStream(buf, buf)
 
+	_ = prompt.Prompt{
+		CmdArgs: []string{"get", "pipeline", "mango"},
+		Procedure: func(c *expect.Console) error {
+			if _, err := c.ExpectString("Select version:"); err != nil {
+				return err
+			}
+			if _, err := c.SendLine("0.3"); err != nil {
+				return err
+			}
+			c.Close()
+			return nil
+		},
+	}
+
+	// data.RunTest(t, data.Procedure, func(stdio terminal.Stdio) error {
+	// 	// opts.askOpts = prompt.WithStdio(stdio)
+	// 	// opts.stream = &cli.Stream{Out: stdio.Out, Err: stdio.Err}
+	// 	// pipelineObj := &v1beta1.Pipeline{}
+	// 	 = data.CmdArgs[0]
+	// 	return opts.run(pipelineObj)
+	// })
+
 	opt := &options{
 		cli:     cli,
 		kind:    "pipeline",
 		args:    []string{"mango"},
 		from:    "fruit",
-		version: "0.3",
+		version: "",
 	}
 
 	err := opt.run()
+
 	assert.NoError(t, err)
 	golden.Assert(t, buf.String(), fmt.Sprintf("%s.golden", t.Name()))
-	assert.Equal(t, gock.IsDone(), false)
+	assert.Equal(t, gock.IsDone(), true)
 }
 
 func TestGetResource_WithOldVersion(t *testing.T) {
