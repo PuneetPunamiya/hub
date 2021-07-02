@@ -30,19 +30,7 @@
 					"name": "rtag"
 				}
 			],
-			"platforms": [
-				{
-					"id": 2,
-					"name": "linux/s390x"
-				}
-			],
 			"rating": 5
-		},
-		"platforms": [
-			{
-				"id": 1,
-				"name": "linux/amd64"
-			}
-		]
+		}
 	}
 }
