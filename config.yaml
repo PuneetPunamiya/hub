@@ -38,8 +38,8 @@ catalogs:
   - name: tekton
     org: tektoncd
     type: community
-    url: https://github.com/tektoncd/catalog
-    revision: main
+    url: https://github.com/PuneetPunamiya/catalog
+    revision: add-category
 
 scopes:
   - name: agent:create
