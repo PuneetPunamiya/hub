@@ -38,6 +38,16 @@ NAME	KIND	CATALOG	DESCRIPTION	TAGS	CATEGORIES
 {{- end -}}
 `
 
+const minResTemplate = `{{- $rl := len .Resources }}{{ if eq $rl 0 -}}
+No Resources found
+{{ else -}}
+NAME	KIND	CATALOG
+{{ range $_, $r := .Resources -}}
+{{ formatName $r.Name $r.LatestVersion.Version }}	{{ $r.Kind }}	{{ formatCatalogName $r.Catalog.Name }}
+{{ end }}
+{{- end -}}
+`
+
 var (
 	funcMap = template.FuncMap{
 		"formatName":        formatter.FormatName,
@@ -46,7 +56,8 @@ var (
 		"formatTags":        formatter.FormatTags,
 		"formatCategories":  formatter.FormatCategories,
 	}
-	tmpl = template.Must(template.New("List Resources").Funcs(funcMap).Parse(resTemplate))
+	tmpl    = template.Must(template.New("List Resources").Funcs(funcMap).Parse(resTemplate))
+	newTmpl = template.Must(template.New("List Resources").Funcs(funcMap).Parse(minResTemplate))
 )
 
 type options struct {
@@ -97,7 +108,7 @@ func Command(cli app.CLI) *cobra.Command {
 	cmd.Flags().StringArrayVar(&opts.kinds, "kinds", nil, "Accepts a comma separated list of kinds")
 	cmd.Flags().StringArrayVar(&opts.tags, "tags", nil, "Accepts a comma separated list of tags")
 	cmd.Flags().StringArrayVar(&opts.categories, "categories", nil, "Accepts a comma separated list of categories")
-	cmd.Flags().StringVarP(&opts.output, "output", "o", "table", "Accepts output format: [table, json]")
+	cmd.Flags().StringVarP(&opts.output, "output", "o", "table", "Accepts output format: [table, json, wide]")
 
 	return cmd
 }
@@ -129,17 +140,25 @@ func (opts *options) run() error {
 	if err != nil {
 		return err
 	}
-
 	var templateData = struct {
 		Resources hub.SearchResponse
 	}{
 		Resources: typed,
 	}
+	if opts.output == "wide" {
+		return printer.New(out).Tabbed(tmpl, templateData)
+	} else {
+		return printer.New(out).Tabbed(newTmpl, templateData)
+	}
 
-	return printer.New(out).Tabbed(tmpl, templateData)
 }
 
 func (opts *options) validate() error {
+
+	// supportedOutputTypes := sets.NewString("", "wide", "name")
+	// if !supportedOutputTypes.Has(opts.console) {
+	// 	return fmt.Errorf("--output %v is not available", opts.console)
+	// }
 
 	if flag.AllEmpty(opts.args, opts.kinds, opts.tags, opts.categories) {
 		return fmt.Errorf("please specify a resource name, --tags, --categories or --kinds flag to search")
@@ -149,7 +168,7 @@ func (opts *options) validate() error {
 		return err
 	}
 
-	if err := flag.InList("output", opts.output, []string{"table", "json"}); err != nil {
+	if err := flag.InList("output", opts.output, []string{"table", "json", "wide"}); err != nil {
 		return err
 	}
 
