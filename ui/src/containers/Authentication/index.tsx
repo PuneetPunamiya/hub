@@ -29,13 +29,15 @@ const Authentication: React.FC = observer(() => {
           <Icon id={Icons.Github} size="lg" label={'github'} />
         </CardHeader>
         <CardBody className="hub-authentication-card__body">
-          <GitHubLogin
+          {/* <GitHubLogin
             clientId={GH_CLIENT_ID}
             redirectUri=""
             onSuccess={onSuccess}
             onFailure={user.onFailure}
             host={GHE_URL || 'https://github.com'}
-          />
+          /> */}
+          <a href="http://localhost:4200/auth/github">Sign In</a>
+          {/* {historyBack()} */}
         </CardBody>
       </Card>
       {user.authErr.serverMessage ? (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 import {
@@ -14,7 +14,8 @@ import {
   ModalVariant,
   TextContent,
   TextList,
-  TextListItem
+  TextListItem,
+  Button
 } from '@patternfly/react-core';
 import logo from '../../assets/logo/logo.png';
 import { IconSize } from '@patternfly/react-icons';
@@ -31,6 +32,8 @@ const Header: React.FC = observer(() => {
   const history = useHistory();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
+  const [isSignInModalOpen, setIsSignInModalOpen] = React.useState(false);
+
   const headerTools = (
     <PageHeaderTools>
       <Grid>
@@ -44,10 +47,14 @@ const Header: React.FC = observer(() => {
       {user.isAuthenticated && user.refreshTokenInfo.expiresAt * 1000 > global.Date.now() ? (
         <UserProfile />
       ) : (
-        <Text component={TextVariants.h3}>
-          <Link to="/login" style={{ textDecoration: 'none' }}>
-            <span className="hub-header-login">Login</span>
-          </Link>
+        <Text
+          style={{ textDecoration: 'none' }}
+          component={TextVariants.a}
+          onClick={() => setIsSignInModalOpen(true)}
+        >
+          <span className="hub-header-login">
+            <b>Login</b>
+          </span>
         </Text>
       )}
     </PageHeaderTools>
@@ -80,6 +87,52 @@ const Header: React.FC = observer(() => {
               </TextListItem>
             </TextList>
           </TextContent>
+        </Grid>
+      </Modal>
+
+      <Modal
+        variant={ModalVariant.small}
+        title="Sign In:"
+        isOpen={isSignInModalOpen}
+        onClose={() => setIsSignInModalOpen(false)}
+        actions={[
+          <Button key="cancel" variant="secondary" onClick={() => setIsSignInModalOpen(false)}>
+            Close
+          </Button>
+        ]}
+      >
+        <Grid>
+          <GridItem style={{ margin: 'center', marginLeft: '10em' }}>
+            <Button
+              component="a"
+              href="http://localhost:4200/auth/github?redirect_uri=http://localhost:3000"
+            >
+              {' '}
+              Sign In with GitHub
+            </Button>
+
+            <br />
+            <br />
+
+            <Button
+              component="a"
+              href="http://localhost:4200/auth/gitlab?redirect_uri=http://localhost:3000"
+            >
+              {' '}
+              Sign In with Gitlab
+            </Button>
+
+            <br />
+            <br />
+
+            <Button
+              component="a"
+              href="http://localhost:4200/auth/bitbucket?redirect_uri=http://localhost:3000"
+            >
+              {' '}
+              Sign In with BitBucket
+            </Button>
+          </GridItem>
         </Grid>
       </Modal>
     </React.Fragment>

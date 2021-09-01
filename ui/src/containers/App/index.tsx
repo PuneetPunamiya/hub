@@ -8,7 +8,7 @@ import Background from '../../components/Background';
 import Header from '../../containers/Header';
 import Footer from '../../components/Footer';
 import Resources from '../Resources';
-import Authentication from '../../containers/Authentication';
+// import Authentication from '../../containers/Authentication';
 import Details from '../Details';
 import ParseUrl from '../ParseUrl';
 import { createProvider } from '../../store/root';
@@ -26,7 +26,15 @@ const App: React.FC = observer(() => {
           <PageSection>
             <Grid hasGutter>
               <GridItem span={12}>
-                <Route exact path="/login" component={Authentication}></Route>
+                {/* <Route exact path="/login" component={Authentication}></Route> */}
+                {/* <Route
+                  exact
+                  path="/login"
+                  component={() => {
+                    // window.location.href = 'http://localhost:4200/auth/github';
+                    return null;
+                  }}
+                ></Route> */}
                 <Route exact path="/:catalog/:kind/:name" component={Details}></Route>
               </GridItem>
               <GridItem span={2}>

@@ -57,5 +57,10 @@ export const UpdateURL = (
     });
   }
 
+  if (searchParams.has(Params.Code)) {
+    searchParams.delete(Params.Code);
+    searchParams.delete(Params.Status);
+  }
+
   return searchParams.toString();
 };

@@ -37,11 +37,11 @@ Array [
     <div
       className="pf-c-card__body hub-authentication-card__body"
     >
-      <button
-        onClick={[Function]}
+      <a
+        href="http://localhost:4200/auth/github"
       >
-        Sign in with GitHub
-      </button>
+        Sign In
+      </a>
     </div>
   </article>,
   " ",

@@ -66,9 +66,10 @@ export class Hub implements Api {
   }
 
   async authentication(authCode: string) {
+    const AUTH_URL = 'http://localhost:4200';
     try {
       return axios
-        .post(`${API_URL}/auth/login?code=${authCode}`)
+        .post(`${AUTH_URL}/auth/login?code=${authCode}`)
         .then((response) => response.data)
         .catch((err) => Promise.reject(err.response));
     } catch (err) {

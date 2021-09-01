@@ -4,5 +4,7 @@ export enum Params {
   Category = 'category',
   Kind = 'kind',
   Catalog = 'catalog',
-  Tag = 'tag'
+  Tag = 'tag',
+  Code = 'code',
+  Status = 'status'
 }
