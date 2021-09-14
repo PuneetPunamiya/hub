@@ -10,6 +10,7 @@ import (
 	"github.com/tektoncd/hub/api/gen/log"
 	"github.com/tektoncd/hub/api/pkg/app"
 	"github.com/tektoncd/hub/api/pkg/db/model"
+	authApp "github.com/tektoncd/hub/api/pkg/oauth/auth/app"
 	"gorm.io/gorm"
 )
 
@@ -23,23 +24,6 @@ type request struct {
 	log           *log.Logger
 	defaultScopes []string
 	jwtConfig     *app.JWTConfig
-}
-
-type Provider struct {
-	Name string `json:"name"`
-}
-
-type ProviderList struct {
-	Data []Provider `json:"data"`
-}
-
-type AuthService struct {
-	Name   string `json:"name"`
-	Status string `json:"status"`
-}
-
-type Services struct {
-	Service AuthService `json:"services"`
 }
 
 var (
@@ -61,8 +45,8 @@ func New(api app.Config) Service {
 
 func Status(res http.ResponseWriter, req *http.Request) {
 
-	authSvc := Services{
-		AuthService{
+	authSvc := authApp.Services{
+		authApp.AuthService{
 			Name:   "auth",
 			Status: "ok",
 		},
@@ -150,9 +134,9 @@ func (s *service) HubAuthenticate(res http.ResponseWriter, req *http.Request) {
 }
 
 func List(res http.ResponseWriter, req *http.Request) {
-	providers := []ProviderList{
+	providers := []authApp.ProviderList{
 		{
-			Data: []Provider{
+			Data: []authApp.Provider{
 				{
 					Name: "github",
 				},

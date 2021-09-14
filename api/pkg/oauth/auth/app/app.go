@@ -1,4 +1,21 @@
-package auth
+package app
+
+type Provider struct {
+	Name string `json:"name"`
+}
+
+type ProviderList struct {
+	Data []Provider `json:"data"`
+}
+
+type Services struct {
+	Service AuthService `json:"services"`
+}
+
+type AuthService struct {
+	Name   string `json:"name"`
+	Status string `json:"status"`
+}
 
 type AuthenticateResult struct {
 	// User Tokens

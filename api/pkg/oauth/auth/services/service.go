@@ -6,6 +6,7 @@ import (
 
 	"github.com/markbates/goth"
 	"github.com/tektoncd/hub/api/pkg/db/model"
+	"github.com/tektoncd/hub/api/pkg/oauth/auth/app"
 	"github.com/tektoncd/hub/api/pkg/token"
 	"gorm.io/gorm"
 )
@@ -31,7 +32,7 @@ func (r *request) userScopes(user *model.User) ([]string, error) {
 	return userScopes, nil
 }
 
-func (r *request) createTokens(user *model.User, scopes []string) (*AuthenticateResult, error) {
+func (r *request) createTokens(user *model.User, scopes []string) (*app.AuthenticateResult, error) {
 
 	req := token.Request{
 		User:      user,
@@ -60,20 +61,20 @@ func (r *request) createTokens(user *model.User, scopes []string) (*Authenticate
 		// return nil, internalError
 	}
 
-	data := &AuthTokens{
-		Access: &Token{
+	data := &app.AuthTokens{
+		Access: &app.Token{
 			Token:           accessToken,
 			RefreshInterval: r.jwtConfig.AccessExpiresIn.String(),
 			ExpiresAt:       accessExpiresAt,
 		},
-		Refresh: &Token{
+		Refresh: &app.Token{
 			Token:           refreshToken,
 			RefreshInterval: r.jwtConfig.AccessExpiresIn.String(),
 			ExpiresAt:       refreshExpiresAt,
 		},
 	}
 
-	return &AuthenticateResult{Data: data}, nil
+	return &app.AuthenticateResult{Data: data}, nil
 }
 
 func createChecksum(token string) string {
@@ -105,7 +106,6 @@ func (r *request) insertData(ghUser goth.User, code string) error {
 				// return nil, internalError
 				return err
 			}
-			// return &user, nil
 		}
 	} else {
 		if err := r.db.Model(&model.User{}).Where("github_login = ?", ghUser.NickName).Update("code", code).Error; err != nil {
