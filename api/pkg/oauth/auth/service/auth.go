@@ -146,10 +146,6 @@ func (s *service) HubAuthenticate(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err := r.db.Model(&model.User{}).Where("github_login = ?", User.GithubLogin).Update("code", "").Error; err != nil {
-		r.log.Error(err)
-	}
-
 	// gets user scopes to add in jwt
 	scopes, err := r.userScopes(&User)
 	if err != nil {
@@ -163,6 +159,10 @@ func (s *service) HubAuthenticate(res http.ResponseWriter, req *http.Request) {
 		r.log.Error(err)
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	if err := r.db.Model(&model.User{}).Where("github_login = ?", User.GithubLogin).Update("code", "").Error; err != nil {
+		r.log.Error(err)
 	}
 
 	res.WriteHeader(http.StatusOK)
@@ -179,6 +179,9 @@ func List(res http.ResponseWriter, req *http.Request) {
 		Data: []authApp.Provider{
 			{
 				Name: "github",
+			},
+			{
+				Name: "gitlab",
 			},
 		},
 	}
