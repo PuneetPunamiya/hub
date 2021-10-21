@@ -31,6 +31,7 @@ const (
 
 type Request struct {
 	User      *model.User
+	GitUser   *model.GitUser
 	Scopes    []string
 	JWTConfig *app.JWTConfig
 }
@@ -43,7 +44,7 @@ func (r *Request) AccessJWT() (string, int64, error) {
 	expiresAt := Now().Add(r.JWTConfig.AccessExpiresIn).Unix()
 	claim := jwt.MapClaims{
 		"iss":    issuer,
-		"id":     r.User.ID,
+		"id":     r.GitUser.ID,
 		"scopes": r.Scopes,
 		"type":   accessTokenType,
 		"iat":    Now().Unix(),
@@ -63,7 +64,7 @@ func (r *Request) RefreshJWT() (string, int64, error) {
 	expiresAt := Now().Add(r.JWTConfig.RefreshExpiresIn).Unix()
 	claim := jwt.MapClaims{
 		"iss":    issuer,
-		"id":     r.User.ID,
+		"id":     r.GitUser.ID,
 		"type":   refreshTokenType,
 		"scopes": []string{"refresh:token"},
 		"iat":    Now().Unix(),

@@ -33,6 +33,7 @@ type request struct {
 	db            *gorm.DB
 	log           *log.Logger
 	user          *model.User
+	gitUser       *model.GitUser
 	defaultScopes []string
 	jwtConfig     *app.JWTConfig
 }
@@ -82,18 +83,20 @@ func (s *UserService) Info(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	user, err := r.User(userId)
-	if err != nil {
-		r.log.Error(err)
-		http.Error(res, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// user, err := r.User(userId)
+	// if err != nil {
+	// 	r.log.Error(err)
+	// 	http.Error(res, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
+
+	gitUser, err := r.GitUser(userId)
 
 	result := userApp.InfoResult{
 		Data: &userApp.UserData{
-			GithubID:  user.GithubLogin,
-			Name:      user.GithubName,
-			AvatarURL: user.AvatarURL,
+			GithubID:  gitUser.Username,
+			Name:      gitUser.Name,
+			AvatarURL: gitUser.AvatarURL,
 		},
 	}
 

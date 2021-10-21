@@ -23,6 +23,7 @@ import (
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/github"
+	"github.com/markbates/goth/providers/gitlab"
 	"github.com/tektoncd/hub/api/pkg/app"
 	"github.com/tektoncd/hub/api/pkg/auth/provider"
 	auth "github.com/tektoncd/hub/api/pkg/auth/service"
@@ -48,6 +49,7 @@ func AuthProvider(r *mux.Router, api app.Config) {
 	var AUTH_URL = AUTH_BASE_URL + "/auth/%s/callback"
 
 	githubAuth := provider.GithubProvider(AUTH_URL)
+	gitlabAuth := provider.GitlabProvider(AUTH_URL)
 
 	goth.UseProviders(
 		github.NewCustomisedURL(
@@ -58,6 +60,15 @@ func AuthProvider(r *mux.Router, api app.Config) {
 			githubAuth.TokenUrl,
 			githubAuth.ProfileUrl,
 			githubAuth.EmailUrl),
+
+		gitlab.NewCustomisedURL(
+			gitlabAuth.ClientId,
+			gitlabAuth.ClientSecret,
+			gitlabAuth.CallbackUrl,
+			gitlabAuth.AuthUrl,
+			gitlabAuth.TokenUrl,
+			gitlabAuth.ProfileUrl,
+		),
 	)
 
 	authSvc := auth.New(api)

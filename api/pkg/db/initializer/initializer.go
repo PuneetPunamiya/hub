@@ -16,6 +16,7 @@ package initializer
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/tektoncd/hub/api/gen/log"
@@ -71,6 +72,7 @@ func (i *Initializer) Run(ctx context.Context) (*model.Config, error) {
 		addCatalogs,
 		addUsers,
 		updateConfig,
+		addGitUsers,
 	); err != nil {
 		return nil, err
 	}
@@ -123,6 +125,83 @@ func addCatalogs(db *gorm.DB, log *log.Logger, data *app.Data) error {
 		if err := db.Where(&model.Catalog{Name: c.Name, Org: c.Org}).FirstOrCreate(&cat).Error; err != nil {
 			log.Error(err)
 			return err
+		}
+	}
+	return nil
+}
+
+var counter uint
+
+func addGitUsers(db *gorm.DB, log *log.Logger, data *app.Data) error {
+
+	fmt.Println("------------------------------")
+	fmt.Println("data", data)
+	fmt.Println("------------------------------")
+
+	for _, s := range data.Scopes {
+		// Check if scopes exist or create it
+		q := db.Where(&model.Scope{Name: s.Name})
+
+		scope := model.Scope{}
+		if err := q.FirstOrCreate(&scope).Error; err != nil {
+			log.Error(err)
+			return err
+		}
+
+		for _, userID := range s.Users {
+
+			// Checks if user exists
+			q := db.Where("username = ?", userID)
+
+			account := model.Account{}
+			if err := q.First(&account).Error; err != nil {
+				// If user not found then create a new record
+				if err != gorm.ErrRecordNotFound {
+					log.Error(err)
+					return err
+				}
+
+				log.Infof("user %s not found, create a new user", userID)
+				account.Username = userID
+
+				// var user []model.GitUser
+				// if err := db.Find(&user).Error; err != nil {
+				// 	log.Error(err)
+				// 	return err
+				// }
+				var users_last_value uint
+				if err := db.Table("git_users_id_seq").Pluck("last_value", &users_last_value).Error; err != nil {
+					log.Error(err)
+					return err
+				}
+
+				result := map[string]interface{}{}
+				db.Model(&model.GitUser{}).Last(&result)
+
+				if result["id"] != nil && result["id"].(uint) != 1 {
+					counter = result["id"].(uint) + 1
+				} else if counter == 1 {
+					counter = 2
+				} else {
+					counter = users_last_value
+				}
+
+				gitUser := model.GitUser{}
+				gitUser.ID = counter
+				if err = db.Create(&gitUser).Error; err != nil {
+					log.Error(err)
+					return err
+				}
+
+				account.GitUserID = gitUser.ID
+				account.Provider = "github"
+				if err = db.Create(&account).Error; err != nil {
+					log.Error(err)
+					return err
+				}
+
+			}
+
 		}
 	}
 	return nil

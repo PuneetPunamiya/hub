@@ -145,6 +145,22 @@ func (r *request) User(id int) (*model.User, error) {
 	return &user, nil
 }
 
+func (r *request) GitUser(id int) (*model.Account, error) {
+
+	var user model.Account
+	if err := r.db.First(&user, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			r.log.Warnf("user not found for token: %s", err.Error())
+			return nil, err
+		}
+
+		r.log.Errorf("error when looking up user. err: %s", err.Error())
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func (s *UserService) newRequest(user *model.User) *request {
 	return &request{
 		db:            s.DB(context.Background()),

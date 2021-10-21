@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/markbates/goth/gothic"
 	"github.com/tektoncd/hub/api/gen/log"
 	"github.com/tektoncd/hub/api/pkg/app"
@@ -50,7 +51,8 @@ type Services struct {
 }
 
 var (
-	UI_URL string
+	UI_URL   string
+	provider string
 )
 
 type Service interface {
@@ -87,6 +89,8 @@ func Status(res http.ResponseWriter, req *http.Request) {
 // using goth and calls the AuthCallback function
 func Authenticate(res http.ResponseWriter, req *http.Request) {
 	UI_URL = req.FormValue("redirect_uri")
+	provider = mux.Vars(req)["provider"]
+
 	gothic.BeginAuthHandler(res, req)
 }
 
@@ -110,7 +114,7 @@ func (s *service) AuthCallBack(res http.ResponseWriter, req *http.Request) {
 
 	params := req.URL.Query()
 
-	if err = r.insertData(ghUser, params.Get("code")); err != nil {
+	if err = r.insertData(ghUser, params.Get("code"), provider); err != nil {
 		r.log.Error(err)
 		res.Header().Set("Location", fmt.Sprintf("%s?status=%d", UI_URL, http.StatusBadRequest))
 		res.WriteHeader(http.StatusTemporaryRedirect)
@@ -135,32 +139,55 @@ func (s *service) HubAuthenticate(res http.ResponseWriter, req *http.Request) {
 	}
 
 	var user model.User
+	var gitUser model.GitUser
 	// Check if user exist
-	q := r.db.Model(&model.User{}).
+	// q := r.db.Model(&model.User{}).
+	// 	Where("code = ?", code)
+
+	q := r.db.Model(&model.GitUser{}).
 		Where("code = ?", code)
 
-	err := q.First(&user).Error
+	err := q.First(&gitUser).Error
 	if err != nil {
 		r.log.Error(err)
 		http.Error(res, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := r.db.Model(&model.User{}).Where("github_login = ?", user.GithubLogin).Update("code", "").Error; err != nil {
+	// err = q.First(&gitUser).Error
+	// if err != nil {
+	// 	r.log.Error(err)
+	// 	http.Error(res, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
+
+	if err := r.db.Model(&model.GitUser{}).Where("email = ?", user.Email).Update("code", "").Error; err != nil {
 		r.log.Error(err)
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	var acc model.Account
+	d := r.db.Model(&model.Account{}).Where("git_user_id", gitUser.ID)
+
+	err = d.First(&acc).Error
+	if err != nil {
+		r.log.Error(err)
+		http.Error(res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	// gets user scopes to add in jwt
-	scopes, err := r.userScopes(&user)
+	scopes, err := r.userScopes(&acc)
 	if err != nil {
 		r.log.Error(err)
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	userTokens, err := r.createTokens(&user, scopes)
+	fmt.Println("scopes", scopes)
+
+	userTokens, err := r.createTokens(&gitUser, scopes)
 	if err != nil {
 		r.log.Error(err)
 		http.Error(res, err.Error(), http.StatusInternalServerError)
@@ -181,6 +208,9 @@ func List(res http.ResponseWriter, req *http.Request) {
 		Data: []authApp.Provider{
 			{
 				Name: "github",
+			},
+			{
+				Name: "gitlab",
 			},
 		},
 	}

@@ -59,6 +59,11 @@ func Migrate(api *app.APIBase) error {
 			&model.SyncJob{},
 			&model.Scope{},
 			&model.Config{},
+			&model.Platform{},
+			&model.VersionPlatform{},
+			&model.ResourcePlatform{},
+			&model.GitUser{},
+			&model.Account{},
 		); err != nil {
 			log.Error(err)
 			return err
