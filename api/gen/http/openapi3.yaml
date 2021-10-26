@@ -28,81 +28,6 @@ paths:
                 - error: unable to reach db
                   name: api
                   status: ok
-  /auth/login:
-    post:
-      tags:
-      - auth
-      summary: Authenticate auth
-      description: Authenticates users against GitHub OAuth
-      operationId: auth#Authenticate
-      parameters:
-      - name: code
-        in: query
-        description: OAuth Authorization code of User
-        allowEmptyValue: true
-        required: true
-        schema:
-          type: string
-          description: OAuth Authorization code of User
-          example: 5628b69ec09c09512eef
-        example: 5628b69ec09c09512eef
-      responses:
-        "200":
-          description: OK response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthenticateResponseBody'
-              example:
-                data:
-                  access:
-                    expiresAt: 0
-                    refreshInterval: 1h30m
-                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-                  refresh:
-                    expiresAt: 0
-                    refreshInterval: 1h30m
-                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-        "400":
-          description: Bad Request response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
-        "401":
-          description: Unauthorized response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
-        "403":
-          description: Forbidden response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
-        "500":
-          description: Internal Server Error response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
   /catalog/{catalogName}/error:
     get:
       tags:
@@ -332,7 +257,7 @@ paths:
           type: array
           items:
             type: string
-            example: Ipsam ad dicta sunt fugiat.
+            example: Aliquam voluptates illo.
           description: Catalogs of resource to filter by
           example:
           - tekton
@@ -348,7 +273,7 @@ paths:
           type: array
           items:
             type: string
-            example: Eum in similique labore.
+            example: Illum et ut pariatur similique.
           description: Category associated with a resource to filter by
           example:
           - build
@@ -364,7 +289,7 @@ paths:
           type: array
           items:
             type: string
-            example: Laboriosam placeat eveniet perspiciatis.
+            example: Laudantium nostrum quia totam magni reprehenderit maxime.
           description: Kinds of resource to filter by
           example:
           - task
@@ -380,7 +305,7 @@ paths:
           type: array
           items:
             type: string
-            example: Ut debitis quia sed ipsa velit dolorem.
+            example: Velit itaque dolores dolor esse.
           description: Tags associated with a resource to filter by
           example:
           - image
@@ -396,7 +321,7 @@ paths:
           type: array
           items:
             type: string
-            example: Ut debitis iste sed voluptas et.
+            example: Velit aliquid praesentium saepe sed optio ab.
           description: Platforms associated with a resource to filter by
           example:
           - linux/s390x
@@ -426,7 +351,7 @@ paths:
           enum:
           - exact
           - contains
-        example: contains
+        example: exact
       responses:
         "200":
           description: OK response.
@@ -573,11 +498,11 @@ paths:
         schema:
           type: string
           description: kind of resource
-          example: task
+          example: pipeline
           enum:
           - task
           - pipeline
-        example: task
+        example: pipeline
       - name: name
         in: path
         description: Name of resource
@@ -676,11 +601,11 @@ paths:
         schema:
           type: string
           description: kind of resource
-          example: pipeline
+          example: task
           enum:
           - task
           - pipeline
-        example: pipeline
+        example: task
       - name: name
         in: path
         description: name of resource
@@ -854,8 +779,8 @@ paths:
         schema:
           type: integer
           description: ID of a resource
-          example: 4748836856209207639
-        example: 17835074238948411605
+          example: 13079036966868018111
+        example: 8898227098768256088
       responses:
         "200":
           description: OK response.
@@ -927,8 +852,8 @@ paths:
         schema:
           type: integer
           description: ID of a resource
-          example: 9285005120921241060
-        example: 11505831677112471131
+          example: 17566308914815160138
+        example: 4705517885956809601
       requestBody:
         required: true
         content:
@@ -1370,179 +1295,6 @@ paths:
         - catalog:refresh
         - config:refresh
         - refresh:token
-  /user/info:
-    get:
-      tags:
-      - user
-      summary: Info user
-      description: Get the user Info
-      operationId: user#Info
-      responses:
-        "200":
-          description: OK response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InfoResponseBody'
-              example:
-                data:
-                  avatarUrl: https://avatars.githubusercontent.com
-                  githubId: abc123
-                  name: abc
-        "401":
-          description: Unauthorized response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
-        "403":
-          description: Forbidden response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
-        "500":
-          description: Internal Server Error response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
-      security:
-      - jwt_header_Authorization:
-        - rating:read
-        - rating:write
-        - agent:create
-        - catalog:refresh
-        - config:refresh
-        - refresh:token
-  /user/refresh/accesstoken:
-    post:
-      tags:
-      - user
-      summary: RefreshAccessToken user
-      description: Refresh the access token of User
-      operationId: user#RefreshAccessToken
-      responses:
-        "200":
-          description: OK response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RefreshAccessTokenResponseBody'
-              example:
-                data:
-                  access:
-                    expiresAt: 0
-                    refreshInterval: 1h30m
-                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-        "401":
-          description: Unauthorized response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
-        "403":
-          description: Forbidden response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
-        "500":
-          description: Internal Server Error response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
-      security:
-      - jwt_header_Authorization:
-        - rating:read
-        - rating:write
-        - agent:create
-        - catalog:refresh
-        - config:refresh
-        - refresh:token
-  /user/refresh/refreshtoken:
-    post:
-      tags:
-      - user
-      summary: NewRefreshToken user
-      description: Get a new refresh token of User
-      operationId: user#NewRefreshToken
-      responses:
-        "200":
-          description: OK response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NewRefreshTokenResponseBody'
-              example:
-                data:
-                  refresh:
-                    expiresAt: 0
-                    refreshInterval: 1h30m
-                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-        "401":
-          description: Unauthorized response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
-        "403":
-          description: Forbidden response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
-        "500":
-          description: Internal Server Error response.
-          content:
-            application/vnd.goa.error:
-              schema:
-                $ref: '#/components/schemas/Error'
-              example:
-                id: 3F1FKVRR
-                message: Value of ID must be an integer
-                name: bad_request
-      security:
-      - jwt_header_Authorization:
-        - rating:read
-        - rating:write
-        - agent:create
-        - catalog:refresh
-        - config:refresh
-        - refresh:token
   /v1:
     get:
       tags:
@@ -1599,51 +1351,6 @@ paths:
                 name: bad_request
 components:
   schemas:
-    AccessToken:
-      type: object
-      properties:
-        access:
-          $ref: '#/components/schemas/Token'
-      description: Access Token for User
-      example:
-        access:
-          expiresAt: 0
-          refreshInterval: 1h30m
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-    AuthTokens:
-      type: object
-      properties:
-        access:
-          $ref: '#/components/schemas/Token'
-        refresh:
-          $ref: '#/components/schemas/Token'
-      description: Auth tokens have access and refresh token for user
-      example:
-        access:
-          expiresAt: 0
-          refreshInterval: 1h30m
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-        refresh:
-          expiresAt: 0
-          refreshInterval: 1h30m
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-    AuthenticateResponseBody:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/AuthTokens'
-      example:
-        data:
-          access:
-            expiresAt: 0
-            refreshInterval: 1h30m
-            token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-          refresh:
-            expiresAt: 0
-            refreshInterval: 1h30m
-            token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-      required:
-      - data
     Catalog:
       type: object
       properties:
@@ -1711,14 +1418,6 @@ components:
           - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
           - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
           type: warning
-        - errors:
-          - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
-          - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
-          type: warning
-        - errors:
-          - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
-          - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
-          type: warning
       required:
       - data
     CatalogErrors:
@@ -1728,7 +1427,7 @@ components:
           type: array
           items:
             type: string
-            example: Est nihil facilis adipisci.
+            example: Quidem architecto rerum id quia quia molestiae.
           description: Catalog Error message
           example:
           - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
@@ -1769,7 +1468,7 @@ components:
         fault:
           type: boolean
           description: Is the error a server-side fault?
-          example: false
+          example: true
         id:
           type: string
           description: ID is a unique identifier for this particular occurrence of
@@ -1787,7 +1486,7 @@ components:
         temporary:
           type: boolean
           description: Is the error temporary?
-          example: false
+          example: true
         timeout:
           type: boolean
           description: Is the error a timeout?
@@ -1842,18 +1541,6 @@ components:
       required:
       - name
       - status
-    InfoResponseBody:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/UserData'
-      example:
-        data:
-          avatarUrl: https://avatars.githubusercontent.com
-          githubId: abc123
-          name: abc
-      required:
-      - data
     Job:
       type: object
       properties:
@@ -1895,36 +1582,6 @@ components:
           name: Image Builder
         - id: 1
           name: Image Builder
-        - id: 1
-          name: Image Builder
-        - id: 1
-          name: Image Builder
-    NewRefreshTokenResponseBody:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RefreshToken'
-      example:
-        data:
-          refresh:
-            expiresAt: 0
-            refreshInterval: 1h30m
-            token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-      required:
-      - data
-    RefreshAccessTokenResponseBody:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/AccessToken'
-      example:
-        data:
-          access:
-            expiresAt: 0
-            refreshInterval: 1h30m
-            token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-      required:
-      - data
     RefreshConfigResponseBody:
       type: object
       properties:
@@ -1936,17 +1593,6 @@ components:
         checksum: 41ba391c8baf1fcd3c62c11272b913dc6613f4cf3b1833cfbb32431dc4384c93
       required:
       - checksum
-    RefreshToken:
-      type: object
-      properties:
-        refresh:
-          $ref: '#/components/schemas/Token'
-      description: Refresh Token for User
-      example:
-        refresh:
-          expiresAt: 0
-          refreshInterval: 1h30m
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
     Resource:
       type: object
       properties:
@@ -2102,6 +1748,41 @@ components:
       items:
         $ref: '#/components/schemas/ResourceData'
       example:
+      - catalog:
+          id: 1
+          name: tekton
+          type: community
+        categories:
+        - id: 1
+          name: image-build
+        id: 1
+        kind: task
+        latestVersion:
+          description: Buildah task builds source into a container image and then
+            pushes it to a container registry.
+          displayName: Buildah
+          id: 1
+          minPipelinesVersion: 0.12.1
+          platforms:
+          - id: 1
+            name: linux/amd64
+          rawURL: https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.1/buildah.yaml
+          updatedAt: 2020-01-01 12:00:00 +0000 UTC
+          version: "0.1"
+          webURL: https://github.com/tektoncd/catalog/blob/main/task/buildah/0.1/buildah.yaml
+        name: buildah
+        platforms:
+        - id: 1
+          name: linux/amd64
+        rating: 4.3
+        tags:
+        - id: 1
+          name: image-build
+        versions:
+        - id: 1
+          version: "0.1"
+        - id: 2
+          version: "0.2"
       - catalog:
           id: 1
           name: tekton
@@ -2425,6 +2106,9 @@ components:
           - error: unable to reach db
             name: api
             status: ok
+          - error: unable to reach db
+            name: api
+            status: ok
       example:
         services:
         - error: unable to reach db
@@ -2433,31 +2117,12 @@ components:
         - error: unable to reach db
           name: api
           status: ok
-    Token:
-      type: object
-      properties:
-        expiresAt:
-          type: integer
-          description: Time the token will expires at
-          example: 0
-          format: int64
-        refreshInterval:
-          type: string
-          description: Duration the token will Expire In
-          example: 1h30m
-        token:
-          type: string
-          description: JWT
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-      description: Token includes the JWT, Expire Duration & Time
-      example:
-        expiresAt: 0
-        refreshInterval: 1h30m
-        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM
-      required:
-      - token
-      - refreshInterval
-      - expiresAt
+        - error: unable to reach db
+          name: api
+          status: ok
+        - error: unable to reach db
+          name: api
+          status: ok
     UpdateAgentRequestBody:
       type: object
       properties:
@@ -2469,7 +2134,7 @@ components:
           type: array
           items:
             type: string
-            example: Voluptas eius non illo accusantium aut.
+            example: Unde cum laborum fugit quam perspiciatis.
           description: Scopes required for Agent
           example:
           - catalog-refresh
@@ -2499,37 +2164,13 @@ components:
         rating:
           type: integer
           description: User rating for resource
-          example: 1
+          example: 0
           minimum: 0
           maximum: 5
       example:
-        rating: 1
+        rating: 3
       required:
       - rating
-    UserData:
-      type: object
-      properties:
-        avatarUrl:
-          type: string
-          description: Github user's profile picture url
-          example: https://avatars.githubusercontent.com
-        githubId:
-          type: string
-          description: Github id of User
-          example: abc123
-        name:
-          type: string
-          description: Github user name
-          example: abc
-      description: Github user Information
-      example:
-        avatarUrl: https://avatars.githubusercontent.com
-        githubId: abc123
-        name: abc
-      required:
-      - githubId
-      - name
-      - avatarUrl
     Versions:
       type: object
       properties:

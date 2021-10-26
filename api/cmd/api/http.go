@@ -27,23 +27,19 @@ import (
 	"goa.design/goa/v3/middleware"
 
 	admin "github.com/tektoncd/hub/api/gen/admin"
-	auth "github.com/tektoncd/hub/api/gen/auth"
 	catalog "github.com/tektoncd/hub/api/gen/catalog"
 	category "github.com/tektoncd/hub/api/gen/category"
 	adminsvr "github.com/tektoncd/hub/api/gen/http/admin/server"
-	authsvr "github.com/tektoncd/hub/api/gen/http/auth/server"
 	catalogsvr "github.com/tektoncd/hub/api/gen/http/catalog/server"
 	categorysvr "github.com/tektoncd/hub/api/gen/http/category/server"
 	ratingsvr "github.com/tektoncd/hub/api/gen/http/rating/server"
 	resourcesvr "github.com/tektoncd/hub/api/gen/http/resource/server"
 	statussvr "github.com/tektoncd/hub/api/gen/http/status/server"
 	swaggersvr "github.com/tektoncd/hub/api/gen/http/swagger/server"
-	usersvr "github.com/tektoncd/hub/api/gen/http/user/server"
 	"github.com/tektoncd/hub/api/gen/log"
 	rating "github.com/tektoncd/hub/api/gen/rating"
 	resource "github.com/tektoncd/hub/api/gen/resource"
 	status "github.com/tektoncd/hub/api/gen/status"
-	user "github.com/tektoncd/hub/api/gen/user"
 	v1catalog "github.com/tektoncd/hub/api/v1/gen/catalog"
 	v1catalogsvr "github.com/tektoncd/hub/api/v1/gen/http/catalog/server"
 	v1resourcesvr "github.com/tektoncd/hub/api/v1/gen/http/resource/server"
@@ -56,7 +52,6 @@ import (
 func handleHTTPServer(
 	ctx context.Context, u *url.URL,
 	adminEndpoints *admin.Endpoints,
-	authEndpoints *auth.Endpoints,
 	catalogEndpoints *catalog.Endpoints,
 	v1catalogEndpoints *v1catalog.Endpoints,
 	categoryEndpoints *category.Endpoints,
@@ -64,7 +59,6 @@ func handleHTTPServer(
 	resourceEndpoints *resource.Endpoints,
 	v1resourceEndpoints *v1resource.Endpoints,
 	statusEndpoints *status.Endpoints,
-	userEndpoints *user.Endpoints,
 	wg *sync.WaitGroup, errc chan error, logger *log.Logger, debug bool) {
 
 	// Setup goa log adapter.
@@ -97,7 +91,6 @@ func handleHTTPServer(
 	// responses.
 	var (
 		adminServer      *adminsvr.Server
-		authServer       *authsvr.Server
 		catalogServer    *catalogsvr.Server
 		v1catalogServer  *v1catalogsvr.Server
 		categoryServer   *categorysvr.Server
@@ -107,12 +100,10 @@ func handleHTTPServer(
 		statusServer     *statussvr.Server
 		swaggerServer    *swaggersvr.Server
 		v1swaggerServer  *v1swaggersvr.Server
-		userServer       *usersvr.Server
 	)
 	{
 		eh := errorHandler(logger)
 		adminServer = adminsvr.New(adminEndpoints, mux, dec, enc, eh, nil)
-		authServer = authsvr.New(authEndpoints, mux, dec, enc, eh, nil)
 		catalogServer = catalogsvr.New(catalogEndpoints, mux, dec, enc, eh, nil)
 		v1catalogServer = v1catalogsvr.New(v1catalogEndpoints, mux, dec, enc, eh, nil)
 		categoryServer = categorysvr.New(categoryEndpoints, mux, dec, enc, eh, nil)
@@ -122,12 +113,10 @@ func handleHTTPServer(
 		statusServer = statussvr.New(statusEndpoints, mux, dec, enc, eh, nil)
 		swaggerServer = swaggersvr.New(nil, mux, dec, enc, eh, nil)
 		v1swaggerServer = v1swaggersvr.New(nil, mux, dec, enc, eh, nil)
-		userServer = usersvr.New(userEndpoints, mux, dec, enc, eh, nil)
 
 		if debug {
 			servers := goahttp.Servers{
 				adminServer,
-				authServer,
 				catalogServer,
 				v1catalogServer,
 				categoryServer,
@@ -137,14 +126,12 @@ func handleHTTPServer(
 				statusServer,
 				swaggerServer,
 				v1swaggerServer,
-				userServer,
 			}
 			servers.Use(httpmdlwr.Debug(mux, os.Stdout))
 		}
 	}
 	// Configure the mux.
 	adminsvr.Mount(mux, adminServer)
-	authsvr.Mount(mux, authServer)
 	catalogsvr.Mount(mux, catalogServer)
 	v1catalogsvr.Mount(mux, v1catalogServer)
 	categorysvr.Mount(mux, categoryServer)
@@ -154,7 +141,6 @@ func handleHTTPServer(
 	statussvr.Mount(mux, statusServer)
 	swaggersvr.Mount(mux, swaggerServer)
 	v1swaggersvr.Mount(mux, v1swaggerServer)
-	usersvr.Mount(mux, userServer)
 
 	// Wrap the multiplexer with additional middlewares. Middlewares mounted
 	// here apply to all the service endpoints.
@@ -168,9 +154,6 @@ func handleHTTPServer(
 	// configure the server as required by your service.
 	srv := &http.Server{Addr: u.Host, Handler: handler}
 	for _, m := range adminServer.Mounts {
-		logger.Infof("HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
-	}
-	for _, m := range authServer.Mounts {
 		logger.Infof("HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
 	for _, m := range catalogServer.Mounts {
@@ -198,9 +181,6 @@ func handleHTTPServer(
 		logger.Infof("HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
 	for _, m := range v1swaggerServer.Mounts {
-		logger.Infof("HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
-	}
-	for _, m := range userServer.Mounts {
 		logger.Infof("HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
 

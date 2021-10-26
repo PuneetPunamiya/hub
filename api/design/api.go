@@ -34,14 +34,12 @@ var _ = API("hub", func() {
 
 		Services(
 			"admin",
-			"auth",
 			"catalog",
 			"category",
 			"rating",
 			"resource",
 			"status",
 			"swagger",
-			"user",
 		)
 	})
 

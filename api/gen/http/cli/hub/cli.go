@@ -14,13 +14,11 @@ import (
 	"os"
 
 	adminc "github.com/tektoncd/hub/api/gen/http/admin/client"
-	authc "github.com/tektoncd/hub/api/gen/http/auth/client"
 	catalogc "github.com/tektoncd/hub/api/gen/http/catalog/client"
 	categoryc "github.com/tektoncd/hub/api/gen/http/category/client"
 	ratingc "github.com/tektoncd/hub/api/gen/http/rating/client"
 	resourcec "github.com/tektoncd/hub/api/gen/http/resource/client"
 	statusc "github.com/tektoncd/hub/api/gen/http/status/client"
-	userc "github.com/tektoncd/hub/api/gen/http/user/client"
 	goahttp "goa.design/goa/v3/http"
 	goa "goa.design/goa/v3/pkg"
 )
@@ -31,13 +29,11 @@ import (
 //
 func UsageCommands() string {
 	return `admin (update-agent|refresh-config)
-auth authenticate
 catalog (refresh|refresh-all|catalog-error)
 category list
 rating (get|update)
 resource (query|list|versions-by-id|by-catalog-kind-name-version|by-version-id|by-catalog-kind-name|by-id)
 status status
-user (refresh-access-token|new-refresh-token|info)
 `
 }
 
@@ -50,10 +46,25 @@ func UsageExamples() string {
          "agent:create"
       ]
    }' --token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM"` + "\n" +
-		os.Args[0] + ` auth authenticate --code "5628b69ec09c09512eef"` + "\n" +
 		os.Args[0] + ` catalog refresh --catalog-name "tekton" --token "Inventore adipisci molestiae quaerat animi qui qui."` + "\n" +
 		os.Args[0] + ` category list` + "\n" +
 		os.Args[0] + ` rating get --id 18445012574457005975 --token "Rerum qui hic."` + "\n" +
+		os.Args[0] + ` resource query --name "buildah" --catalogs '[
+      "tekton",
+      "openshift"
+   ]' --categories '[
+      "build",
+      "tools"
+   ]' --kinds '[
+      "task",
+      "pipelines"
+   ]' --tags '[
+      "image",
+      "build"
+   ]' --platforms '[
+      "linux/s390x",
+      "linux/amd64"
+   ]' --limit 100 --match "contains"` + "\n" +
 		""
 }
 
@@ -75,11 +86,6 @@ func ParseEndpoint(
 
 		adminRefreshConfigFlags     = flag.NewFlagSet("refresh-config", flag.ExitOnError)
 		adminRefreshConfigTokenFlag = adminRefreshConfigFlags.String("token", "REQUIRED", "")
-
-		authFlags = flag.NewFlagSet("auth", flag.ContinueOnError)
-
-		authAuthenticateFlags    = flag.NewFlagSet("authenticate", flag.ExitOnError)
-		authAuthenticateCodeFlag = authAuthenticateFlags.String("code", "REQUIRED", "")
 
 		catalogFlags = flag.NewFlagSet("catalog", flag.ContinueOnError)
 
@@ -148,24 +154,10 @@ func ParseEndpoint(
 		statusFlags = flag.NewFlagSet("status", flag.ContinueOnError)
 
 		statusStatusFlags = flag.NewFlagSet("status", flag.ExitOnError)
-
-		userFlags = flag.NewFlagSet("user", flag.ContinueOnError)
-
-		userRefreshAccessTokenFlags            = flag.NewFlagSet("refresh-access-token", flag.ExitOnError)
-		userRefreshAccessTokenRefreshTokenFlag = userRefreshAccessTokenFlags.String("refresh-token", "REQUIRED", "")
-
-		userNewRefreshTokenFlags            = flag.NewFlagSet("new-refresh-token", flag.ExitOnError)
-		userNewRefreshTokenRefreshTokenFlag = userNewRefreshTokenFlags.String("refresh-token", "REQUIRED", "")
-
-		userInfoFlags           = flag.NewFlagSet("info", flag.ExitOnError)
-		userInfoAccessTokenFlag = userInfoFlags.String("access-token", "REQUIRED", "")
 	)
 	adminFlags.Usage = adminUsage
 	adminUpdateAgentFlags.Usage = adminUpdateAgentUsage
 	adminRefreshConfigFlags.Usage = adminRefreshConfigUsage
-
-	authFlags.Usage = authUsage
-	authAuthenticateFlags.Usage = authAuthenticateUsage
 
 	catalogFlags.Usage = catalogUsage
 	catalogRefreshFlags.Usage = catalogRefreshUsage
@@ -191,11 +183,6 @@ func ParseEndpoint(
 	statusFlags.Usage = statusUsage
 	statusStatusFlags.Usage = statusStatusUsage
 
-	userFlags.Usage = userUsage
-	userRefreshAccessTokenFlags.Usage = userRefreshAccessTokenUsage
-	userNewRefreshTokenFlags.Usage = userNewRefreshTokenUsage
-	userInfoFlags.Usage = userInfoUsage
-
 	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
 		return nil, nil, err
 	}
@@ -213,8 +200,6 @@ func ParseEndpoint(
 		switch svcn {
 		case "admin":
 			svcf = adminFlags
-		case "auth":
-			svcf = authFlags
 		case "catalog":
 			svcf = catalogFlags
 		case "category":
@@ -225,8 +210,6 @@ func ParseEndpoint(
 			svcf = resourceFlags
 		case "status":
 			svcf = statusFlags
-		case "user":
-			svcf = userFlags
 		default:
 			return nil, nil, fmt.Errorf("unknown service %q", svcn)
 		}
@@ -249,13 +232,6 @@ func ParseEndpoint(
 
 			case "refresh-config":
 				epf = adminRefreshConfigFlags
-
-			}
-
-		case "auth":
-			switch epn {
-			case "authenticate":
-				epf = authAuthenticateFlags
 
 			}
 
@@ -321,19 +297,6 @@ func ParseEndpoint(
 
 			}
 
-		case "user":
-			switch epn {
-			case "refresh-access-token":
-				epf = userRefreshAccessTokenFlags
-
-			case "new-refresh-token":
-				epf = userNewRefreshTokenFlags
-
-			case "info":
-				epf = userInfoFlags
-
-			}
-
 		}
 	}
 	if epf == nil {
@@ -363,13 +326,6 @@ func ParseEndpoint(
 			case "refresh-config":
 				endpoint = c.RefreshConfig()
 				data, err = adminc.BuildRefreshConfigPayload(*adminRefreshConfigTokenFlag)
-			}
-		case "auth":
-			c := authc.NewClient(scheme, host, doer, enc, dec, restore)
-			switch epn {
-			case "authenticate":
-				endpoint = c.Authenticate()
-				data, err = authc.BuildAuthenticatePayload(*authAuthenticateCodeFlag)
 			}
 		case "catalog":
 			c := catalogc.NewClient(scheme, host, doer, enc, dec, restore)
@@ -433,19 +389,6 @@ func ParseEndpoint(
 				endpoint = c.Status()
 				data = nil
 			}
-		case "user":
-			c := userc.NewClient(scheme, host, doer, enc, dec, restore)
-			switch epn {
-			case "refresh-access-token":
-				endpoint = c.RefreshAccessToken()
-				data, err = userc.BuildRefreshAccessTokenPayload(*userRefreshAccessTokenRefreshTokenFlag)
-			case "new-refresh-token":
-				endpoint = c.NewRefreshToken()
-				data, err = userc.BuildNewRefreshTokenPayload(*userNewRefreshTokenRefreshTokenFlag)
-			case "info":
-				endpoint = c.Info()
-				data, err = userc.BuildInfoPayload(*userInfoAccessTokenFlag)
-			}
 		}
 	}
 	if err != nil {
@@ -495,30 +438,6 @@ Refresh the changes in config file
 
 Example:
     `+os.Args[0]+` admin refresh-config --token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM"
-`, os.Args[0])
-}
-
-// authUsage displays the usage of the auth command and its subcommands.
-func authUsage() {
-	fmt.Fprintf(os.Stderr, `The auth service exposes endpoint to authenticate User against GitHub OAuth
-Usage:
-    %s [globalflags] auth COMMAND [flags]
-
-COMMAND:
-    authenticate: Authenticates users against GitHub OAuth
-
-Additional help:
-    %s auth COMMAND --help
-`, os.Args[0], os.Args[0])
-}
-func authAuthenticateUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] auth authenticate -code STRING
-
-Authenticates users against GitHub OAuth
-    -code STRING: 
-
-Example:
-    `+os.Args[0]+` auth authenticate --code "5628b69ec09c09512eef"
 `, os.Args[0])
 }
 
@@ -780,53 +699,5 @@ Return status of the services
 
 Example:
     `+os.Args[0]+` status status
-`, os.Args[0])
-}
-
-// userUsage displays the usage of the user command and its subcommands.
-func userUsage() {
-	fmt.Fprintf(os.Stderr, `The user service exposes endpoint to get user specific specs
-Usage:
-    %s [globalflags] user COMMAND [flags]
-
-COMMAND:
-    refresh-access-token: Refresh the access token of User
-    new-refresh-token: Get a new refresh token of User
-    info: Get the user Info
-
-Additional help:
-    %s user COMMAND --help
-`, os.Args[0], os.Args[0])
-}
-func userRefreshAccessTokenUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] user refresh-access-token -refresh-token STRING
-
-Refresh the access token of User
-    -refresh-token STRING: 
-
-Example:
-    `+os.Args[0]+` user refresh-access-token --refresh-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODM2MDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJlZnJlc2g6dG9rZW4iXSwidHlwZSI6InJlZnJlc2gtdG9rZW4ifQ.4RdUk5ttHdDiymurlZ_f7Uy5Pas3Lq9w04BjKQKRiCE"
-`, os.Args[0])
-}
-
-func userNewRefreshTokenUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] user new-refresh-token -refresh-token STRING
-
-Get a new refresh token of User
-    -refresh-token STRING: 
-
-Example:
-    `+os.Args[0]+` user new-refresh-token --refresh-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODM2MDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJlZnJlc2g6dG9rZW4iXSwidHlwZSI6InJlZnJlc2gtdG9rZW4ifQ.4RdUk5ttHdDiymurlZ_f7Uy5Pas3Lq9w04BjKQKRiCE"
-`, os.Args[0])
-}
-
-func userInfoUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] user info -access-token STRING
-
-Get the user Info
-    -access-token STRING: 
-
-Example:
-    `+os.Args[0]+` user info --access-token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODM2MDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJlZnJlc2g6dG9rZW4iXSwidHlwZSI6InJlZnJlc2gtdG9rZW4ifQ.4RdUk5ttHdDiymurlZ_f7Uy5Pas3Lq9w04BjKQKRiCE"
 `, os.Args[0])
 }

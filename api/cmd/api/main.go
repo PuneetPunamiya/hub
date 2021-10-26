@@ -18,31 +18,32 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"os/signal"
 	"strings"
 	"sync"
 
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 	admin "github.com/tektoncd/hub/api/gen/admin"
-	auth "github.com/tektoncd/hub/api/gen/auth"
 	catalog "github.com/tektoncd/hub/api/gen/catalog"
 	category "github.com/tektoncd/hub/api/gen/category"
 	"github.com/tektoncd/hub/api/gen/log"
 	rating "github.com/tektoncd/hub/api/gen/rating"
 	resource "github.com/tektoncd/hub/api/gen/resource"
 	status "github.com/tektoncd/hub/api/gen/status"
-	user "github.com/tektoncd/hub/api/gen/user"
 	"github.com/tektoncd/hub/api/pkg/app"
+	auth "github.com/tektoncd/hub/api/pkg/auth"
 	"github.com/tektoncd/hub/api/pkg/db/initializer"
 	adminsvc "github.com/tektoncd/hub/api/pkg/service/admin"
-	authsvc "github.com/tektoncd/hub/api/pkg/service/auth"
 	catalogsvc "github.com/tektoncd/hub/api/pkg/service/catalog"
 	categorysvc "github.com/tektoncd/hub/api/pkg/service/category"
 	ratingsvc "github.com/tektoncd/hub/api/pkg/service/rating"
 	resourcesvc "github.com/tektoncd/hub/api/pkg/service/resource"
 	statussvc "github.com/tektoncd/hub/api/pkg/service/status"
-	usersvc "github.com/tektoncd/hub/api/pkg/service/user"
+	userSvc "github.com/tektoncd/hub/api/pkg/user"
 	v1catalog "github.com/tektoncd/hub/api/v1/gen/catalog"
 	v1resource "github.com/tektoncd/hub/api/v1/gen/resource"
 	v1catalogsvc "github.com/tektoncd/hub/api/v1/service/catalog"
@@ -86,7 +87,6 @@ func main() {
 	// Initialize the services.
 	var (
 		adminSvc      admin.Service
-		authSvc       auth.Service
 		catalogSvc    catalog.Service
 		v1catalogSvc  v1catalog.Service
 		categorySvc   category.Service
@@ -94,11 +94,9 @@ func main() {
 		resourceSvc   resource.Service
 		v1resourceSvc v1resource.Service
 		statusSvc     status.Service
-		userSvc       user.Service
 	)
 	{
 		adminSvc = adminsvc.New(api)
-		authSvc = authsvc.New(api)
 		catalogSvc = catalogsvc.New(api)
 		v1catalogSvc = v1catalogsvc.New(api)
 		categorySvc = categorysvc.New(api)
@@ -106,14 +104,12 @@ func main() {
 		resourceSvc = resourcesvc.New(api)
 		v1resourceSvc = v1resourcesvc.New(api)
 		statusSvc = statussvc.New(api)
-		userSvc = usersvc.New(api)
 	}
 
 	// Wrap the services in endpoints that can be invoked from other services
 	// potentially running in different processes.
 	var (
 		adminEndpoints      *admin.Endpoints
-		authEndpoints       *auth.Endpoints
 		catalogEndpoints    *catalog.Endpoints
 		v1catalogEndpoints  *v1catalog.Endpoints
 		categoryEndpoints   *category.Endpoints
@@ -121,11 +117,9 @@ func main() {
 		resourceEndpoints   *resource.Endpoints
 		v1resourceEndpoints *v1resource.Endpoints
 		statusEndpoints     *status.Endpoints
-		userEndpoints       *user.Endpoints
 	)
 	{
 		adminEndpoints = admin.NewEndpoints(adminSvc)
-		authEndpoints = auth.NewEndpoints(authSvc)
 		catalogEndpoints = catalog.NewEndpoints(catalogSvc)
 		v1catalogEndpoints = v1catalog.NewEndpoints(v1catalogSvc)
 		categoryEndpoints = category.NewEndpoints(categorySvc)
@@ -133,7 +127,6 @@ func main() {
 		resourceEndpoints = resource.NewEndpoints(resourceSvc)
 		v1resourceEndpoints = v1resource.NewEndpoints(v1resourceSvc)
 		statusEndpoints = status.NewEndpoints(statusSvc)
-		userEndpoints = user.NewEndpoints(userSvc)
 	}
 
 	// Create channel used by both the signal handler and server goroutines
@@ -176,7 +169,6 @@ func main() {
 			handleHTTPServer(
 				ctx, u,
 				adminEndpoints,
-				authEndpoints,
 				catalogEndpoints,
 				v1catalogEndpoints,
 				categoryEndpoints,
@@ -184,7 +176,6 @@ func main() {
 				resourceEndpoints,
 				v1resourceEndpoints,
 				statusEndpoints,
-				userEndpoints,
 				&wg, errc, api.Logger("http"), *dbgF,
 			)
 		}
@@ -192,6 +183,22 @@ func main() {
 	default:
 		fmt.Fprintf(os.Stderr, "invalid host argument: %q (valid hosts: localhost)\n", *hostF)
 	}
+
+	r := mux.NewRouter()
+
+	authPort := "4200"
+
+	auth.AuthProvider(r, api)
+	userSvc.User(r, api)
+	go func() {
+		// start the web server on port and accept requests
+		logger.Infof("AUTH server listening on port %q", authPort)
+		logger.Fatal(http.ListenAndServe(":"+authPort,
+			handlers.CORS(handlers.AllowedHeaders(
+				[]string{"Content-Type", "Authorization"}),
+				handlers.AllowedMethods([]string{"GET", "POST"}),
+				handlers.AllowedOrigins([]string{"*"}))(r)))
+	}()
 
 	// Wait for signal.
 	logger.Infof("exiting (%v)", <-errc)

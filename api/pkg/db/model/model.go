@@ -118,6 +118,8 @@ type (
 		Scopes               []*Scope `gorm:"many2many:user_scopes;"`
 		RefreshTokenChecksum string
 		AvatarURL            string
+		Code                 string
+		Email                string
 	}
 
 	Scope struct {
@@ -132,6 +134,30 @@ type (
 		Resource   Resource `gorm:"constraint:OnDelete:CASCADE;"`
 		ResourceID uint
 		Rating     uint `gorm:"not null;default:null"`
+	}
+
+	GitUser struct {
+		gorm.Model
+		Scopes               []*Scope `gorm:"many2many:git_user_scopes;"`
+		RefreshTokenChecksum string
+		Code                 string
+		Email                string
+		Accounts             []Account
+	}
+
+	Account struct {
+		gorm.Model
+		GitUserID uint
+		Username  string
+		Name      string
+		AvatarURL string
+		Type      UserType
+		Provider  string
+	}
+
+	GitUserScope struct {
+		GitUserID uint
+		ScopeID   uint
 	}
 
 	UserScope struct {
