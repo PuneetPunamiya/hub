@@ -43,6 +43,7 @@ func Migrate(api *app.APIBase) error {
 			addProviderColumnInCatalogsTable(log),
 			addOnDeleteConstraints(log),
 			addCodeColInUserTable(log),
+			addGitUsers(log),
 		},
 	)
 
