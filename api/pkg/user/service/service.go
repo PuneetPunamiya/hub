@@ -202,7 +202,7 @@ func (r *request) userScopes() ([]string, error) {
 
 	var userScopes []string = r.defaultScopes
 
-	q := r.db.Preload("Scopes").Where(&model.User{GithubLogin: r.user.GithubLogin})
+	q := r.db.Preload("Scopes").Where(&model.User{})
 
 	dbUser := &model.User{}
 	if err := q.Find(dbUser).Error; err != nil {

@@ -17,7 +17,6 @@ package initializer
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/tektoncd/hub/api/gen/log"
 	"github.com/tektoncd/hub/api/pkg/app"
@@ -72,7 +71,7 @@ func (i *Initializer) Run(ctx context.Context) (*model.Config, error) {
 		addCatalogs,
 		addUsers,
 		updateConfig,
-		addGitUsers,
+		addUsers,
 	); err != nil {
 		return nil, err
 	}
@@ -132,7 +131,7 @@ func addCatalogs(db *gorm.DB, log *log.Logger, data *app.Data) error {
 
 var counter uint
 
-func addGitUsers(db *gorm.DB, log *log.Logger, data *app.Data) error {
+func addUsers(db *gorm.DB, log *log.Logger, data *app.Data) error {
 
 	fmt.Println("------------------------------")
 	fmt.Println("data", data)
@@ -170,13 +169,13 @@ func addGitUsers(db *gorm.DB, log *log.Logger, data *app.Data) error {
 				// 	return err
 				// }
 				var users_last_value uint
-				if err := db.Table("git_users_id_seq").Pluck("last_value", &users_last_value).Error; err != nil {
+				if err := db.Table("users_id_seq").Pluck("last_value", &users_last_value).Error; err != nil {
 					log.Error(err)
 					return err
 				}
 
 				result := map[string]interface{}{}
-				db.Model(&model.GitUser{}).Last(&result)
+				db.Model(&model.User{}).Last(&result)
 
 				if result["id"] != nil && result["id"].(uint) != 1 {
 					counter = result["id"].(uint) + 1
@@ -186,14 +185,14 @@ func addGitUsers(db *gorm.DB, log *log.Logger, data *app.Data) error {
 					counter = users_last_value
 				}
 
-				gitUser := model.GitUser{}
+				gitUser := model.User{}
 				gitUser.ID = counter
 				if err = db.Create(&gitUser).Error; err != nil {
 					log.Error(err)
 					return err
 				}
 
-				account.GitUserID = gitUser.ID
+				account.UserID = gitUser.ID
 				account.Provider = "github"
 				if err = db.Create(&account).Error; err != nil {
 					log.Error(err)
@@ -207,53 +206,53 @@ func addGitUsers(db *gorm.DB, log *log.Logger, data *app.Data) error {
 	return nil
 }
 
-func addUsers(db *gorm.DB, log *log.Logger, data *app.Data) error {
+// func addUsers(db *gorm.DB, log *log.Logger, data *app.Data) error {
 
-	for _, s := range data.Scopes {
+// 	for _, s := range data.Scopes {
 
-		// Check if scopes exist or create it
-		q := db.Where(&model.Scope{Name: s.Name})
+// 		// Check if scopes exist or create it
+// 		q := db.Where(&model.Scope{Name: s.Name})
 
-		scope := model.Scope{}
-		if err := q.FirstOrCreate(&scope).Error; err != nil {
-			log.Error(err)
-			return err
-		}
+// 		scope := model.Scope{}
+// 		if err := q.FirstOrCreate(&scope).Error; err != nil {
+// 			log.Error(err)
+// 			return err
+// 		}
 
-		for _, userID := range s.Users {
+// 		for _, userID := range s.Users {
 
-			// Checks if user exists
-			q := db.Where("LOWER(github_login) = ?", strings.ToLower(userID))
+// 			// Checks if user exists
+// 			q := db.Where("LOWER(github_login) = ?", strings.ToLower(userID))
 
-			user := model.User{}
-			if err := q.First(&user).Error; err != nil {
-				// If user not found then create a new record
-				if err != gorm.ErrRecordNotFound {
-					log.Error(err)
-					return err
-				}
+// 			user := model.User{}
+// 			if err := q.First(&user).Error; err != nil {
+// 				// If user not found then create a new record
+// 				if err != gorm.ErrRecordNotFound {
+// 					log.Error(err)
+// 					return err
+// 				}
 
-				log.Infof("user %s not found, create a new user", userID)
-				user.GithubLogin = strings.ToLower(userID)
-				if err = db.Create(&user).Error; err != nil {
-					log.Error(err)
-					return err
-				}
-			}
+// 				log.Infof("user %s not found, create a new user", userID)
+// 				user.Accounts[0].Username = strings.ToLower(userID)
+// 				if err = db.Create(&user).Error; err != nil {
+// 					log.Error(err)
+// 					return err
+// 				}
+// 			}
 
-			// Add scopes for user if not added already
-			us := model.UserScope{UserID: user.ID, ScopeID: scope.ID}
-			q = db.Model(&model.UserScope{}).Where(&us)
+// 			// Add scopes for user if not added already
+// 			us := model.UserScope{UserID: user.ID, ScopeID: scope.ID}
+// 			q = db.Model(&model.UserScope{}).Where(&us)
 
-			if err := q.FirstOrCreate(&us).Error; err != nil {
-				log.Error(err)
-				return err
-			}
-		}
+// 			if err := q.FirstOrCreate(&us).Error; err != nil {
+// 				log.Error(err)
+// 				return err
+// 			}
+// 		}
 
-	}
-	return nil
-}
+// 	}
+// 	return nil
+// }
 
 func withTransaction(db *gorm.DB, log *log.Logger, data *app.Data, fns ...initFn) error {
 	txn := db.Begin()

@@ -59,7 +59,8 @@ func AuthProvider(r *mux.Router, api app.Config) {
 			githubAuth.AuthUrl,
 			githubAuth.TokenUrl,
 			githubAuth.ProfileUrl,
-			githubAuth.EmailUrl),
+			githubAuth.EmailUrl,
+			"user"),
 
 		gitlab.NewCustomisedURL(
 			gitlabAuth.ClientId,

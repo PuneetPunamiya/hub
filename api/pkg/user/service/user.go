@@ -30,10 +30,10 @@ import (
 )
 
 type request struct {
-	db            *gorm.DB
-	log           *log.Logger
-	user          *model.User
-	gitUser       *model.GitUser
+	db   *gorm.DB
+	log  *log.Logger
+	user *model.User
+	// gitUser       *model.User
 	defaultScopes []string
 	jwtConfig     *app.JWTConfig
 }

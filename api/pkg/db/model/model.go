@@ -109,17 +109,32 @@ type (
 		CategoryID uint
 	}
 
+	// UserPrev struct {
+	// 	gorm.Model
+	// 	AgentName            string
+	// 	GithubLogin          string
+	// 	GithubName           string
+	// 	Type                 UserType
+	// 	Scopes               []*Scope `gorm:"many2many:user_scopes;"`
+	// 	RefreshTokenChecksum string
+	// 	AvatarURL            string
+	// 	Code                 string
+	// 	Email                string
+	// 	Accounts             []Account `gorm:"constraint:OnDelete:CASCADE;"`
+	// }
+
 	User struct {
-		gorm.Model
-		AgentName            string
-		GithubLogin          string
-		GithubName           string
-		Type                 UserType
-		Scopes               []*Scope `gorm:"many2many:user_scopes;"`
-		RefreshTokenChecksum string
-		AvatarURL            string
-		Code                 string
-		Email                string
+		gorm.Model // 1
+		AgentName  string
+		// GithubLogin          string   // 2
+		// GithubName           string   // 2
+		Type                 UserType // 2
+		Scopes               []*Scope `gorm:"many2many:user_scopes;"` // 1
+		RefreshTokenChecksum string   // 1
+		// AvatarURL            string   // 2
+		Code     string    // 1
+		Email    string    // 1
+		Accounts []Account `gorm:"constraint:OnDelete:CASCADE;"` // 1
 	}
 
 	Scope struct {
@@ -136,29 +151,28 @@ type (
 		Rating     uint `gorm:"not null;default:null"`
 	}
 
-	GitUser struct {
-		gorm.Model
-		Scopes               []*Scope `gorm:"many2many:git_user_scopes;"`
-		RefreshTokenChecksum string
-		Code                 string
-		Email                string
-		Accounts             []Account
-	}
+	// GitUser struct { //1
+	// 	gorm.Model
+	// 	Scopes               []*Scope `gorm:"many2many:git_user_scopes;"`
+	// 	RefreshTokenChecksum string
+	// 	Code                 string
+	// 	Email                string
+	// 	Accounts             []Account
+	// }
 
-	Account struct {
+	Account struct { //2
 		gorm.Model
-		GitUserID uint
+		UserID    uint
 		Username  string
 		Name      string
 		AvatarURL string
-		Type      UserType
 		Provider  string
 	}
 
-	GitUserScope struct {
-		GitUserID uint
-		ScopeID   uint
-	}
+	// GitUserScope struct {
+	// 	GitUserID uint
+	// 	ScopeID   uint
+	// }
 
 	UserScope struct {
 		UserID  uint

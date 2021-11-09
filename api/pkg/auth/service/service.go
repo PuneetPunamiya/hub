@@ -32,8 +32,8 @@ func (r *request) userScopes(user *model.Account) ([]string, error) {
 	// q := r.db.Preload("Scopes").Where(&model.User{GithubLogin: user.GithubLogin})
 	q := r.db.Preload("Scopes").Where(&model.Account{Username: user.Username})
 
-	dbUser := model.GitUser{}
-	if err := q.Model(&dbUser).Joins("JOINS accounts ON accounts.git_user_id = git_users.id").Where("accounts.username = ?", user.Username).Error; err != nil {
+	dbUser := model.User{}
+	if err := q.Model(&dbUser).Joins("JOINS accounts ON accounts.user_id = users.id").Where("accounts.username = ?", user.Username).Error; err != nil {
 		r.log.Error(err)
 		return nil, err
 	}
@@ -45,10 +45,10 @@ func (r *request) userScopes(user *model.Account) ([]string, error) {
 	return userScopes, nil
 }
 
-func (r *request) createTokens(user *model.GitUser, scopes []string) (*app.AuthenticateResult, error) {
+func (r *request) createTokens(user *model.User, scopes []string) (*app.AuthenticateResult, error) {
 
 	req := token.Request{
-		GitUser:   user,
+		User:      user,
 		Scopes:    scopes,
 		JWTConfig: r.jwtConfig,
 	}
@@ -95,13 +95,13 @@ func createChecksum(token string) string {
 
 func (r *request) insertData(ghUser goth.User, code, provider string) error {
 
-	q := r.db.Model(&model.GitUser{}).
+	q := r.db.Model(&model.User{}).
 		Where("email = ?", ghUser.Email)
 
 	// Check if user exist
 
 	var acc model.Account
-	var user model.GitUser
+	var user model.User
 	err := q.First(&user).Error
 	if err != nil {
 
@@ -113,15 +113,15 @@ func (r *request) insertData(ghUser goth.User, code, provider string) error {
 
 			acc.Name = ghUser.Name
 			acc.Username = ghUser.NickName
-			acc.Type = model.NormalUserType
 			acc.AvatarURL = ghUser.AvatarURL
 			acc.Provider = provider
 
 			user.Code = code
 			user.Email = ghUser.Email
+			user.Type = model.NormalUserType
 
 			result := map[string]interface{}{}
-			r.db.Model(&model.GitUser{}).Last(&result)
+			r.db.Model(&model.User{}).Last(&result)
 			user.ID = result["id"].(uint) + 1
 
 			err = r.db.Create(&user).Error
@@ -130,18 +130,18 @@ func (r *request) insertData(ghUser goth.User, code, provider string) error {
 				return err
 			}
 
-			acc.GitUserID = user.ID
+			acc.UserID = user.ID
 			if err = r.db.Create(&acc).Error; err != nil {
 				r.log.Error(err)
 				return err
 			}
 		} else {
-			if err := r.db.Model(&model.GitUser{}).Where("id = ?", acc.GitUserID).Updates(model.GitUser{Code: code, Email: ghUser.Email}).Error; err != nil {
+			if err := r.db.Model(&model.User{}).Where("id = ?", acc.UserID).Updates(model.User{Code: code, Email: ghUser.Email}).Error; err != nil {
 				r.log.Error(err)
 				return err
 			}
 
-			if err := r.db.Model(&model.Account{}).Where("id = ?", acc.GitUserID).Updates(model.Account{AvatarURL: ghUser.AvatarURL}).Error; err != nil {
+			if err := r.db.Model(&model.Account{}).Where("id = ?", acc.UserID).Updates(model.Account{AvatarURL: ghUser.AvatarURL}).Error; err != nil {
 				r.log.Error(err)
 				return err
 			}
@@ -152,22 +152,21 @@ func (r *request) insertData(ghUser goth.User, code, provider string) error {
 		// r.db.Model(&model.GitUser{}).First(&result).Where("email = ?", ghUser.Email)
 
 		// This checks is when user logins with different git provider
-		q := r.db.Model(&model.Account{}).Where("email = ?", ghUser.Email)
+		q := r.db.Model(&model.User{}).Where("email = ?", ghUser.Email)
 		err = q.First(&result).Error
 		if err == nil {
 			user.ID = result["id"].(uint)
 		}
 
-		s := r.db.Model(&model.Account{}).Where("git_user_id = ?", user.ID).Where("provider = ?", provider)
+		s := r.db.Model(&model.Account{}).Where("user_id = ?", user.ID).Where("provider = ?", provider)
 		err = s.First(&acc).Error
 
 		if err == gorm.ErrRecordNotFound {
 			acc.Name = ghUser.Name
 			acc.Username = ghUser.NickName
-			acc.Type = model.NormalUserType
 			acc.AvatarURL = ghUser.AvatarURL
 			acc.Provider = provider
-			acc.GitUserID = user.ID
+			acc.UserID = user.ID
 
 			if err = r.db.Create(&acc).Error; err != nil {
 				r.log.Error(err)
@@ -175,7 +174,11 @@ func (r *request) insertData(ghUser goth.User, code, provider string) error {
 			}
 		}
 
-		if err := r.db.Model(&model.GitUser{}).Where("email = ?", ghUser.Email).Update("code", code).Error; err != nil {
+		if err := r.db.Model(&model.User{}).Where("email = ?", ghUser.Email).Update("code", code).Error; err != nil {
+			r.log.Error(err)
+			return err
+		}
+		if err := r.db.Model(&model.Account{}).Where("user_id = ?", user.ID).Update("avatar_url", ghUser.AvatarURL).Error; err != nil {
 			r.log.Error(err)
 			return err
 		}

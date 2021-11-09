@@ -62,7 +62,7 @@ func Migrate(api *app.APIBase) error {
 			&model.Platform{},
 			&model.VersionPlatform{},
 			&model.ResourcePlatform{},
-			&model.GitUser{},
+			// &model.GitUser{},
 			&model.Account{},
 		); err != nil {
 			log.Error(err)

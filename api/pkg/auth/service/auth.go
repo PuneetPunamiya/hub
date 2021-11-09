@@ -138,13 +138,13 @@ func (s *service) HubAuthenticate(res http.ResponseWriter, req *http.Request) {
 		jwtConfig:     s.api.JWTConfig(),
 	}
 
-	var user model.User
-	var gitUser model.GitUser
+	// var user model.User
+	var gitUser model.User
 	// Check if user exist
 	// q := r.db.Model(&model.User{}).
 	// 	Where("code = ?", code)
 
-	q := r.db.Model(&model.GitUser{}).
+	q := r.db.Model(&model.User{}).
 		Where("code = ?", code)
 
 	err := q.First(&gitUser).Error
@@ -161,14 +161,14 @@ func (s *service) HubAuthenticate(res http.ResponseWriter, req *http.Request) {
 	// 	return
 	// }
 
-	if err := r.db.Model(&model.GitUser{}).Where("email = ?", user.Email).Update("code", "").Error; err != nil {
+	if err := r.db.Model(&model.User{}).Where("email = ?", gitUser.Email).Update("code", "").Error; err != nil {
 		r.log.Error(err)
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	var acc model.Account
-	d := r.db.Model(&model.Account{}).Where("git_user_id", gitUser.ID)
+	d := r.db.Model(&model.Account{}).Where("user_id", gitUser.ID)
 
 	err = d.First(&acc).Error
 	if err != nil {
