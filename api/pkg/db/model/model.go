@@ -109,19 +109,19 @@ type (
 		CategoryID uint
 	}
 
-	// UserPrev struct {
-	// 	gorm.Model
-	// 	AgentName            string
-	// 	GithubLogin          string
-	// 	GithubName           string
-	// 	Type                 UserType
-	// 	Scopes               []*Scope `gorm:"many2many:user_scopes;"`
-	// 	RefreshTokenChecksum string
-	// 	AvatarURL            string
-	// 	Code                 string
-	// 	Email                string
-	// 	Accounts             []Account `gorm:"constraint:OnDelete:CASCADE;"`
-	// }
+	UserPrev struct {
+		gorm.Model
+		AgentName            string
+		GithubLogin          string
+		GithubName           string
+		Type                 UserType
+		Scopes               []*Scope `gorm:"many2many:user_scopes;"`
+		RefreshTokenChecksum string
+		AvatarURL            string
+		Code                 string
+		Email                string
+		// Accounts             []Account `gorm:"constraint:OnDelete:CASCADE;"`
+	}
 
 	User struct {
 		gorm.Model // 1

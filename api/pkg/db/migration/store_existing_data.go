@@ -1,91 +1,60 @@
 package migration
 
 import (
-	"fmt"
-
 	"github.com/go-gormigrate/gormigrate/v2"
 	"github.com/tektoncd/hub/api/gen/log"
 	"github.com/tektoncd/hub/api/pkg/db/model"
 	"gorm.io/gorm"
 )
 
-func addGitUsers(log *log.Logger) *gormigrate.Migration {
+func addUsersDetailsInAccountTable(log *log.Logger) *gormigrate.Migration {
 
 	return &gormigrate.Migration{
 		ID: "202103111249_add_git_user",
 		Migrate: func(db *gorm.DB) error {
-			// if err := db.AutoMigrate(&model.Config{}); err != nil {
-			// 	log.Error(err)
-			// 	return err
-			// }
 
 			// Get all users from user table
-			var user []model.User
-			if err := db.Find(&user).Error; err != nil {
-				fmt.Println("Bhai chal jaaa")
+			if err := db.Exec("CREATE TABLE user_prevs AS	SELECT * FROM users;").Error; err != nil {
 				log.Error(err)
 				return err
 			}
 
-			fmt.Println("---------------------------------")
-			fmt.Println(user)
-			fmt.Println("---------------------------------")
+			var users []model.UserPrev
+			if err := db.Find(&users).Error; err != nil {
+				log.Error(err)
+				return err
+			}
 
-			// if err := db.Migrator().DropTable(
-			// 	&model.Account{},
-			// 	&model.GitUser{},
-			// ); err != nil {
-			// 	log.Error(err)
-			// 	return err
-			// }
+			// Update the user table based on the model
+			db.Migrator().DropColumn(model.User{}, "github_login")
 
+			db.Migrator().DropColumn(model.User{}, "github_name")
+
+			db.Migrator().DropColumn(model.User{}, "avatar_url")
+
+			// Create the account table
 			if err := db.AutoMigrate(
-				&model.User{},
 				&model.Account{},
 			); err != nil {
 				log.Error(err)
 				return err
 			}
 
-			// var users_last_value uint
-			// if err := db.Table("users_id_seq").Pluck("last_value", &users_last_value).Error; err != nil {
-			// 	log.Error(err)
-			// 	return err
-			// }
-
-			// gitUser := make([]model.GitUser, 0, 8)
-			// account := make([]model.Account, 0, 7)
-
-			for i := range user {
-
-				fmt.Println("--------------works till here------------------------------")
-				fmt.Println(i, user[i].ID)
-				fmt.Println("--------------works till here------------------------------")
-				// fmt.Println(gitUser[i])
-				// fmt.Println("--------------works till here------------------------------")
-				// fmt.Println(len(gitUser))
-
-				// gitUser[i].ID = user[i].ID
-				// gitUser[i].RefreshTokenChecksum = user[i].RefreshTokenChecksum
-
-				// account[i].GitUserID = user[i].ID
-				// account[i].Username = user[i].GithubLogin
-				// account[i].Name = user[i].GithubName
+			var accounts []model.Account
+			for _, user := range users {
+				account := model.Account{
+					UserID:   user.ID,
+					Username: user.GithubLogin,
+					Name:     user.GithubName,
+				}
+				accounts = append(accounts, account)
 			}
 
-			// if err := db.Create(
-			// 	&gitUser,
-			// ).Error; err != nil {
-			// 	log.Error(err)
-			// 	return err
-			// }
-
-			// if err := db.Create(
-			// 	&account,
-			// ).Error; err != nil {
-			// 	log.Error(err)
-			// 	return err
-			// }
+			// Add user details in account table
+			if err := db.Create(&accounts).Error; err != nil {
+				log.Error(err)
+				return err
+			}
 
 			return nil
 		},
