@@ -10,6 +10,24 @@ api-check: goa-gen api-test generated api-lint ## all API checks
 .PHONY: ui-check
 ui-check: ui-test ui-lint ## all UI checks
 
+.PHONY: db-release ## creates release manifest for db
+db-release: db
+
+.PHONY: db-migration-release ## creates release manifest for db-migration
+db-migration-release: db-migration
+
+.PHONY: api-k8s ## creates release manifest for api specific to k8s
+api-release: api
+
+.PHONY: api-openshift ## creates release manifest for api specific to openshift
+api-openshift: api
+
+.PHONY: ui-k8s ## creates release manifest for ui specific to k8s
+ui-k8s: ui
+
+.PHONY: ui-openshift ## creates release manifest for ui specific to openshift
+ui-openshift: ui
+
 .PHONY: goa-gen
 goa-gen: ## generate API Design
 	@echo "----------------------------"
@@ -81,6 +99,36 @@ yaml-lint: ## run YAML Lint
 	@echo "-- Running Yaml-lint... --"
 	@echo "----------------------------"
 	yamllint -c .yamllint ./config.yaml ./config
+
+.PHONY: db
+db:
+	mkdir -p releases && cd config && ko resolve -f 00-init  > ../releases/db.yaml
+	@echo "-----------------------------------------"
+
+.PHONY: db-migration
+db-migration:
+	mkdir -p releases && cd config && ko resolve -f 01-db  > ../releases/db-migration.yaml
+	@echo "----------------------------"
+
+.PHONY: api-k8s
+api-k8s:
+	mkdir -p releases && cd config && ko resolve -f 02-api  > ../releases/api-k8s.yaml
+	@echo "-----------------------------------------"
+
+.PHONY: api-openshift
+api-openshift:
+	mkdir -p releases && cd config && ko resolve -f 02-api -f 04-openshift/40-api-route.yaml > ../releases/api-openshift.yaml
+	@echo "-----------------------------------------"
+
+.PHONY: ui-k8s
+ui-k8s:
+	mkdir -p releases && cd config && ko resolve -f 03-ui -f 04-kubernetes/42-ui-ingress.yaml > ../releases/ui-k8s.yaml
+	@echo "-----------------------------------------"
+
+.PHONY: ui-openshift
+ui-openshift:
+	mkdir -p releases && cd config && ko resolve -f 03-ui -f 04-openshift/41-ui-route.yaml > ../releases/ui-openshift.yaml
+	@echo "-----------------------------------------"
 
 .PHONY: help
 help: ## print this help
