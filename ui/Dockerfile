@@ -1,18 +1,19 @@
-FROM node:16-alpine3.14 as BUILD
-WORKDIR /app
+FROM registry.access.redhat.com/ubi8/nodejs-16:1-8 as BUILD
 
+WORKDIR /opt/app-root/src
+
+USER root
 # install deps and the copy the src to speed up docker build
-COPY package-lock.json package.json /app/
+COPY package-lock.json package.json tsconfig.json /opt/app-root/src/
 RUN npm install
 
-COPY tsconfig.json /app/
-COPY public /app/public/
-COPY src /app/src/
+COPY public /opt/app-root/src/public/
+COPY src /opt/app-root/src/src/
 RUN npm run build
 
 # Stage 2 - the production environment
-FROM nginxinc/nginx-unprivileged
-COPY --from=BUILD /app/build /usr/share/nginx/html
+FROM registry.access.redhat.com/ubi8/nginx-120:1-7
+COPY --from=BUILD /opt/app-root/src/build /usr/share/nginx/html
 COPY image/start.sh /usr/bin/
 
 USER root
@@ -23,6 +24,6 @@ USER nginx
 
 EXPOSE 8080
 
-COPY image/nginx.conf /etc/nginx/conf.d/default.conf
+COPY image/nginx.conf "${NGINX_CONFIGURATION_PATH}"
 
 CMD /usr/bin/start.sh
