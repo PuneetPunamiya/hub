@@ -43,6 +43,7 @@ type ResourceResult struct {
 	set                     bool
 	resourceData            *ResourceData
 	resourceWithVersionData *ResourceWithVersionData
+	ResourceContent         *ResourceContent
 }
 
 type ResourceVersionOptions struct {
@@ -60,13 +61,31 @@ type resVersionResponse = rclient.ByCatalogKindNameVersionResponseBody
 // ResourceData is the response of API when finding a resource
 type ResourceData = rclient.ResourceDataResponseBody
 
+type ResourceContent = rclient.ResourceContentResponseBody
+
 // ResourceWithVersionData is the response of API when finding a resource
 // with a specific version
 type ResourceWithVersionData = rclient.ResourceVersionDataResponseBody
 
+type resourceYaml = rclient.ByCatalogKindNameVersionYamlResponseBody
+
 // GetResource queries the data using Hub Endpoint
 func (c *client) GetResource(opt ResourceOption) ResourceResult {
 	data, status, err := c.Get(opt.Endpoint())
+
+	return ResourceResult{
+		data:    data,
+		version: opt.Version,
+		status:  status,
+		err:     err,
+		set:     false,
+	}
+}
+
+// GetResource queries the data using Hub Endpoint
+func (c *client) GetResourceYaml(opt ResourceOption) ResourceResult {
+
+	data, status, err := c.Get(fmt.Sprintf("/v1/resource/%s/%s/%s/%s/yaml", opt.Catalog, opt.Kind, opt.Name, opt.Version))
 
 	return ResourceResult{
 		data:    data,
@@ -111,6 +130,7 @@ func (rr *ResourceResult) unmarshalData() error {
 			return err
 		}
 		rr.resourceData = res.Data
+
 		rr.set = true
 		return nil
 	}
@@ -167,6 +187,20 @@ func (rr *ResourceResult) Resource() (interface{}, error) {
 		return *rr.resourceWithVersionData, nil
 	}
 	return *rr.resourceData, nil
+}
+
+// Resource returns the resource found
+func (rr *ResourceResult) ResourceYaml() (string, error) {
+
+	res := resourceYaml{}
+	if err := json.Unmarshal(rr.data, &res); err != nil {
+		return "", err
+	}
+	rr.ResourceContent = res.Data
+
+	rr.set = true
+
+	return *rr.ResourceContent.Yaml, nil
 }
 
 // ResourceVersion returns the resource version found
