@@ -27,7 +27,7 @@ import (
 
 const (
 	// hubURL - Hub API Server URL
-	hubURL        = "https://api.hub.tekton.dev"
+	hubURL        = "https://api-tekton-hub.apps.openshift-web.p0s5.p1.openshiftapps.com"
 	hubConfigPath = ".tekton/hub-config"
 )
 

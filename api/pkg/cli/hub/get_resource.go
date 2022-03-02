@@ -37,6 +37,7 @@ type ResourceOption struct {
 // ResourceResult defines API response
 type ResourceResult struct {
 	data                    []byte
+	yaml                    []byte
 	status                  int
 	err                     error
 	version                 string
@@ -85,10 +86,12 @@ func (c *client) GetResource(opt ResourceOption) ResourceResult {
 // GetResource queries the data using Hub Endpoint
 func (c *client) GetResourceYaml(opt ResourceOption) ResourceResult {
 
-	data, status, err := c.Get(fmt.Sprintf("/v1/resource/%s/%s/%s/%s/yaml", opt.Catalog, opt.Kind, opt.Name, opt.Version))
+	yaml, status, err := c.Get(fmt.Sprintf("/v1/resource/%s/%s/%s/%s/yaml", opt.Catalog, opt.Kind, opt.Name, opt.Version))
+	data, status, err := c.Get(opt.Endpoint())
 
 	return ResourceResult{
 		data:    data,
+		yaml:    yaml,
 		version: opt.Version,
 		status:  status,
 		err:     err,
@@ -112,6 +115,7 @@ func (opt ResourceOption) Endpoint() string {
 }
 
 func (rr *ResourceResult) unmarshalData() error {
+	fmt.Println("Version", rr.version)
 	if rr.err != nil {
 		return rr.err
 	}
@@ -135,6 +139,7 @@ func (rr *ResourceResult) unmarshalData() error {
 		return nil
 	}
 
+	fmt.Println("yaha aa araha hai")
 	// API Response when a specific version is mentioned
 	res := resVersionResponse{}
 	if err := json.Unmarshal(rr.data, &res); err != nil {
@@ -193,7 +198,7 @@ func (rr *ResourceResult) Resource() (interface{}, error) {
 func (rr *ResourceResult) ResourceYaml() (string, error) {
 
 	res := resourceYaml{}
-	if err := json.Unmarshal(rr.data, &res); err != nil {
+	if err := json.Unmarshal(rr.yaml, &res); err != nil {
 		return "", err
 	}
 	rr.ResourceContent = res.Data
