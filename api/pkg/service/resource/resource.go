@@ -23,7 +23,6 @@ import (
 	"github.com/tektoncd/hub/api/gen/resource"
 	"github.com/tektoncd/hub/api/pkg/app"
 	"github.com/tektoncd/hub/api/pkg/db/model"
-	res "github.com/tektoncd/hub/api/pkg/shared/resource"
 )
 
 type service struct {
@@ -54,32 +53,9 @@ func (s *service) List(ctx context.Context) (*resource.Resources, error) {
 }
 
 // VersionsByID returns all versions of a resource given its resource id
-func (s *service) VersionsByID(ctx context.Context, p *resource.VersionsByIDPayload) (*resource.ResourceVersions, error) {
+func (s *service) VersionsByID(ctx context.Context, p *resource.VersionsByIDPayload) (*resource.VersionsByIDResult, error) {
 
-	req := res.Request{
-		Db:  s.DB(ctx),
-		Log: s.Logger(ctx),
-		ID:  p.ID,
-	}
-
-	versions, err := req.AllVersions()
-	if err != nil {
-		if err == res.FetchError {
-			return nil, resource.MakeInternalError(err)
-		}
-		if err == res.NotFoundError {
-			return nil, resource.MakeNotFound(err)
-		}
-	}
-
-	var rv resource.Versions
-	rv.Versions = []*resource.ResourceVersionData{}
-	for _, r := range versions {
-		rv.Versions = append(rv.Versions, minVersionInfo(r))
-	}
-	rv.Latest = minVersionInfo(versions[len(versions)-1])
-
-	return &resource.ResourceVersions{Data: &rv}, nil
+	return &resource.VersionsByIDResult{Location: fmt.Sprintf("/v1/resource/%d/versions", p.ID)}, nil
 }
 
 func tinyVersionInfo(r model.ResourceVersion) *resource.ResourceVersionData {

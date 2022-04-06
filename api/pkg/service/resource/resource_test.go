@@ -15,36 +15,10 @@
 package resource
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tektoncd/hub/api/gen/resource"
-	"github.com/tektoncd/hub/api/pkg/testutils"
 )
-
-func TestVersionsByID(t *testing.T) {
-	tc := testutils.Setup(t)
-	testutils.LoadFixtures(t, tc.FixturePath())
-
-	resourceSvc := New(tc)
-	payload := &resource.VersionsByIDPayload{ID: 1}
-	res, err := resourceSvc.VersionsByID(context.Background(), payload)
-	assert.NoError(t, err)
-	assert.Equal(t, 3, len(res.Data.Versions))
-	assert.Equal(t, "0.2", res.Data.Latest.Version)
-}
-
-func TestVersionsByID_NotFoundError(t *testing.T) {
-	tc := testutils.Setup(t)
-	testutils.LoadFixtures(t, tc.FixturePath())
-
-	resourceSvc := New(tc)
-	payload := &resource.VersionsByIDPayload{ID: 11}
-	_, err := resourceSvc.VersionsByID(context.Background(), payload)
-	assert.Error(t, err)
-	assert.EqualError(t, err, "resource not found")
-}
 
 func TestCreationRawURLBitbucket(t *testing.T) {
 	url := "https://bitbucket.org/org/catalog/src/main/task/name/0.1/name.yaml"
