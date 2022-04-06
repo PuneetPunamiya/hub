@@ -103,3 +103,38 @@ func BuildByCatalogKindNameVersionReadmePayload(resourceByCatalogKindNameVersion
 
 	return v, nil
 }
+
+// BuildByCatalogKindNameVersionYamlPayload builds the payload for the resource
+// ByCatalogKindNameVersionYaml endpoint from CLI flags.
+func BuildByCatalogKindNameVersionYamlPayload(resourceByCatalogKindNameVersionYamlCatalog string, resourceByCatalogKindNameVersionYamlKind string, resourceByCatalogKindNameVersionYamlName string, resourceByCatalogKindNameVersionYamlVersion string) (*resource.ByCatalogKindNameVersionYamlPayload, error) {
+	var err error
+	var catalog string
+	{
+		catalog = resourceByCatalogKindNameVersionYamlCatalog
+	}
+	var kind string
+	{
+		kind = resourceByCatalogKindNameVersionYamlKind
+		if !(kind == "task" || kind == "pipeline") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("kind", kind, []interface{}{"task", "pipeline"}))
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+	var name string
+	{
+		name = resourceByCatalogKindNameVersionYamlName
+	}
+	var version string
+	{
+		version = resourceByCatalogKindNameVersionYamlVersion
+	}
+	v := &resource.ByCatalogKindNameVersionYamlPayload{}
+	v.Catalog = catalog
+	v.Kind = kind
+	v.Name = name
+	v.Version = version
+
+	return v, nil
+}

@@ -156,6 +156,15 @@ func NewByCatalogKindNameVersionReadmeResultFound(location string) *resource.ByC
 	return v
 }
 
+// NewByCatalogKindNameVersionYamlResultFound builds a "resource" service
+// "ByCatalogKindNameVersionYaml" endpoint result from a HTTP "Found" response.
+func NewByCatalogKindNameVersionYamlResultFound(location string) *resource.ByCatalogKindNameVersionYamlResult {
+	v := &resource.ByCatalogKindNameVersionYamlResult{}
+	v.Location = location
+
+	return v
+}
+
 // ValidateResourceDataCollectionResponseBody runs the validations defined on
 // ResourceDataCollectionResponseBody
 func ValidateResourceDataCollectionResponseBody(body ResourceDataCollectionResponseBody) (err error) {

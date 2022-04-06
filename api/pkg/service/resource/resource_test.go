@@ -45,3 +45,17 @@ func TestByCatalogKindNameVersionReadme(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, res.Location, "/v1/resource/catalog-official/task/tkn/0.1/readme")
 }
+
+func TestByCatalogKindNameVersionYaml(t *testing.T) {
+	os.Setenv("CLONE_BASE_PATH", "testdata/catalog")
+	defer os.Unsetenv("CLONE_BASE_PATH")
+
+	tc := testutils.Setup(t)
+	testutils.LoadFixtures(t, tc.FixturePath())
+
+	resourceSvc := New(tc)
+	payload := &resource.ByCatalogKindNameVersionYamlPayload{Catalog: "catalog-official", Kind: "task", Name: "tkn", Version: "0.1"}
+	res, err := resourceSvc.ByCatalogKindNameVersionYaml(context.Background(), payload)
+	assert.NoError(t, err)
+	assert.Equal(t, res.Location, "/v1/resource/catalog-official/task/tkn/0.1/yaml")
+}

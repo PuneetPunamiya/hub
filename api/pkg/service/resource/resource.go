@@ -50,3 +50,8 @@ func (s *service) ByCatalogKindNameVersion(ctx context.Context, p *resource.ByCa
 func (s *service) ByCatalogKindNameVersionReadme(ctx context.Context, p *resource.ByCatalogKindNameVersionReadmePayload) (res *resource.ByCatalogKindNameVersionReadmeResult, err error) {
 	return &resource.ByCatalogKindNameVersionReadmeResult{Location: fmt.Sprintf("/v1/resource/%s/%s/%s/%s/readme", p.Catalog, p.Kind, p.Name, p.Version)}, nil
 }
+
+// Find resource yaml using name of catalog & name, kind and version of resource
+func (s *service) ByCatalogKindNameVersionYaml(ctx context.Context, p *resource.ByCatalogKindNameVersionYamlPayload) (res *resource.ByCatalogKindNameVersionYamlResult, err error) {
+	return &resource.ByCatalogKindNameVersionYamlResult{Location: fmt.Sprintf("/v1/resource/%s/%s/%s/%s/yaml", p.Catalog, p.Kind, p.Name, p.Version)}, nil
+}

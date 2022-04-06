@@ -19,15 +19,17 @@ type Client struct {
 	VersionsByIDEndpoint                   goa.Endpoint
 	ByCatalogKindNameVersionEndpoint       goa.Endpoint
 	ByCatalogKindNameVersionReadmeEndpoint goa.Endpoint
+	ByCatalogKindNameVersionYamlEndpoint   goa.Endpoint
 }
 
 // NewClient initializes a "resource" service client given the endpoints.
-func NewClient(list, versionsByID, byCatalogKindNameVersion, byCatalogKindNameVersionReadme goa.Endpoint) *Client {
+func NewClient(list, versionsByID, byCatalogKindNameVersion, byCatalogKindNameVersionReadme, byCatalogKindNameVersionYaml goa.Endpoint) *Client {
 	return &Client{
 		ListEndpoint:                           list,
 		VersionsByIDEndpoint:                   versionsByID,
 		ByCatalogKindNameVersionEndpoint:       byCatalogKindNameVersion,
 		ByCatalogKindNameVersionReadmeEndpoint: byCatalogKindNameVersionReadme,
+		ByCatalogKindNameVersionYamlEndpoint:   byCatalogKindNameVersionYaml,
 	}
 }
 
@@ -71,4 +73,15 @@ func (c *Client) ByCatalogKindNameVersionReadme(ctx context.Context, p *ByCatalo
 		return
 	}
 	return ires.(*ByCatalogKindNameVersionReadmeResult), nil
+}
+
+// ByCatalogKindNameVersionYaml calls the "ByCatalogKindNameVersionYaml"
+// endpoint of the "resource" service.
+func (c *Client) ByCatalogKindNameVersionYaml(ctx context.Context, p *ByCatalogKindNameVersionYamlPayload) (res *ByCatalogKindNameVersionYamlResult, err error) {
+	var ires interface{}
+	ires, err = c.ByCatalogKindNameVersionYamlEndpoint(ctx, p)
+	if err != nil {
+		return
+	}
+	return ires.(*ByCatalogKindNameVersionYamlResult), nil
 }
