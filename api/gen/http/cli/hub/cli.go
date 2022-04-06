@@ -32,7 +32,7 @@ func UsageCommands() string {
 catalog (refresh|refresh-all|catalog-error)
 category list
 rating (get|update)
-resource (list|versions-by-id|by-catalog-kind-name-version|by-catalog-kind-name-version-readme|by-catalog-kind-name-version-yaml)
+resource (list|versions-by-id|by-catalog-kind-name-version|by-catalog-kind-name-version-readme|by-catalog-kind-name-version-yaml|by-version-id)
 status status
 `
 }
@@ -46,9 +46,9 @@ func UsageExamples() string {
          "agent:create"
       ]
    }' --token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4ODAzMDAsImlhdCI6MTU3Nzg4MDAwMCwiaWQiOjExLCJpc3MiOiJUZWt0b24gSHViIiwic2NvcGVzIjpbInJhdGluZzpyZWFkIiwicmF0aW5nOndyaXRlIiwiYWdlbnQ6Y3JlYXRlIl0sInR5cGUiOiJhY2Nlc3MtdG9rZW4ifQ.6pDmziSKkoSqI1f0rc4-AqVdcfY0Q8wA-tSLzdTCLgM"` + "\n" +
-		os.Args[0] + ` catalog refresh --catalog-name "tekton" --token "Quidem magni."` + "\n" +
+		os.Args[0] + ` catalog refresh --catalog-name "tekton" --token "Itaque et nostrum."` + "\n" +
 		os.Args[0] + ` category list` + "\n" +
-		os.Args[0] + ` rating get --id 5020310314104480935 --token "Amet eum."` + "\n" +
+		os.Args[0] + ` rating get --id 8441914113791270511 --token "Vitae voluptatem deleniti eum minus reiciendis nulla."` + "\n" +
 		os.Args[0] + ` resource list` + "\n" +
 		""
 }
@@ -125,6 +125,9 @@ func ParseEndpoint(
 		resourceByCatalogKindNameVersionYamlNameFlag    = resourceByCatalogKindNameVersionYamlFlags.String("name", "REQUIRED", "name of resource")
 		resourceByCatalogKindNameVersionYamlVersionFlag = resourceByCatalogKindNameVersionYamlFlags.String("version", "REQUIRED", "version of resource")
 
+		resourceByVersionIDFlags         = flag.NewFlagSet("by-version-id", flag.ExitOnError)
+		resourceByVersionIDVersionIDFlag = resourceByVersionIDFlags.String("version-id", "REQUIRED", "Version ID of a resource's version")
+
 		statusFlags = flag.NewFlagSet("status", flag.ContinueOnError)
 
 		statusStatusFlags = flag.NewFlagSet("status", flag.ExitOnError)
@@ -151,6 +154,7 @@ func ParseEndpoint(
 	resourceByCatalogKindNameVersionFlags.Usage = resourceByCatalogKindNameVersionUsage
 	resourceByCatalogKindNameVersionReadmeFlags.Usage = resourceByCatalogKindNameVersionReadmeUsage
 	resourceByCatalogKindNameVersionYamlFlags.Usage = resourceByCatalogKindNameVersionYamlUsage
+	resourceByVersionIDFlags.Usage = resourceByVersionIDUsage
 
 	statusFlags.Usage = statusUsage
 	statusStatusFlags.Usage = statusStatusUsage
@@ -254,6 +258,9 @@ func ParseEndpoint(
 			case "by-catalog-kind-name-version-yaml":
 				epf = resourceByCatalogKindNameVersionYamlFlags
 
+			case "by-version-id":
+				epf = resourceByVersionIDFlags
+
 			}
 
 		case "status":
@@ -341,6 +348,9 @@ func ParseEndpoint(
 			case "by-catalog-kind-name-version-yaml":
 				endpoint = c.ByCatalogKindNameVersionYaml()
 				data, err = resourcec.BuildByCatalogKindNameVersionYamlPayload(*resourceByCatalogKindNameVersionYamlCatalogFlag, *resourceByCatalogKindNameVersionYamlKindFlag, *resourceByCatalogKindNameVersionYamlNameFlag, *resourceByCatalogKindNameVersionYamlVersionFlag)
+			case "by-version-id":
+				endpoint = c.ByVersionID()
+				data, err = resourcec.BuildByVersionIDPayload(*resourceByVersionIDVersionIDFlag)
 			}
 		case "status":
 			c := statusc.NewClient(scheme, host, doer, enc, dec, restore)
@@ -424,7 +434,7 @@ Refresh a Catalog by it's name
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` catalog refresh --catalog-name "tekton" --token "Quidem magni."
+    `+os.Args[0]+` catalog refresh --catalog-name "tekton" --token "Itaque et nostrum."
 `, os.Args[0])
 }
 
@@ -435,7 +445,7 @@ Refresh all catalogs
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` catalog refresh-all --token "Nemo sint est omnis."
+    `+os.Args[0]+` catalog refresh-all --token "Vel quis nostrum et."
 `, os.Args[0])
 }
 
@@ -496,7 +506,7 @@ Find user's rating for a resource
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` rating get --id 5020310314104480935 --token "Amet eum."
+    `+os.Args[0]+` rating get --id 8441914113791270511 --token "Vitae voluptatem deleniti eum minus reiciendis nulla."
 `, os.Args[0])
 }
 
@@ -510,8 +520,8 @@ Update user's rating for a resource
 
 Example:
     `+os.Args[0]+` rating update --body '{
-      "rating": 2
-   }' --id 15037922521136997622 --token "Enim adipisci rerum ipsa."
+      "rating": 3
+   }' --id 4423747783498871485 --token "Aut accusamus et dignissimos."
 `, os.Args[0])
 }
 
@@ -527,6 +537,7 @@ COMMAND:
     by-catalog-kind-name-version: Find resource using name of catalog & name, kind and version of resource
     by-catalog-kind-name-version-readme: Find resource README using name of catalog & name, kind and version of resource
     by-catalog-kind-name-version-yaml: Find resource README using name of catalog & name, kind and version of resource
+    by-version-id: Find a resource using its version's id
 
 Additional help:
     %s resource COMMAND --help
@@ -563,7 +574,7 @@ Find resource using name of catalog & name, kind and version of resource
     -version STRING: version of resource
 
 Example:
-    `+os.Args[0]+` resource by-catalog-kind-name-version --catalog "tektoncd" --kind "task" --name "buildah" --version "0.1"
+    `+os.Args[0]+` resource by-catalog-kind-name-version --catalog "tektoncd" --kind "pipeline" --name "buildah" --version "0.1"
 `, os.Args[0])
 }
 
@@ -592,6 +603,17 @@ Find resource README using name of catalog & name, kind and version of resource
 
 Example:
     `+os.Args[0]+` resource by-catalog-kind-name-version-yaml --catalog "tektoncd" --kind "task" --name "buildah" --version "0.1"
+`, os.Args[0])
+}
+
+func resourceByVersionIDUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] resource by-version-id -version-id UINT
+
+Find a resource using its version's id
+    -version-id UINT: Version ID of a resource's version
+
+Example:
+    `+os.Args[0]+` resource by-version-id --version-id 1
 `, os.Args[0])
 }
 

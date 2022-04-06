@@ -28,6 +28,8 @@ type Service interface {
 	// Find resource README using name of catalog & name, kind and version of
 	// resource
 	ByCatalogKindNameVersionYaml(context.Context, *ByCatalogKindNameVersionYamlPayload) (res *ByCatalogKindNameVersionYamlResult, err error)
+	// Find a resource using its version's id
+	ByVersionID(context.Context, *ByVersionIDPayload) (res *ByVersionIDResult, err error)
 }
 
 // ServiceName is the name of the service as defined in the design. This is the
@@ -38,7 +40,7 @@ const ServiceName = "resource"
 // MethodNames lists the service method names as defined in the design. These
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
-var MethodNames = [5]string{"List", "VersionsByID", "ByCatalogKindNameVersion", "ByCatalogKindNameVersionReadme", "ByCatalogKindNameVersionYaml"}
+var MethodNames = [6]string{"List", "VersionsByID", "ByCatalogKindNameVersion", "ByCatalogKindNameVersionReadme", "ByCatalogKindNameVersionYaml", "ByVersionId"}
 
 // Resources is the result type of the resource service List method.
 type Resources struct {
@@ -115,6 +117,20 @@ type ByCatalogKindNameVersionYamlPayload struct {
 // ByCatalogKindNameVersionYamlResult is the result type of the resource
 // service ByCatalogKindNameVersionYaml method.
 type ByCatalogKindNameVersionYamlResult struct {
+	// Redirect URL
+	Location string
+}
+
+// ByVersionIDPayload is the payload type of the resource service ByVersionId
+// method.
+type ByVersionIDPayload struct {
+	// Version ID of a resource's version
+	VersionID uint
+}
+
+// ByVersionIDResult is the result type of the resource service ByVersionId
+// method.
+type ByVersionIDResult struct {
 	// Redirect URL
 	Location string
 }

@@ -59,3 +59,14 @@ func TestByCatalogKindNameVersionYaml(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, res.Location, "/v1/resource/catalog-official/task/tkn/0.1/yaml")
 }
+
+func TestByVersionID(t *testing.T) {
+	tc := testutils.Setup(t)
+	testutils.LoadFixtures(t, tc.FixturePath())
+
+	resourceSvc := New(tc)
+	payload := &resource.ByVersionIDPayload{VersionID: 6}
+	res, err := resourceSvc.ByVersionID(context.Background(), payload)
+	assert.NoError(t, err)
+	assert.Equal(t, res.Location, "/v1/resource/version/6")
+}

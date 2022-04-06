@@ -55,3 +55,8 @@ func (s *service) ByCatalogKindNameVersionReadme(ctx context.Context, p *resourc
 func (s *service) ByCatalogKindNameVersionYaml(ctx context.Context, p *resource.ByCatalogKindNameVersionYamlPayload) (res *resource.ByCatalogKindNameVersionYamlResult, err error) {
 	return &resource.ByCatalogKindNameVersionYamlResult{Location: fmt.Sprintf("/v1/resource/%s/%s/%s/%s/yaml", p.Catalog, p.Kind, p.Name, p.Version)}, nil
 }
+
+// Find a resource using its version's id
+func (s *service) ByVersionID(ctx context.Context, p *resource.ByVersionIDPayload) (*resource.ByVersionIDResult, error) {
+	return &resource.ByVersionIDResult{Location: fmt.Sprintf("/v1/resource/version/%d", p.VersionID)}, nil
+}
