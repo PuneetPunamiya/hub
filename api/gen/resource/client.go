@@ -15,17 +15,19 @@ import (
 
 // Client is the "resource" service client.
 type Client struct {
-	ListEndpoint                     goa.Endpoint
-	VersionsByIDEndpoint             goa.Endpoint
-	ByCatalogKindNameVersionEndpoint goa.Endpoint
+	ListEndpoint                           goa.Endpoint
+	VersionsByIDEndpoint                   goa.Endpoint
+	ByCatalogKindNameVersionEndpoint       goa.Endpoint
+	ByCatalogKindNameVersionReadmeEndpoint goa.Endpoint
 }
 
 // NewClient initializes a "resource" service client given the endpoints.
-func NewClient(list, versionsByID, byCatalogKindNameVersion goa.Endpoint) *Client {
+func NewClient(list, versionsByID, byCatalogKindNameVersion, byCatalogKindNameVersionReadme goa.Endpoint) *Client {
 	return &Client{
-		ListEndpoint:                     list,
-		VersionsByIDEndpoint:             versionsByID,
-		ByCatalogKindNameVersionEndpoint: byCatalogKindNameVersion,
+		ListEndpoint:                           list,
+		VersionsByIDEndpoint:                   versionsByID,
+		ByCatalogKindNameVersionEndpoint:       byCatalogKindNameVersion,
+		ByCatalogKindNameVersionReadmeEndpoint: byCatalogKindNameVersionReadme,
 	}
 }
 
@@ -58,4 +60,15 @@ func (c *Client) ByCatalogKindNameVersion(ctx context.Context, p *ByCatalogKindN
 		return
 	}
 	return ires.(*ByCatalogKindNameVersionResult), nil
+}
+
+// ByCatalogKindNameVersionReadme calls the "ByCatalogKindNameVersionReadme"
+// endpoint of the "resource" service.
+func (c *Client) ByCatalogKindNameVersionReadme(ctx context.Context, p *ByCatalogKindNameVersionReadmePayload) (res *ByCatalogKindNameVersionReadmeResult, err error) {
+	var ires interface{}
+	ires, err = c.ByCatalogKindNameVersionReadmeEndpoint(ctx, p)
+	if err != nil {
+		return
+	}
+	return ires.(*ByCatalogKindNameVersionReadmeResult), nil
 }

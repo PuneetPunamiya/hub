@@ -141,3 +141,15 @@ func NewByCatalogKindNameVersionPayload(catalog string, kind string, name string
 
 	return v
 }
+
+// NewByCatalogKindNameVersionReadmePayload builds a resource service
+// ByCatalogKindNameVersionReadme endpoint payload.
+func NewByCatalogKindNameVersionReadmePayload(catalog string, kind string, name string, version string) *resource.ByCatalogKindNameVersionReadmePayload {
+	v := &resource.ByCatalogKindNameVersionReadmePayload{}
+	v.Catalog = catalog
+	v.Kind = kind
+	v.Name = name
+	v.Version = version
+
+	return v
+}

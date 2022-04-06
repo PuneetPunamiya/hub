@@ -28,6 +28,10 @@ type Client struct {
 	// the ByCatalogKindNameVersion endpoint.
 	ByCatalogKindNameVersionDoer goahttp.Doer
 
+	// ByCatalogKindNameVersionReadme Doer is the HTTP client used to make requests
+	// to the ByCatalogKindNameVersionReadme endpoint.
+	ByCatalogKindNameVersionReadmeDoer goahttp.Doer
+
 	// CORS Doer is the HTTP client used to make requests to the  endpoint.
 	CORSDoer goahttp.Doer
 
@@ -51,15 +55,16 @@ func NewClient(
 	restoreBody bool,
 ) *Client {
 	return &Client{
-		ListDoer:                     doer,
-		VersionsByIDDoer:             doer,
-		ByCatalogKindNameVersionDoer: doer,
-		CORSDoer:                     doer,
-		RestoreResponseBody:          restoreBody,
-		scheme:                       scheme,
-		host:                         host,
-		decoder:                      dec,
-		encoder:                      enc,
+		ListDoer:                           doer,
+		VersionsByIDDoer:                   doer,
+		ByCatalogKindNameVersionDoer:       doer,
+		ByCatalogKindNameVersionReadmeDoer: doer,
+		CORSDoer:                           doer,
+		RestoreResponseBody:                restoreBody,
+		scheme:                             scheme,
+		host:                               host,
+		decoder:                            dec,
+		encoder:                            enc,
 	}
 }
 
@@ -115,6 +120,25 @@ func (c *Client) ByCatalogKindNameVersion() goa.Endpoint {
 		resp, err := c.ByCatalogKindNameVersionDoer.Do(req)
 		if err != nil {
 			return nil, goahttp.ErrRequestError("resource", "ByCatalogKindNameVersion", err)
+		}
+		return decodeResponse(resp)
+	}
+}
+
+// ByCatalogKindNameVersionReadme returns an endpoint that makes HTTP requests
+// to the resource service ByCatalogKindNameVersionReadme server.
+func (c *Client) ByCatalogKindNameVersionReadme() goa.Endpoint {
+	var (
+		decodeResponse = DecodeByCatalogKindNameVersionReadmeResponse(c.decoder, c.RestoreResponseBody)
+	)
+	return func(ctx context.Context, v interface{}) (interface{}, error) {
+		req, err := c.BuildByCatalogKindNameVersionReadmeRequest(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := c.ByCatalogKindNameVersionReadmeDoer.Do(req)
+		if err != nil {
+			return nil, goahttp.ErrRequestError("resource", "ByCatalogKindNameVersionReadme", err)
 		}
 		return decodeResponse(resp)
 	}

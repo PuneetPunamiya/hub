@@ -2,6 +2,7 @@ package resource
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -29,4 +30,18 @@ func TestByCatalogKindNameVersion(t *testing.T) {
 	res, err := resourceSvc.ByCatalogKindNameVersion(context.Background(), payload)
 	assert.NoError(t, err)
 	assert.Equal(t, res.Location, "/v1/resource/catalog-official/task/tkn/0.1")
+}
+
+func TestByCatalogKindNameVersionReadme(t *testing.T) {
+	os.Setenv("CLONE_BASE_PATH", "testdata/catalog")
+	defer os.Unsetenv("CLONE_BASE_PATH")
+
+	tc := testutils.Setup(t)
+	testutils.LoadFixtures(t, tc.FixturePath())
+
+	resourceSvc := New(tc)
+	payload := &resource.ByCatalogKindNameVersionReadmePayload{Catalog: "catalog-official", Kind: "task", Name: "tkn", Version: "0.1"}
+	res, err := resourceSvc.ByCatalogKindNameVersionReadme(context.Background(), payload)
+	assert.NoError(t, err)
+	assert.Equal(t, res.Location, "/v1/resource/catalog-official/task/tkn/0.1/readme")
 }

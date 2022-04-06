@@ -218,6 +218,81 @@ func DecodeByCatalogKindNameVersionResponse(decoder func(*http.Response) goahttp
 	}
 }
 
+// BuildByCatalogKindNameVersionReadmeRequest instantiates a HTTP request
+// object with method and path set to call the "resource" service
+// "ByCatalogKindNameVersionReadme" endpoint
+func (c *Client) BuildByCatalogKindNameVersionReadmeRequest(ctx context.Context, v interface{}) (*http.Request, error) {
+	var (
+		catalog string
+		kind    string
+		name    string
+		version string
+	)
+	{
+		p, ok := v.(*resource.ByCatalogKindNameVersionReadmePayload)
+		if !ok {
+			return nil, goahttp.ErrInvalidType("resource", "ByCatalogKindNameVersionReadme", "*resource.ByCatalogKindNameVersionReadmePayload", v)
+		}
+		catalog = p.Catalog
+		kind = p.Kind
+		name = p.Name
+		version = p.Version
+	}
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: ByCatalogKindNameVersionReadmeResourcePath(catalog, kind, name, version)}
+	req, err := http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("resource", "ByCatalogKindNameVersionReadme", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// DecodeByCatalogKindNameVersionReadmeResponse returns a decoder for responses
+// returned by the resource ByCatalogKindNameVersionReadme endpoint.
+// restoreBody controls whether the response body should be restored after
+// having been read.
+func DecodeByCatalogKindNameVersionReadmeResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
+	return func(resp *http.Response) (interface{}, error) {
+		if restoreBody {
+			b, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusFound:
+			var (
+				location string
+				err      error
+			)
+			locationRaw := resp.Header.Get("Location")
+			if locationRaw == "" {
+				err = goa.MergeErrors(err, goa.MissingFieldError("location", "header"))
+			}
+			location = locationRaw
+			err = goa.MergeErrors(err, goa.ValidateFormat("location", location, goa.FormatURI))
+
+			if err != nil {
+				return nil, goahttp.ErrValidationError("resource", "ByCatalogKindNameVersionReadme", err)
+			}
+			res := NewByCatalogKindNameVersionReadmeResultFound(location)
+			return res, nil
+		default:
+			body, _ := ioutil.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("resource", "ByCatalogKindNameVersionReadme", resp.StatusCode, string(body))
+		}
+	}
+}
+
 // unmarshalResourceDataResponseBodyToResourceviewsResourceDataView builds a
 // value of type *resourceviews.ResourceDataView from a value of type
 // *ResourceDataResponseBody.

@@ -15,17 +15,19 @@ import (
 
 // Endpoints wraps the "resource" service endpoints.
 type Endpoints struct {
-	List                     goa.Endpoint
-	VersionsByID             goa.Endpoint
-	ByCatalogKindNameVersion goa.Endpoint
+	List                           goa.Endpoint
+	VersionsByID                   goa.Endpoint
+	ByCatalogKindNameVersion       goa.Endpoint
+	ByCatalogKindNameVersionReadme goa.Endpoint
 }
 
 // NewEndpoints wraps the methods of the "resource" service with endpoints.
 func NewEndpoints(s Service) *Endpoints {
 	return &Endpoints{
-		List:                     NewListEndpoint(s),
-		VersionsByID:             NewVersionsByIDEndpoint(s),
-		ByCatalogKindNameVersion: NewByCatalogKindNameVersionEndpoint(s),
+		List:                           NewListEndpoint(s),
+		VersionsByID:                   NewVersionsByIDEndpoint(s),
+		ByCatalogKindNameVersion:       NewByCatalogKindNameVersionEndpoint(s),
+		ByCatalogKindNameVersionReadme: NewByCatalogKindNameVersionReadmeEndpoint(s),
 	}
 }
 
@@ -34,6 +36,7 @@ func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
 	e.List = m(e.List)
 	e.VersionsByID = m(e.VersionsByID)
 	e.ByCatalogKindNameVersion = m(e.ByCatalogKindNameVersion)
+	e.ByCatalogKindNameVersionReadme = m(e.ByCatalogKindNameVersionReadme)
 }
 
 // NewListEndpoint returns an endpoint function that calls the method "List" of
@@ -64,5 +67,14 @@ func NewByCatalogKindNameVersionEndpoint(s Service) goa.Endpoint {
 	return func(ctx context.Context, req interface{}) (interface{}, error) {
 		p := req.(*ByCatalogKindNameVersionPayload)
 		return s.ByCatalogKindNameVersion(ctx, p)
+	}
+}
+
+// NewByCatalogKindNameVersionReadmeEndpoint returns an endpoint function that
+// calls the method "ByCatalogKindNameVersionReadme" of service "resource".
+func NewByCatalogKindNameVersionReadmeEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		p := req.(*ByCatalogKindNameVersionReadmePayload)
+		return s.ByCatalogKindNameVersionReadme(ctx, p)
 	}
 }

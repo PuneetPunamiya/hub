@@ -96,4 +96,38 @@ var _ = Service("resource", func() {
 		})
 	})
 
+	Method("ByCatalogKindNameVersionReadme", func() {
+		Description("Find resource README using name of catalog & name, kind and version of resource")
+		Payload(func() {
+			Attribute("catalog", String, "name of catalog", func() {
+				Example("catalog", "tektoncd")
+			})
+			Attribute("kind", String, "kind of resource", func() {
+				Enum("task", "pipeline")
+			})
+			Attribute("name", String, "name of resource", func() {
+				Example("name", "buildah")
+			})
+			Attribute("version", String, "version of resource", func() {
+				Example("version", "0.1")
+			})
+
+			Required("catalog", "kind", "name", "version")
+		})
+		Result(func() {
+			Attribute("location", String, "Redirect URL", func() {
+				Format(FormatURI)
+			})
+			Required("location")
+		})
+
+		HTTP(func() {
+			GET("/resource/{catalog}/{kind}/{name}/{version}/readme")
+			Response(StatusFound, func() {
+				Header("location")
+			})
+
+		})
+	})
+
 })
