@@ -21,6 +21,7 @@ type Endpoints struct {
 	ByCatalogKindNameVersionReadme goa.Endpoint
 	ByCatalogKindNameVersionYaml   goa.Endpoint
 	ByVersionID                    goa.Endpoint
+	ByCatalogKindName              goa.Endpoint
 }
 
 // NewEndpoints wraps the methods of the "resource" service with endpoints.
@@ -32,6 +33,7 @@ func NewEndpoints(s Service) *Endpoints {
 		ByCatalogKindNameVersionReadme: NewByCatalogKindNameVersionReadmeEndpoint(s),
 		ByCatalogKindNameVersionYaml:   NewByCatalogKindNameVersionYamlEndpoint(s),
 		ByVersionID:                    NewByVersionIDEndpoint(s),
+		ByCatalogKindName:              NewByCatalogKindNameEndpoint(s),
 	}
 }
 
@@ -43,6 +45,7 @@ func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
 	e.ByCatalogKindNameVersionReadme = m(e.ByCatalogKindNameVersionReadme)
 	e.ByCatalogKindNameVersionYaml = m(e.ByCatalogKindNameVersionYaml)
 	e.ByVersionID = m(e.ByVersionID)
+	e.ByCatalogKindName = m(e.ByCatalogKindName)
 }
 
 // NewListEndpoint returns an endpoint function that calls the method "List" of
@@ -100,5 +103,14 @@ func NewByVersionIDEndpoint(s Service) goa.Endpoint {
 	return func(ctx context.Context, req interface{}) (interface{}, error) {
 		p := req.(*ByVersionIDPayload)
 		return s.ByVersionID(ctx, p)
+	}
+}
+
+// NewByCatalogKindNameEndpoint returns an endpoint function that calls the
+// method "ByCatalogKindName" of service "resource".
+func NewByCatalogKindNameEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		p := req.(*ByCatalogKindNamePayload)
+		return s.ByCatalogKindName(ctx, p)
 	}
 }

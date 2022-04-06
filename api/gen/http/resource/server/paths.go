@@ -40,3 +40,8 @@ func ByCatalogKindNameVersionYamlResourcePath(catalog string, kind string, name 
 func ByVersionIDResourcePath(versionID uint) string {
 	return fmt.Sprintf("/resource/version/%v", versionID)
 }
+
+// ByCatalogKindNameResourcePath returns the URL path to the resource service ByCatalogKindName HTTP endpoint.
+func ByCatalogKindNameResourcePath(catalog string, kind string, name string) string {
+	return fmt.Sprintf("/resource/%v/%v/%v", catalog, kind, name)
+}
