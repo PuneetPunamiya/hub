@@ -22,10 +22,11 @@ type Client struct {
 	ByCatalogKindNameVersionYamlEndpoint   goa.Endpoint
 	ByVersionIDEndpoint                    goa.Endpoint
 	ByCatalogKindNameEndpoint              goa.Endpoint
+	ByIDEndpoint                           goa.Endpoint
 }
 
 // NewClient initializes a "resource" service client given the endpoints.
-func NewClient(list, versionsByID, byCatalogKindNameVersion, byCatalogKindNameVersionReadme, byCatalogKindNameVersionYaml, byVersionID, byCatalogKindName goa.Endpoint) *Client {
+func NewClient(list, versionsByID, byCatalogKindNameVersion, byCatalogKindNameVersionReadme, byCatalogKindNameVersionYaml, byVersionID, byCatalogKindName, byID goa.Endpoint) *Client {
 	return &Client{
 		ListEndpoint:                           list,
 		VersionsByIDEndpoint:                   versionsByID,
@@ -34,6 +35,7 @@ func NewClient(list, versionsByID, byCatalogKindNameVersion, byCatalogKindNameVe
 		ByCatalogKindNameVersionYamlEndpoint:   byCatalogKindNameVersionYaml,
 		ByVersionIDEndpoint:                    byVersionID,
 		ByCatalogKindNameEndpoint:              byCatalogKindName,
+		ByIDEndpoint:                           byID,
 	}
 }
 
@@ -109,4 +111,14 @@ func (c *Client) ByCatalogKindName(ctx context.Context, p *ByCatalogKindNamePayl
 		return
 	}
 	return ires.(*ByCatalogKindNameResult), nil
+}
+
+// ByID calls the "ById" endpoint of the "resource" service.
+func (c *Client) ByID(ctx context.Context, p *ByIDPayload) (res *ByIDResult, err error) {
+	var ires interface{}
+	ires, err = c.ByIDEndpoint(ctx, p)
+	if err != nil {
+		return
+	}
+	return ires.(*ByIDResult), nil
 }
