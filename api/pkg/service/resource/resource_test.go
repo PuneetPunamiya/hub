@@ -10,7 +10,24 @@ import (
 	"github.com/tektoncd/hub/api/pkg/testutils"
 )
 
-func TestVersionsByID(t *testing.T) {
+func TestQueryBuilder(t *testing.T) {
+	res := queryBuilder("", "name", "hub")
+	assert.Equal(t, res, "name=hub")
+}
+
+func TestQuery_ByNameAndKind(t *testing.T) {
+	tc := testutils.Setup(t)
+	testutils.LoadFixtures(t, tc.FixturePath())
+
+	resourceSvc := New(tc)
+	payload := &resource.QueryPayload{Name: "build", Kinds: []string{"pipeline"}, Limit: 100}
+	query, err := resourceSvc.Query(context.Background(), payload)
+	assert.Equal(t, err, nil)
+	assert.Equal(t, "/v1/query?name=build&kinds=pipeline&limit=100", query.Location)
+
+}
+
+func TestVersionByID(t *testing.T) {
 	tc := testutils.Setup(t)
 	testutils.LoadFixtures(t, tc.FixturePath())
 

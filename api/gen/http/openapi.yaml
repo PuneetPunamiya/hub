@@ -153,6 +153,86 @@ paths:
             $ref: '#/definitions/CategoryListInternalErrorResponseBody'
       schemes:
       - https
+  /query:
+    get:
+      tags:
+      - resource
+      summary: Query resource
+      description: Find resources by a combination of name, kind, catalog, categories,
+        platforms and tags
+      operationId: resource#Query
+      parameters:
+      - name: name
+        in: query
+        description: Name of resource
+        required: false
+        type: string
+        default: ""
+      - name: catalogs
+        in: query
+        description: Catalogs of resource to filter by
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+      - name: categories
+        in: query
+        description: Category associated with a resource to filter by
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+      - name: kinds
+        in: query
+        description: Kinds of resource to filter by
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+      - name: tags
+        in: query
+        description: Tags associated with a resource to filter by
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+      - name: platforms
+        in: query
+        description: Platforms associated with a resource to filter by
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+      - name: limit
+        in: query
+        description: Maximum number of resources to be returned
+        required: false
+        type: integer
+        default: 1000
+      - name: match
+        in: query
+        description: Strategy used to find matching resources
+        required: false
+        type: string
+        default: contains
+        enum:
+        - exact
+        - contains
+      responses:
+        "302":
+          description: Found response.
+          headers:
+            location:
+              description: Redirect URL
+              type: string
+              format: uri
+      schemes:
+      - https
   /resource/{catalog}/{kind}/{name}:
     get:
       tags:
@@ -652,7 +732,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: false
+        example: true
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -670,14 +750,14 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: true
+        example: false
       timeout:
         type: boolean
         description: Is the error a timeout?
-        example: true
+        example: false
     description: Internal server error (default view)
     example:
-      fault: false
+      fault: true
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
@@ -722,11 +802,11 @@ definitions:
         example: false
     description: Invalid Token scopes  (default view)
     example:
-      fault: true
+      fault: false
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: false
+      temporary: true
       timeout: false
     required:
     - name
@@ -742,7 +822,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: true
+        example: false
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -760,19 +840,19 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: true
+        example: false
       timeout:
         type: boolean
         description: Is the error a timeout?
         example: false
     description: Invalid User token (default view)
     example:
-      fault: true
+      fault: false
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
       temporary: true
-      timeout: true
+      timeout: false
     required:
     - name
     - id
@@ -799,7 +879,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: false
+        example: true
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -824,11 +904,11 @@ definitions:
         example: false
     description: Internal server error (default view)
     example:
-      fault: false
+      fault: true
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: true
+      temporary: false
       timeout: false
     required:
     - name
@@ -869,12 +949,12 @@ definitions:
         example: true
     description: Invalid request body (default view)
     example:
-      fault: true
+      fault: false
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: true
-      timeout: false
+      temporary: false
+      timeout: true
     required:
     - name
     - id
@@ -889,7 +969,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: true
+        example: false
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -907,14 +987,14 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: false
+        example: true
       timeout:
         type: boolean
         description: Is the error a timeout?
         example: false
     description: Invalid Token scopes  (default view)
     example:
-      fault: false
+      fault: true
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
@@ -952,19 +1032,19 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: false
+        example: true
       timeout:
         type: boolean
         description: Is the error a timeout?
         example: true
     description: Invalid User token (default view)
     example:
-      fault: false
+      fault: true
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: false
-      timeout: true
+      temporary: true
+      timeout: false
     required:
     - name
     - id
@@ -984,7 +1064,7 @@ definitions:
         type: array
         items:
           type: string
-          example: Voluptatem nihil.
+          example: Voluptatem id rerum.
         description: Scopes required for Agent
         example:
         - catalog-refresh
@@ -1045,7 +1125,7 @@ definitions:
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: true
+      temporary: false
       timeout: false
     required:
     - name
@@ -1086,14 +1166,6 @@ definitions:
         - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
         - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
         type: warning
-      - errors:
-        - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
-        - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
-        type: warning
-      - errors:
-        - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
-        - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
-        type: warning
     required:
     - data
   CatalogErrorsResponseBody:
@@ -1104,7 +1176,7 @@ definitions:
         type: array
         items:
           type: string
-          example: Necessitatibus doloremque quo dolorum minima.
+          example: Ab ea ut voluptatem.
         description: Catalog Error message
         example:
         - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
@@ -1151,15 +1223,15 @@ definitions:
       timeout:
         type: boolean
         description: Is the error a timeout?
-        example: false
+        example: true
     description: Internal Server Error (default view)
     example:
       fault: true
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: false
-      timeout: true
+      temporary: true
+      timeout: false
     required:
     - name
     - id
@@ -1196,10 +1268,10 @@ definitions:
       timeout:
         type: boolean
         description: Is the error a timeout?
-        example: false
+        example: true
     description: Internal Server Error (default view)
     example:
-      fault: false
+      fault: true
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
@@ -1219,7 +1291,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: false
+        example: true
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -1244,12 +1316,12 @@ definitions:
         example: true
     description: Resource Not Found Error (default view)
     example:
-      fault: true
+      fault: false
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
       temporary: true
-      timeout: false
+      timeout: true
     required:
     - name
     - id
@@ -1319,7 +1391,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: false
+        example: true
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -1337,19 +1409,19 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: false
+        example: true
       timeout:
         type: boolean
         description: Is the error a timeout?
         example: false
     description: Internal Server Error (default view)
     example:
-      fault: false
+      fault: true
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
       temporary: false
-      timeout: true
+      timeout: false
     required:
     - name
     - id
@@ -1372,8 +1444,6 @@ definitions:
           name: Image Builder
     example:
       data:
-      - id: 1
-        name: Image Builder
       - id: 1
         name: Image Builder
       - id: 1
@@ -1497,14 +1567,14 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: false
+        example: true
       timeout:
         type: boolean
         description: Is the error a timeout?
         example: true
     description: Internal server error (default view)
     example:
-      fault: false
+      fault: true
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
@@ -1546,14 +1616,14 @@ definitions:
       timeout:
         type: boolean
         description: Is the error a timeout?
-        example: true
+        example: false
     description: Invalid User scope (default view)
     example:
-      fault: false
+      fault: true
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: true
+      temporary: false
       timeout: false
     required:
     - name
@@ -1569,7 +1639,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: false
+        example: true
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -1587,7 +1657,7 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: true
+        example: false
       timeout:
         type: boolean
         description: Is the error a timeout?
@@ -1598,8 +1668,8 @@ definitions:
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: false
-      timeout: false
+      temporary: true
+      timeout: true
     required:
     - name
     - id
@@ -1632,14 +1702,14 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: false
+        example: true
       timeout:
         type: boolean
         description: Is the error a timeout?
-        example: true
+        example: false
     description: Resource Not Found Error (default view)
     example:
-      fault: true
+      fault: false
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
@@ -1672,7 +1742,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: true
+        example: false
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -1690,19 +1760,19 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: false
+        example: true
       timeout:
         type: boolean
         description: Is the error a timeout?
-        example: false
+        example: true
     description: Internal server error (default view)
     example:
-      fault: true
+      fault: false
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
       temporary: false
-      timeout: false
+      timeout: true
     required:
     - name
     - id
@@ -1739,15 +1809,15 @@ definitions:
       timeout:
         type: boolean
         description: Is the error a timeout?
-        example: true
+        example: false
     description: Invalid User scope (default view)
     example:
       fault: true
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: true
-      timeout: true
+      temporary: false
+      timeout: false
     required:
     - name
     - id
@@ -1762,7 +1832,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: true
+        example: false
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -1784,15 +1854,15 @@ definitions:
       timeout:
         type: boolean
         description: Is the error a timeout?
-        example: true
+        example: false
     description: Invalid User token (default view)
     example:
-      fault: false
+      fault: true
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: false
-      timeout: false
+      temporary: true
+      timeout: true
     required:
     - name
     - id
@@ -1807,7 +1877,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: false
+        example: true
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -1825,7 +1895,7 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: true
+        example: false
       timeout:
         type: boolean
         description: Is the error a timeout?
@@ -1836,7 +1906,7 @@ definitions:
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: false
+      temporary: true
       timeout: true
     required:
     - name
@@ -1852,11 +1922,11 @@ definitions:
       rating:
         type: integer
         description: User rating for resource
-        example: 4
+        example: 0
         minimum: 0
         maximum: 5
     example:
-      rating: 3
+      rating: 2
     required:
     - rating
   ResourceDataResponseBodyWithoutVersion:
@@ -2029,6 +2099,68 @@ definitions:
       tags:
       - id: 1
         name: image-build
+    - catalog:
+        id: 1
+        name: tekton
+        type: community
+      categories:
+      - id: 1
+        name: image-build
+      hubURLPath: tekton/task/buildah
+      id: 1
+      kind: task
+      latestVersion:
+        description: Buildah task builds source into a container image and then pushes
+          it to a container registry.
+        displayName: Buildah
+        id: 1
+        minPipelinesVersion: 0.12.1
+        platforms:
+        - id: 1
+          name: linux/amd64
+        rawURL: https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.1/buildah.yaml
+        updatedAt: 2020-01-01 12:00:00 +0000 UTC
+        version: "0.1"
+        webURL: https://github.com/tektoncd/catalog/blob/main/task/buildah/0.1/buildah.yaml
+      name: buildah
+      platforms:
+      - id: 1
+        name: linux/amd64
+      rating: 4.3
+      tags:
+      - id: 1
+        name: image-build
+    - catalog:
+        id: 1
+        name: tekton
+        type: community
+      categories:
+      - id: 1
+        name: image-build
+      hubURLPath: tekton/task/buildah
+      id: 1
+      kind: task
+      latestVersion:
+        description: Buildah task builds source into a container image and then pushes
+          it to a container registry.
+        displayName: Buildah
+        id: 1
+        minPipelinesVersion: 0.12.1
+        platforms:
+        - id: 1
+          name: linux/amd64
+        rawURL: https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.1/buildah.yaml
+        updatedAt: 2020-01-01 12:00:00 +0000 UTC
+        version: "0.1"
+        webURL: https://github.com/tektoncd/catalog/blob/main/task/buildah/0.1/buildah.yaml
+      name: buildah
+      platforms:
+      - id: 1
+        name: linux/amd64
+      rating: 4.3
+      tags:
+      - id: 1
+        name: image-build
   ResourceListResponseBody:
     title: 'Mediatype identifier: application/vnd.hub.resources; view=default'
     type: object
@@ -2038,37 +2170,6 @@ definitions:
     description: ListResponseBody result type (default view)
     example:
       data:
-      - catalog:
-          id: 1
-          name: tekton
-          type: community
-        categories:
-        - id: 1
-          name: image-build
-        hubURLPath: tekton/task/buildah
-        id: 1
-        kind: task
-        latestVersion:
-          description: Buildah task builds source into a container image and then
-            pushes it to a container registry.
-          displayName: Buildah
-          id: 1
-          minPipelinesVersion: 0.12.1
-          platforms:
-          - id: 1
-            name: linux/amd64
-          rawURL: https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.1/buildah.yaml
-          updatedAt: 2020-01-01 12:00:00 +0000 UTC
-          version: "0.1"
-          webURL: https://github.com/tektoncd/catalog/blob/main/task/buildah/0.1/buildah.yaml
-        name: buildah
-        platforms:
-        - id: 1
-          name: linux/amd64
-        rating: 4.3
-        tags:
-        - id: 1
-          name: image-build
       - catalog:
           id: 1
           name: tekton
@@ -2266,8 +2367,20 @@ definitions:
         - error: unable to reach db
           name: api
           status: ok
+        - error: unable to reach db
+          name: api
+          status: ok
+        - error: unable to reach db
+          name: api
+          status: ok
     example:
       services:
+      - error: unable to reach db
+        name: api
+        status: ok
+      - error: unable to reach db
+        name: api
+        status: ok
       - error: unable to reach db
         name: api
         status: ok
