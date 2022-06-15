@@ -39,7 +39,8 @@ catalogs:
     org: tektoncd
     type: community
     provider: github
-    url: https://github.com/tektoncd/catalog
+    url: https://github.com/pratap0007/tekton-resources
+    sshUrl: git@github.com:pratap0007/tekton-resources.git
     revision: main
 
 scopes:
