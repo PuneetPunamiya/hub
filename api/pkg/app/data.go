@@ -85,5 +85,6 @@ func readLocalFile(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return data, nil
 }

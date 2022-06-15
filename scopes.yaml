@@ -12,14 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-catalogs:
-  - name: tekton
-    org: tektoncd
-    type: community
-    provider: github
-    url: https://github.com/tektoncd/catalog
-    revision: main
-
 scopes:
   - name: agent:create
     users: [vinamra28, piyush-garg, pratap0007, puneetpunamiya, sm43, sthaha, vdemeester]

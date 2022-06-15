@@ -52,25 +52,25 @@ func (i *Initializer) Run(ctx context.Context) (*model.Config, error) {
 	}
 
 	data := i.api.Data()
-	if config.Checksum == data.Checksum {
-		logger.Info("SKIP: Config refresh as config file has not changed")
-		return &config, nil
-	}
+	// if config.Checksum == data.Checksum {
+	// 	logger.Info("SKIP: Config refresh as config file has not changed")
+	// 	return &config, nil
+	// }
 
-	updateConfig := func(db *gorm.DB, log *log.Logger, data *app.Data) error {
-		config.Checksum = data.Checksum
-		if err := db.Save(&config).Error; err != nil {
-			log.Error(err)
-			return err
-		}
-		return nil
-	}
+	// updateConfig := func(db *gorm.DB, log *log.Logger, data *app.Data) error {
+	// 	config.Checksum = data.Checksum
+	// 	if err := db.Save(&config).Error; err != nil {
+	// 		log.Error(err)
+	// 		return err
+	// 	}
+	// 	return nil
+	// }
 
 	if err := withTransaction(db, logger, data,
 		addCategories,
 		addCatalogs,
 		addUsers,
-		updateConfig,
+		// updateConfig,
 	); err != nil {
 		return nil, err
 	}

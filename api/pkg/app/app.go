@@ -16,8 +16,6 @@ package app
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"os"
 	"strconv"
@@ -168,37 +166,66 @@ func (ab *APIBase) Data() *Data {
 
 // ReloadData reads config file and loads data in Data object
 func (ab *APIBase) ReloadData() error {
-	// Reads config file url from env
-	url, err := configFileURL()
+	// var data Data
+	// Get the categories from categories.yaml
+
+	cdata, err := ab.getConfig("CATEGORIES_URL")
+	if err != nil {
+		return err
+	}
+	ab.data.Categories = cdata.Categories
+
+	catdata, err := ab.getConfig("CATALOGS_URL")
+	if err != nil {
+		return err
+	}
+	ab.data.Catalogs = catdata.Catalogs
+
+	data, err := ab.getConfig("SCOPES_URL")
 	if err != nil {
 		return err
 	}
 
-	// Reads data from config file
+	ab.data.Scopes = data.Scopes
+
+	return nil
+}
+
+func (ab *APIBase) getConfig(configName string) (Data, error) {
+	var data Data
+	// Get the categories from categories.yaml
+	url, err := configFileURL(configName)
+	if err != nil {
+		return Data{}, err
+	}
+
 	fileData, err := dataFromURL(url)
 	if err != nil {
-		ab.logger.Errorf("failed to read config file: %v", err)
-		return err
+		return Data{}, err
 	}
 
-	// Viper unmarshals data from config file into Data Object
+	data, err = ab.getConfigData(fileData)
+	if err != nil {
+		return Data{}, err
+	}
+
+	return data, nil
+}
+
+func (ab *APIBase) getConfigData(fileData []byte) (Data, error) {
 	var data Data
+
 	viper.SetConfigType("yaml")
 	if err := viper.ReadConfig(bytes.NewBuffer(fileData)); err != nil {
 		ab.logger.Errorf("failed to read configuration file: %v", err)
-		return err
+		return Data{}, err
 	}
 	if err := viper.Unmarshal(&data); err != nil {
 		ab.logger.Errorf("failed to unmarshal config data: %v", err)
-		return err
+		return Data{}, err
 	}
-	ab.data = data
 
-	// computes checksum on config data
-	hash := sha256.Sum256(fileData)
-	ab.data.Checksum = hex.EncodeToString(hash[:])
-
-	return nil
+	return data, nil
 }
 
 // Cleanup flushes any buffered log entries & closes the db connection
@@ -361,11 +388,19 @@ func initLogger(mode EnvMode) (*log.Logger, error) {
 
 // configFileURL will look for CONFIG_FILE_URL to be defined among
 // environment variables
-func configFileURL() (string, error) {
-
-	val := viper.GetString("CONFIG_FILE_URL")
+func configFileURL(configName string) (string, error) {
+	val := viper.GetString(configName)
 	if val == "" {
-		return "", fmt.Errorf("no CONFIG_FILE_URL environment variable defined")
+		return "", fmt.Errorf("no %s environment variable defined", configName)
+	}
+	fmt.Println(val)
+	return val, nil
+}
+
+func categoriesURL() (string, error) {
+	val := viper.GetString("CATEGORIES_URL")
+	if val == "" {
+		return "", fmt.Errorf("no CATEGORIES_URL environment variable defined")
 	}
 	return val, nil
 }
