@@ -29,18 +29,36 @@ spec:
         app: tekton-hub-api
     spec:
       volumes:
-      - name: catalog-source
-        persistentVolumeClaim:
-          claimName: tekton-hub-api
-      - name: ssh-creds
-        secret:
-          secretName: tekton-hub-api-ssh-crds
-          optional: true
+        - name: catalog-source
+          persistentVolumeClaim:
+            claimName: tekton-hub-api
+        - name: ssh-creds
+          secret:
+            secretName: tekton-hub-api-ssh-crds
+            optional: true
+        - name: tekton-hub-category
+          configMap:
+            name: category # name you used at the time of creating the config.yaml ConfigMap
+            items:
+              - key: categories.yaml
+                path: categories.yaml
+        - name: tekton-hub-catalog
+          configMap:
+            name: catalog # name you used at the time of creating the config.yaml ConfigMap
+            items:
+              - key: catalogs.yaml
+                path: catalogs.yaml
+        - name: tekton-hub-scopes
+          configMap:
+            name: scopes # name you used at the time of creating the config.yaml ConfigMap
+            items:
+              - key: scopes.yaml
+                path: scopes.yaml
       securityContext:
         fsGroup: 101
       containers:
         - name: tekton-hub-api
-          image: quay.io/tekton-hub/api
+          image: docker.io/puneet2147/api-split-config:v1
           resources:
             requests:
               cpu: 100m
@@ -49,10 +67,19 @@ spec:
               cpu: 500m
               memory: 500Mi
           volumeMounts:
-          - name: catalog-source
-            mountPath: "/tmp/catalog"
-          - name: ssh-creds
-            mountPath: "/home/hub/.ssh"
+            - name: catalog-source
+              mountPath: '/tmp/catalog'
+            - name: ssh-creds
+              mountPath: '/home/hub/.ssh'
+            - name: tekton-hub-category
+              mountPath: '/tmp/config/categories.yaml'
+              subPath: 'categories.yaml'
+            - name: tekton-hub-catalog
+              mountPath: '/tmp/config/catalogs.yaml'
+              subPath: 'catalogs.yaml'
+            - name: tekton-hub-scopes
+              mountPath: '/tmp/config/scopes.yaml'
+              subPath: 'scopes.yaml'
           ports:
             - containerPort: 8000
             - containerPort: 4200
@@ -99,11 +126,21 @@ spec:
                 secretKeyRef:
                   name: tekton-hub-db
                   key: POSTGRES_PASSWORD
-            - name: CONFIG_FILE_URL
+            - name: CATEGORIES_URL
               valueFrom:
                 configMapKeyRef:
                   name: tekton-hub-api
-                  key: CONFIG_FILE_URL
+                  key: CATEGORIES_URL
+            - name: CATALOGS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: tekton-hub-api
+                  key: CATALOGS_URL
+            - name: SCOPES_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: tekton-hub-api
+                  key: SCOPES_URL
             - name: GH_CLIENT_ID
               valueFrom:
                 secretKeyRef:

@@ -19,4 +19,6 @@ metadata:
   labels:
     app: tekton-hub-api
 data:
-  CONFIG_FILE_URL: https://raw.githubusercontent.com/tektoncd/hub/main/config.yaml
+  CATEGORIES_URL: file:///tmp/config/categories.yaml
+  CATALOGS_URL: file:///tmp/config/catalogs.yaml
+  SCOPES_URL: file:///tmp/config/scopes.yaml
