@@ -1,0 +1,53 @@
+name: Bump components.yaml on main branch
+
+on:
+  push:
+  schedule:
+  # Run this every week day at 1AM
+  - cron: '0 0 * * *'
+
+jobs:
+  bump-payloads:
+    name: "Bump payloads"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-go@v2
+      with:
+        go-version: 1.18.x
+    - uses: actions/checkout@v2
+    - name: run operator-tool bump
+      run: |
+        go install goa.design/goa/v3/cmd/goa@v3
+
+        goa version
+
+        echo "----------------------------"
+        echo "-- Generating API Design... "
+        echo "----------------------------"
+        cd api && go mod vendor && goa gen github.com/tektoncd/hub/api/design
+
+        echo "----------------------------"
+        echo "- Generating v1 API Design... "
+        echo "----------------------------"
+        cd v1 && go mod vendor && goa gen github.com/tektoncd/hub/api/v1/design
+
+        cd ..
+        echo "---------------------------------"
+        git diff
+        echo "----------------------------------"
+        files=$(git diff api | wc -l)
+        if [[ ${files} == 0 ]];then
+          echo "    Git repo is clean."
+        else
+          echo "---------------------------------------"
+          echo "  🔴 Files are changed!! Please run 'goa gen' command."
+        fi
+    - name: create pull request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        commit-message: Bumps goa version and updates the gen folder
+        # branch: test-bot-check
+        delete-branch: false
+        title: "[bot] bump goa version and updates gen folder"
+        labels: |
+          release-note-none
