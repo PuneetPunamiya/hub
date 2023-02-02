@@ -1,12 +1,12 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useMst } from '../../store/root';
 import { Params } from '../../common/params';
 import { AuthCodeProps, IError } from '../../store/auth';
 
 const ParseUrl: React.FC = () => {
   const { resources, user } = useMst();
-  const history = useHistory();
+  const history = useNavigate();
 
   if (window.location.search) {
     const searchParams: URLSearchParams = new URLSearchParams(window.location.search);
@@ -20,7 +20,7 @@ const ParseUrl: React.FC = () => {
       };
       user.authenticate(codeFinal);
       if (user.isAuthenticated) {
-        history.goBack();
+        history('-1');
       }
     }
     // Display the alert message when status is not ok
