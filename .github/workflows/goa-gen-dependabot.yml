@@ -1,6 +1,9 @@
 name: Bump Goa version and updates `gen` directory on main branch
 
 on:
+  push:
+    branches:
+      - go-1.19
   workflow_dispatch:
   schedule:
   - cron: '0 0 * * *'
