@@ -24,8 +24,9 @@ import (
 	"github.com/tektoncd/hub/api/pkg/cli/test"
 	cb "github.com/tektoncd/hub/api/pkg/cli/test/builder"
 	res "github.com/tektoncd/hub/api/v1/gen/resource"
+	v1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1"
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
-	pipelinev1beta1test "github.com/tektoncd/pipeline/test"
+	pipelinetest "github.com/tektoncd/pipeline/test"
 	goa "goa.design/goa/v3/pkg"
 	"gopkg.in/h2non/gock.v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -74,6 +75,26 @@ spec:
   description: >-
     v0.3 Task to run foo
 `
+
+var taskv1 = `---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: foo
+  labels:
+    app.kubernetes.io/version: '0.3'
+  annotations:
+    tekton.dev/pipelines.minVersion: '0.14.1'
+    tekton.dev/tags: cli
+    tekton.dev/displayName: 'foo-bar'
+spec:
+  description: >-
+    v0.3 Task to run foo
+`
+
+var taskWithV1NewVersionYaml = &res.ResourceContent{
+	Yaml: &taskv1,
+}
 
 var taskWithNewVersionYaml = &res.ResourceContent{
 	Yaml: &task1,
@@ -257,7 +278,60 @@ func TestInstall_ResourceAlreadyExistError(t *testing.T) {
 	version := "v1beta1"
 	dynamic := test.DynamicClient(cb.UnstructuredV1beta1T(existingTask, version))
 
-	cs, _ := test.SeedV1beta1TestData(t, pipelinev1beta1test.Data{Tasks: []*v1beta1.Task{existingTask}})
+	cs, _ := test.SeedV1beta1TestData(t, test.Data{Tasks: []*v1beta1.Task{existingTask}})
+	cs.Pipeline.Resources = cb.APIResourceList(version, []string{"task"})
+
+	opts := &options{
+		cs:      test.FakeClientSet(cs.Pipeline, dynamic, "hub"),
+		cli:     cli,
+		kind:    "task",
+		args:    []string{"foo"},
+		from:    "tekton",
+		version: "0.3",
+	}
+
+	err := opts.run()
+	assert.Error(t, err)
+	assert.EqualError(t, err, "Task foo already exists in hub namespace but seems to be missing version label. Use reinstall command to overwrite existing")
+	assert.Equal(t, gock.IsDone(), true)
+}
+
+func TestInstall_ResourceAlreadyExistErrorV1(t *testing.T) {
+	cli := test.NewCLI(hub.TektonHubType)
+
+	defer gock.Off()
+
+	rVer := &res.ResourceVersionYaml{Data: taskWithV1NewVersionYaml}
+	resWithVersion := res.NewViewedResourceVersionYaml(rVer, "default")
+
+	resInfo := fmt.Sprintf("%s/%s/%s/%s", "tekton", "task", "foo", "0.3")
+
+	gock.New(test.API).
+		Get("/resource/" + resInfo + "/yaml").
+		Reply(200).
+		JSON(&resWithVersion.Projected)
+
+	resVersion := &res.ResourceVersion{Data: resVersion}
+	resource := res.NewViewedResourceVersion(resVersion, "default")
+	gock.New(test.API).
+		Get("/resource/tekton/task/foo/0.3").
+		Reply(200).
+		JSON(&resource.Projected)
+
+	buf := new(bytes.Buffer)
+	cli.SetStream(buf, buf)
+
+	existingTask := &v1.Task{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "foo",
+			Namespace: "hub",
+		},
+	}
+
+	version := "v1"
+	dynamic := test.DynamicClient(cb.UnstructuredV1(existingTask, version))
+
+	cs, _ := test.SeedTestData(t, pipelinetest.Data{Tasks: []*v1.Task{existingTask}})
 	cs.Pipeline.Resources = cb.APIResourceList(version, []string{"task"})
 
 	opts := &options{
@@ -311,7 +385,7 @@ func TestInstall_UpgradeError(t *testing.T) {
 	version := "v1beta1"
 	dynamic := test.DynamicClient(cb.UnstructuredV1beta1T(existingTask, version))
 
-	cs, _ := test.SeedV1beta1TestData(t, pipelinev1beta1test.Data{Tasks: []*v1beta1.Task{existingTask}})
+	cs, _ := test.SeedV1beta1TestData(t, test.Data{Tasks: []*v1beta1.Task{existingTask}})
 	cs.Pipeline.Resources = cb.APIResourceList(version, []string{"task"})
 
 	opts := &options{
@@ -365,7 +439,7 @@ func TestInstall_SameVersionError(t *testing.T) {
 	version := "v1beta1"
 	dynamic := test.DynamicClient(cb.UnstructuredV1beta1T(existingTask, version))
 
-	cs, _ := test.SeedV1beta1TestData(t, pipelinev1beta1test.Data{Tasks: []*v1beta1.Task{existingTask}})
+	cs, _ := test.SeedV1beta1TestData(t, test.Data{Tasks: []*v1beta1.Task{existingTask}})
 	cs.Pipeline.Resources = cb.APIResourceList(version, []string{"task"})
 
 	opts := &options{
@@ -418,7 +492,7 @@ func TestInstall_LowerVersionError(t *testing.T) {
 	version := "v1beta1"
 	dynamic := test.DynamicClient(cb.UnstructuredV1beta1T(existingTask, version))
 
-	cs, _ := test.SeedV1beta1TestData(t, pipelinev1beta1test.Data{Tasks: []*v1beta1.Task{existingTask}})
+	cs, _ := test.SeedV1beta1TestData(t, test.Data{Tasks: []*v1beta1.Task{existingTask}})
 	cs.Pipeline.Resources = cb.APIResourceList(version, []string{"task"})
 
 	opts := &options{
@@ -464,7 +538,7 @@ func TestInstall_RespectingPipelinesVersion(t *testing.T) {
 	version := "v1beta1"
 	dynamic := test.DynamicClient()
 
-	cs, _ := test.SeedV1beta1TestData(t, pipelinev1beta1test.Data{})
+	cs, _ := test.SeedV1beta1TestData(t, test.Data{})
 	cs.Pipeline.Resources = cb.APIResourceList(version, []string{"task"})
 
 	opts := &options{
@@ -515,7 +589,7 @@ func TestInstall_RespectingPipelinesVersionFailure(t *testing.T) {
 	version := "v1beta1"
 	dynamic := test.DynamicClient()
 
-	cs, _ := test.SeedV1beta1TestData(t, pipelinev1beta1test.Data{})
+	cs, _ := test.SeedV1beta1TestData(t, test.Data{})
 	cs.Pipeline.Resources = cb.APIResourceList(version, []string{"task"})
 
 	opts := &options{
@@ -566,7 +640,7 @@ func TestInstall_DeprecatedVersion(t *testing.T) {
 	version := "v1beta1"
 	dynamic := test.DynamicClient()
 
-	cs, _ := test.SeedV1beta1TestData(t, pipelinev1beta1test.Data{})
+	cs, _ := test.SeedV1beta1TestData(t, test.Data{})
 	cs.Pipeline.Resources = cb.APIResourceList(version, []string{"task"})
 
 	opts := &options{
@@ -590,7 +664,7 @@ func createOpts(t *testing.T, buf *bytes.Buffer, hubType, from, version string) 
 	cli.SetStream(buf, buf)
 
 	dynamic := test.DynamicClient()
-	cs, _ := test.SeedV1beta1TestData(t, pipelinev1beta1test.Data{})
+	cs, _ := test.SeedV1beta1TestData(t, test.Data{})
 	cs.Pipeline.Resources = cb.APIResourceList("v1beta1", []string{"task"})
 
 	return &options{
