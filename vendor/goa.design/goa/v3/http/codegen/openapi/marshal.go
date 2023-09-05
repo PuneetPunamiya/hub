@@ -8,7 +8,7 @@ import (
 
 // MarshalJSON produces the JSON resulting from encoding an object composed of
 // the fields in v (which must me a struct) and the keys in extensions.
-func MarshalJSON(v any, extensions map[string]any) ([]byte, error) {
+func MarshalJSON(v interface{}, extensions map[string]interface{}) ([]byte, error) {
 	marshaled, err := json.Marshal(v)
 	if err != nil {
 		return nil, err
@@ -16,11 +16,11 @@ func MarshalJSON(v any, extensions map[string]any) ([]byte, error) {
 	if len(extensions) == 0 {
 		return marshaled, nil
 	}
-	var unmarshaled any
+	var unmarshaled interface{}
 	if err := json.Unmarshal(marshaled, &unmarshaled); err != nil {
 		return nil, err
 	}
-	asserted := unmarshaled.(map[string]any)
+	asserted := unmarshaled.(map[string]interface{})
 	for k, v := range extensions {
 		asserted[k] = v
 	}
@@ -33,7 +33,7 @@ func MarshalJSON(v any, extensions map[string]any) ([]byte, error) {
 
 // MarshalYAML produces the JSON resulting from encoding an object composed of
 // the fields in v (which must me a struct) and the keys in extensions.
-func MarshalYAML(v any, extensions map[string]any) (any, error) {
+func MarshalYAML(v interface{}, extensions map[string]interface{}) (interface{}, error) {
 	if len(extensions) == 0 {
 		return v, nil
 	}
@@ -41,7 +41,7 @@ func MarshalYAML(v any, extensions map[string]any) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	var unmarshaled map[string]any
+	var unmarshaled map[string]interface{}
 	if err := yaml.Unmarshal(marshaled, &unmarshaled); err != nil {
 		return nil, err
 	}

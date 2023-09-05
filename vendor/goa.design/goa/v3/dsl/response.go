@@ -93,13 +93,13 @@ import (
 //        })
 //    })
 //
-func Response(val any, args ...any) {
+func Response(val interface{}, args ...interface{}) {
 	name, ok := val.(string)
 	if !ok && len(args) > 0 {
 		name, ok = args[0].(string)
 		if ok {
 			arg := args[0]
-			args = append([]any{val}, args[1:]...)
+			args = append([]interface{}{val}, args[1:]...)
 			val = arg
 		}
 	}
@@ -201,7 +201,7 @@ func Code(code int) {
 	}
 }
 
-func grpcError(n string, p eval.Expression, args ...any) *expr.GRPCErrorExpr {
+func grpcError(n string, p eval.Expression, args ...interface{}) *expr.GRPCErrorExpr {
 	if len(args) == 0 {
 		eval.ReportError("not enough arguments, use Response(name, status), Response(name, status, func()) or Response(name, func())")
 		return nil
@@ -209,7 +209,7 @@ func grpcError(n string, p eval.Expression, args ...any) *expr.GRPCErrorExpr {
 	var (
 		code int
 		fn   func()
-		val  any
+		val  interface{}
 	)
 	val = args[0]
 	args = args[1:]
@@ -230,7 +230,7 @@ func grpcError(n string, p eval.Expression, args ...any) *expr.GRPCErrorExpr {
 	}
 }
 
-func parseResponseArgs(val any, args ...any) (code int, fn func()) {
+func parseResponseArgs(val interface{}, args ...interface{}) (code int, fn func()) {
 	switch t := val.(type) {
 	case int:
 		code = t
@@ -259,7 +259,7 @@ func parseResponseArgs(val any, args ...any) (code int, fn func()) {
 	return
 }
 
-func httpError(n string, p eval.Expression, args ...any) *expr.HTTPErrorExpr {
+func httpError(n string, p eval.Expression, args ...interface{}) *expr.HTTPErrorExpr {
 	if len(args) == 0 {
 		eval.ReportError("not enough arguments, use Response(name, status), Response(name, status, func()) or Response(name, func())")
 		return nil
@@ -267,7 +267,7 @@ func httpError(n string, p eval.Expression, args ...any) *expr.HTTPErrorExpr {
 	var (
 		code int
 		fn   func()
-		val  any
+		val  interface{}
 	)
 	val = args[0]
 	args = args[1:]

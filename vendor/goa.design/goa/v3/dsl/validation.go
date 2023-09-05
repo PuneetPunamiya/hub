@@ -68,7 +68,7 @@ const (
 //        })
 //    })
 //
-func Enum(vals ...any) {
+func Enum(vals ...interface{}) {
 	if a, ok := eval.Current().(*expr.AttributeExpr); ok {
 		for i, v := range vals {
 			// When can a.Type be nil? glad you asked
@@ -99,7 +99,7 @@ func Enum(vals ...any) {
 			if a.Validation == nil {
 				a.Validation = &expr.ValidationExpr{}
 			}
-			a.Validation.Values = make([]any, len(vals))
+			a.Validation.Values = make([]interface{}, len(vals))
 			for i, v := range vals {
 				switch actual := v.(type) {
 				case expr.MapVal:
@@ -199,7 +199,7 @@ func Pattern(p string) {
 //        ExclusiveMinimum(100)
 //    })
 //
-func ExclusiveMinimum(val any) {
+func ExclusiveMinimum(val interface{}) {
 	if a, ok := eval.Current().(*expr.AttributeExpr); ok {
 		if a.Type != nil &&
 			a.Type.Kind() != expr.IntKind && a.Type.Kind() != expr.UIntKind &&
@@ -241,7 +241,7 @@ func ExclusiveMinimum(val any) {
 //        Minimum(100)
 //    })
 //
-func Minimum(val any) {
+func Minimum(val interface{}) {
 	if a, ok := eval.Current().(*expr.AttributeExpr); ok {
 		if a.Type != nil &&
 			a.Type.Kind() != expr.IntKind && a.Type.Kind() != expr.UIntKind &&
@@ -283,7 +283,7 @@ func Minimum(val any) {
 //        ExclusiveMaximum(100)
 //    })
 //
-func ExclusiveMaximum(val any) {
+func ExclusiveMaximum(val interface{}) {
 	if a, ok := eval.Current().(*expr.AttributeExpr); ok {
 		if a.Type != nil &&
 			a.Type.Kind() != expr.IntKind && a.Type.Kind() != expr.UIntKind &&
@@ -325,7 +325,7 @@ func ExclusiveMaximum(val any) {
 //        Maximum(100)
 //    })
 //
-func Maximum(val any) {
+func Maximum(val interface{}) {
 	if a, ok := eval.Current().(*expr.AttributeExpr); ok {
 		if a.Type != nil &&
 			a.Type.Kind() != expr.IntKind && a.Type.Kind() != expr.UIntKind &&

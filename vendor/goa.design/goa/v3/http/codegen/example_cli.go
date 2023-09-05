@@ -77,21 +77,21 @@ func exampleCLI(genpkg string, root *expr.RootExpr, svr *expr.ServerExpr) *codeg
 		{
 			Name:   "cli-http-streaming",
 			Source: httpCLIStreamingT,
-			Data: map[string]any{
+			Data: map[string]interface{}{
 				"Services": svcData,
 			},
-			FuncMap: map[string]any{
+			FuncMap: map[string]interface{}{
 				"needStream": needStream,
 			},
 		},
 		{
 			Name:   "cli-http-end",
 			Source: httpCLIEndT,
-			Data: map[string]any{
+			Data: map[string]interface{}{
 				"Services": svcData,
 				"APIPkg":   apiPkg,
 			},
-			FuncMap: map[string]any{
+			FuncMap: map[string]interface{}{
 				"needStream":   needStream,
 				"hasWebSocket": hasWebSocket,
 			},
@@ -109,7 +109,7 @@ func exampleCLI(genpkg string, root *expr.RootExpr, svr *expr.ServerExpr) *codeg
 }
 
 const (
-	httpCLIStartT = `func doHTTP(scheme, host string, timeout int, debug bool) (goa.Endpoint, any, error) {
+	httpCLIStartT = `func doHTTP(scheme, host string, timeout int, debug bool) (goa.Endpoint, interface{}, error) {
 	var (
 		doer goahttp.Doer
 	)
@@ -121,7 +121,7 @@ const (
 	}
 `
 
-	// input: map[string]any{"Services": []*ServiceData}
+	// input: map[string]interface{}{"Services": []*ServiceData}
 	httpCLIStreamingT = `{{- if needStream .Services }}
 	var (
     dialer *websocket.Dialer
@@ -132,7 +132,7 @@ const (
 	{{ end }}
 `
 
-	// input: map[string]any{"Services": []*ServiceData}
+	// input: map[string]interface{}{"Services": []*ServiceData}
 	httpCLIEndT = `return cli.ParseEndpoint(
 		scheme,
 		host,

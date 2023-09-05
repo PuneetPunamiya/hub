@@ -28,6 +28,9 @@ paths:
                                     - error: unable to reach db
                                       name: api
                                       status: ok
+                                    - error: unable to reach db
+                                      name: api
+                                      status: ok
     /catalog/{catalogName}/error:
         get:
             tags:
@@ -54,14 +57,6 @@ paths:
                                 $ref: '#/components/schemas/CatalogErrorResponseBody'
                             example:
                                 data:
-                                    - errors:
-                                        - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
-                                        - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
-                                      type: warning
-                                    - errors:
-                                        - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
-                                        - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
-                                      type: warning
                                     - errors:
                                         - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
                                         - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
@@ -155,10 +150,13 @@ paths:
                                     - catalogName: tekton
                                       id: 1
                                       status: queued
-                                    - catalogName: tekton
-                                      id: 1
-                                      status: queued
                             example:
+                                - catalogName: tekton
+                                  id: 1
+                                  status: queued
+                                - catalogName: tekton
+                                  id: 1
+                                  status: queued
                                 - catalogName: tekton
                                   id: 1
                                   status: queued
@@ -199,6 +197,8 @@ paths:
                                       name: Image Builder
                                     - id: 1
                                       name: Image Builder
+                                    - id: 1
+                                      name: Image Builder
                 "500":
                     description: 'internal-error: Internal Server Error'
                     content:
@@ -231,7 +231,7 @@ paths:
                     type: array
                     items:
                         type: string
-                        example: Vero reiciendis est corporis.
+                        example: Unde quia quia blanditiis nam dolorem.
                     description: Catalogs of resource to filter by
                     example:
                         - tekton
@@ -247,7 +247,7 @@ paths:
                     type: array
                     items:
                         type: string
-                        example: Architecto nisi consequatur aut ab ea.
+                        example: Eos laborum et nesciunt et temporibus.
                     description: Category associated with a resource to filter by
                     example:
                         - build
@@ -263,7 +263,7 @@ paths:
                     type: array
                     items:
                         type: string
-                        example: Voluptatem ratione.
+                        example: Officia quis aliquid rerum perspiciatis voluptatem.
                     description: Kinds of resource to filter by
                     example:
                         - task
@@ -279,7 +279,7 @@ paths:
                     type: array
                     items:
                         type: string
-                        example: Et vero aperiam.
+                        example: Quae vel et.
                     description: Tags associated with a resource to filter by
                     example:
                         - image
@@ -295,7 +295,7 @@ paths:
                     type: array
                     items:
                         type: string
-                        example: Enim corrupti consequatur.
+                        example: Omnis quaerat.
                     description: Platforms associated with a resource to filter by
                     example:
                         - linux/s390x
@@ -321,11 +321,11 @@ paths:
                     type: string
                     description: Strategy used to find matching resources
                     default: contains
-                    example: contains
+                    example: exact
                     enum:
                         - exact
                         - contains
-                  example: exact
+                  example: contains
             responses:
                 "302":
                     description: Found response.
@@ -336,9 +336,9 @@ paths:
                             schema:
                                 type: string
                                 description: Redirect URL
-                                example: http://von.name/kasandra
+                                example: http://douglasebert.info/jessie
                                 format: uri
-                            example: http://lueilwitz.com/caroline
+                            example: http://volkman.net/abdiel
     /resource/{catalog}/{kind}/{name}:
         get:
             tags:
@@ -373,11 +373,11 @@ paths:
                   schema:
                     type: string
                     description: kind of resource
-                    example: task
+                    example: pipeline
                     enum:
                         - task
                         - pipeline
-                  example: pipeline
+                  example: task
                 - name: name
                   in: path
                   description: Name of resource
@@ -397,9 +397,9 @@ paths:
                             schema:
                                 type: string
                                 description: Redirect URL
-                                example: http://schroeder.org/nia.rolfson
+                                example: http://waterslemke.org/mabelle
                                 format: uri
-                            example: http://christiansenmertz.biz/sincere
+                            example: http://ohara.name/vicente_rogahn
     /resource/{catalog}/{kind}/{name}/{version}:
         get:
             tags:
@@ -428,7 +428,7 @@ paths:
                     enum:
                         - task
                         - pipeline
-                  example: pipeline
+                  example: task
                 - name: name
                   in: path
                   description: name of resource
@@ -457,9 +457,9 @@ paths:
                             schema:
                                 type: string
                                 description: Redirect URL
-                                example: http://denesikprohaska.biz/esmeralda.d'amore
+                                example: http://mantehegmann.com/ward_towne
                                 format: uri
-                            example: http://hoeger.biz/eric
+                            example: http://koch.net/waino
     /resource/{id}:
         get:
             tags:
@@ -487,9 +487,9 @@ paths:
                             schema:
                                 type: string
                                 description: Redirect URL
-                                example: http://schiller.name/kayli
+                                example: http://hyatt.org/charity
                                 format: uri
-                            example: http://hahnbergstrom.info/jacklyn_brown
+                            example: http://stracke.com/alysson
     /resource/{id}/rating:
         get:
             tags:
@@ -505,8 +505,8 @@ paths:
                   schema:
                     type: integer
                     description: ID of a resource
-                    example: 6138028468518471795
-                  example: 8114659548213764512
+                    example: 1487680364023662723
+                  example: 15108684595389472227
             responses:
                 "200":
                     description: OK response.
@@ -562,8 +562,8 @@ paths:
                   schema:
                     type: integer
                     description: ID of a resource
-                    example: 9890802013909619962
-                  example: 14770215756158772569
+                    example: 11575953008413914708
+                  example: 17027828275307537165
             requestBody:
                 required: true
                 content:
@@ -571,7 +571,7 @@ paths:
                         schema:
                             $ref: '#/components/schemas/UpdateRequestBody'
                         example:
-                            rating: 0
+                            rating: 1
             responses:
                 "200":
                     description: OK response.
@@ -634,9 +634,9 @@ paths:
                             schema:
                                 type: string
                                 description: Redirect URL
-                                example: http://muller.org/kraig
+                                example: http://fahey.org/elta
                                 format: uri
-                            example: http://kreigeryost.org/emmanuel.rath
+                            example: http://bayer.name/lafayette
     /resource/version/{versionID}:
         get:
             tags:
@@ -664,9 +664,9 @@ paths:
                             schema:
                                 type: string
                                 description: Redirect URL
-                                example: http://senger.info/johnathan
+                                example: http://christiansen.name/haylee
                                 format: uri
-                            example: http://kovacekcassin.name/baron_rutherford
+                            example: http://connellyschaefer.biz/elody_schumm
     /resources:
         get:
             tags:
@@ -890,6 +890,9 @@ paths:
                                     - error: unable to reach db
                                       name: api
                                       status: ok
+                                    - error: unable to reach db
+                                      name: api
+                                      status: ok
     /v1/categories:
         get:
             tags:
@@ -906,6 +909,8 @@ paths:
                                 $ref: '#/components/schemas/ListResponseBody'
                             example:
                                 data:
+                                    - id: 1
+                                      name: Image Builder
                                     - id: 1
                                       name: Image Builder
                                     - id: 1
@@ -973,16 +978,12 @@ components:
                             - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
                             - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
                           type: warning
-                        - errors:
-                            - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
-                            - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
-                          type: warning
-                        - errors:
-                            - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
-                            - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
-                          type: warning
             example:
                 data:
+                    - errors:
+                        - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
+                        - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
+                      type: warning
                     - errors:
                         - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
                         - Resource tekton.dev/v1beta1, Kind=task - curl has no display name
@@ -1000,7 +1001,7 @@ components:
                     type: array
                     items:
                         type: string
-                        example: Nesciunt delectus sunt quidem asperiores quis.
+                        example: Aspernatur eos dolores adipisci vel.
                     description: Catalog Error message
                     example:
                         - Resource tekton.dev/v1beta1, Kind=Task - buildah has no display name
@@ -1041,7 +1042,7 @@ components:
                 fault:
                     type: boolean
                     description: Is the error a server-side fault?
-                    example: false
+                    example: true
                 id:
                     type: string
                     description: ID is a unique identifier for this particular occurrence of the problem.
@@ -1057,19 +1058,16 @@ components:
                 temporary:
                     type: boolean
                     description: Is the error temporary?
-                    example: true
+                    example: false
                 timeout:
                     type: boolean
                     description: Is the error a timeout?
                     example: false
             description: Invalid request body
             example:
-                fault: false
-                id: 123abc
-                message: parameter 'p' must be an integer
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
                 name: bad_request
-                temporary: false
-                timeout: true
             required:
                 - name
                 - id
@@ -1146,6 +1144,8 @@ components:
                     items:
                         $ref: '#/components/schemas/Category'
                     example:
+                        - id: 1
+                          name: Image Builder
                         - id: 1
                           name: Image Builder
                         - id: 1
@@ -1649,11 +1649,14 @@ components:
                         - error: unable to reach db
                           name: api
                           status: ok
-                        - error: unable to reach db
-                          name: api
-                          status: ok
             example:
                 services:
+                    - error: unable to reach db
+                      name: api
+                      status: ok
+                    - error: unable to reach db
+                      name: api
+                      status: ok
                     - error: unable to reach db
                       name: api
                       status: ok
@@ -1671,7 +1674,7 @@ components:
                     type: array
                     items:
                         type: string
-                        example: Est voluptatem id.
+                        example: Quia eos ipsum aperiam nam numquam rerum.
                     description: Scopes required for Agent
                     example:
                         - catalog-refresh
@@ -1701,11 +1704,11 @@ components:
                 rating:
                     type: integer
                     description: User rating for resource
-                    example: 2
+                    example: 4
                     minimum: 0
                     maximum: 5
             example:
-                rating: 3
+                rating: 4
             required:
                 - rating
     securitySchemes:

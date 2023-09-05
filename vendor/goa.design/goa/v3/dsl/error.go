@@ -84,9 +84,9 @@ const (
 //        })
 //    })
 //
-func Error(name string, args ...any) {
+func Error(name string, args ...interface{}) {
 	if len(args) == 0 {
-		args = []any{expr.ErrorResult}
+		args = []interface{}{expr.ErrorResult}
 	}
 	dt, desc, fn := parseAttributeArgs(nil, args...)
 	att := &expr.AttributeExpr{
@@ -173,7 +173,7 @@ func Error(name string, args ...any) {
 //        return nil
 //    }
 //
-func ErrorName(args ...any) {
+func ErrorName(args ...interface{}) {
 	if len(args) == 0 {
 		eval.IncompatibleDSL()
 		return

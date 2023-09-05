@@ -62,7 +62,7 @@ var resultTypeCount int
 //	        Attribute("origin")
 //	    })
 //	 })
-func ResultType(identifier string, args ...any) *expr.ResultTypeExpr {
+func ResultType(identifier string, args ...interface{}) *expr.ResultTypeExpr {
 	if _, ok := eval.Current().(eval.TopExpr); !ok {
 		eval.IncompatibleDSL()
 		return nil
@@ -199,23 +199,23 @@ func TypeName(name string) {
 func View(name string, adsl ...func()) {
 	switch e := eval.Current().(type) {
 	case *expr.ResultTypeExpr:
-		if e.View(name) != nil {
-			eval.ReportError("multiple expressions for view %#v in result type %#v", name, e.TypeName)
+		mt := e
+		if mt.View(name) != nil {
+			eval.ReportError("multiple expressions for view %#v in result type %#v", name, mt.TypeName)
 			return
 		}
 		at := &expr.AttributeExpr{}
 		ok := false
-		var a *expr.Array
 		if len(adsl) > 0 {
 			ok = eval.Execute(adsl[0], at)
-		} else if a, ok = e.Type.(*expr.Array); ok {
+		} else if a, ok := mt.Type.(*expr.Array); ok {
 			// inherit view from collection element if present
-			if elem := a.ElemType; elem != nil {
+			elem := a.ElemType
+			if elem != nil {
 				if pa, ok2 := elem.Type.(*expr.ResultTypeExpr); ok2 {
-					print(pa)
-					print(pa.Views)
 					if v := pa.View(name); v != nil {
 						at = v.AttributeExpr
+						ok = true
 					} else {
 						eval.ReportError("unknown view %#v", name)
 						return
@@ -224,12 +224,12 @@ func View(name string, adsl ...func()) {
 			}
 		}
 		if ok {
-			view, err := buildView(name, e, at)
+			view, err := buildView(name, mt, at)
 			if err != nil {
 				eval.ReportError(err.Error())
 				return
 			}
-			e.Views = append(e.Views, view)
+			mt.Views = append(mt.Views, view)
 		}
 
 	case *expr.AttributeExpr:
@@ -292,7 +292,7 @@ func View(name string, adsl ...func()) {
 //	        })
 //	    })
 //	})
-func CollectionOf(v any, adsl ...func()) *expr.ResultTypeExpr {
+func CollectionOf(v interface{}, adsl ...func()) *expr.ResultTypeExpr {
 	var m *expr.ResultTypeExpr
 	var ok bool
 	m, ok = v.(*expr.ResultTypeExpr)

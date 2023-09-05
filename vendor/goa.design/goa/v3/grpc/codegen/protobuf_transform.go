@@ -107,15 +107,13 @@ func protoBufTransform(source, target *expr.AttributeExpr, sourceVar, targetVar 
 	return strings.TrimRight(code, "\n"), funcs, nil
 }
 
-// removeMeta removes meta attributes from the given attribute that cannot be
-// honored. This is needed to make sure that any field name overridding is
-// removed when generating protobuf types (as protogen itself won't honor these
-// overrides).
+// removeMeta removes the meta attributes from the given attribute. This is
+// needed to make sure that any field name overridding is removed when
+// generating protobuf types (as protogen itself won't honor these overrides).
 func removeMeta(att *expr.AttributeExpr) {
 	_ = codegen.Walk(att, func(a *expr.AttributeExpr) error {
 		delete(a.Meta, "struct:field:name")
 		delete(a.Meta, "struct:field:external")
-		delete(a.Meta, "struct.field.external") // Deprecated syntax. Only present for backward compatibility.
 		return nil
 	})
 }
@@ -433,14 +431,8 @@ func transformArray(source, target *expr.Array, sourceVar, targetVar string, new
 			return "", err
 		}
 	}
-	valVar := "val"
-	if obj := expr.AsObject(src.Type); obj != nil {
-		if len(*obj) == 0 {
-			valVar = ""
-		}
-	}
 
-	data := map[string]any{
+	data := map[string]interface{}{
 		"ElemTypeRef":    targetRef,
 		"SourceElem":     src,
 		"TargetElem":     tgt,
@@ -449,7 +441,6 @@ func transformArray(source, target *expr.Array, sourceVar, targetVar string, new
 		"NewVar":         newVar,
 		"TransformAttrs": ta,
 		"LoopVar":        string(rune(105 + strings.Count(targetVar, "["))),
-		"ValVar":         valVar,
 	}
 	var buf bytes.Buffer
 	if err := transformGoArrayT.Execute(&buf, data); err != nil {
@@ -517,7 +508,7 @@ func transformMap(source, target *expr.Map, sourceVar, targetVar string, newVar 
 			return "", err
 		}
 	}
-	data := map[string]any{
+	data := map[string]interface{}{
 		"KeyTypeRef":     targetKeyRef,
 		"ElemTypeRef":    targetElemRef,
 		"SourceKey":      source.KeyType,
@@ -556,7 +547,7 @@ func transformUnionToProto(source, target *expr.AttributeExpr, sourceVar, target
 		targetValueTypeNames[i] = ta.message + "_" + fieldName
 	}
 
-	data := map[string]any{
+	data := map[string]interface{}{
 		"SourceVar":            sourceVar,
 		"TargetVar":            targetVar,
 		"SourceValueTypeRefs":  tdata.SourceValueTypeRefs,
@@ -587,7 +578,7 @@ func transformUnionFromProto(source, target *expr.AttributeExpr, sourceVar, targ
 		sourceFieldNames[i] = fieldName
 	}
 
-	data := map[string]any{
+	data := map[string]interface{}{
 		"SourceVar":           sourceVar,
 		"TargetVar":           targetVar,
 		"SourceValueTypeRefs": tdata.SourceValueTypeRefs,
@@ -906,20 +897,6 @@ func transformHelperName(source, target *expr.AttributeExpr, ta *transformAttrs)
 		prefix string
 	)
 	{
-		// Do not consider package overrides for protogen generated types
-		if ta.proto {
-			target = expr.DupAtt(target)
-			codegen.Walk(target, func(att *expr.AttributeExpr) error {
-				delete(att.Meta, "struct:pkg:path")
-				return nil
-			})
-		} else {
-			source = expr.DupAtt(source)
-			codegen.Walk(source, func(att *expr.AttributeExpr) error {
-				delete(att.Meta, "struct:pkg:path")
-				return nil
-			})
-		}
 		sname = codegen.Goify(ta.SourceCtx.Scope.Name(source, ta.SourceCtx.Pkg(source), ta.TargetCtx.Pointer, ta.TargetCtx.UseDefault), true)
 		tname = codegen.Goify(ta.TargetCtx.Scope.Name(target, ta.TargetCtx.Pkg(target), ta.TargetCtx.Pointer, ta.TargetCtx.UseDefault), true)
 		prefix = ta.Prefix
@@ -966,7 +943,7 @@ func dupTransformAttrs(ta *transformAttrs) *transformAttrs {
 
 const (
 	transformGoArrayTmpl = `{{ .TargetVar }} {{ if .NewVar }}:={{ else }}={{ end }} make([]{{ .ElemTypeRef }}, len({{ .SourceVar }})) 
-for {{ .LoopVar }}{{ if .ValVar }}, {{ .ValVar }}{{ end }} := range {{ .SourceVar }} {
+for {{ .LoopVar }}, val := range {{ .SourceVar }} {
   {{ transformAttribute .SourceElem .TargetElem "val" (printf "%s[%s]" .TargetVar .LoopVar) false .TransformAttrs -}}
 }
 `

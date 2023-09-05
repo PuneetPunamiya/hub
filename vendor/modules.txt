@@ -12,9 +12,6 @@ github.com/ActiveState/vt10x
 github.com/AlecAivazis/survey/v2
 github.com/AlecAivazis/survey/v2/core
 github.com/AlecAivazis/survey/v2/terminal
-# github.com/AnatolyRugalev/goregen v0.1.0
-## explicit; go 1.19
-github.com/AnatolyRugalev/goregen
 # github.com/ClickHouse/ch-go v0.55.0
 ## explicit; go 1.18
 github.com/ClickHouse/ch-go/compress
@@ -271,8 +268,8 @@ github.com/hashicorp/hcl/hcl/token
 github.com/hashicorp/hcl/json/parser
 github.com/hashicorp/hcl/json/scanner
 github.com/hashicorp/hcl/json/token
-# github.com/ikawaha/goahttpcheck v1.14.2
-## explicit; go 1.20
+# github.com/ikawaha/goahttpcheck v1.13.7
+## explicit; go 1.19
 github.com/ikawaha/goahttpcheck
 # github.com/ikawaha/httpcheck v1.9.0
 ## explicit; go 1.19
@@ -613,6 +610,9 @@ github.com/titanous/rocacheck
 # github.com/vbatts/tar-split v0.11.3
 ## explicit; go 1.15
 github.com/vbatts/tar-split/archive/tar
+# github.com/zach-klippenstein/goregen v0.0.0-20160303162051-795b5e3961ea
+## explicit
+github.com/zach-klippenstein/goregen
 # go.opencensus.io v0.24.0
 ## explicit; go 1.13
 go.opencensus.io
@@ -667,8 +667,8 @@ go.uber.org/zap/internal/pool
 go.uber.org/zap/internal/ztest
 go.uber.org/zap/zapcore
 go.uber.org/zap/zaptest
-# goa.design/goa/v3 v3.12.4
-## explicit; go 1.20
+# goa.design/goa/v3 v3.11.1
+## explicit; go 1.19
 goa.design/goa/v3/codegen
 goa.design/goa/v3/codegen/cli
 goa.design/goa/v3/codegen/example
@@ -687,8 +687,8 @@ goa.design/goa/v3/http/middleware
 goa.design/goa/v3/middleware
 goa.design/goa/v3/pkg
 goa.design/goa/v3/security
-# goa.design/plugins/v3 v3.12.4
-## explicit; go 1.20
+# goa.design/plugins/v3 v3.11.0
+## explicit; go 1.18
 goa.design/plugins/v3/cors
 goa.design/plugins/v3/cors/dsl
 goa.design/plugins/v3/cors/expr

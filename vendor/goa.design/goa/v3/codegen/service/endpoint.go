@@ -10,9 +10,9 @@ import (
 )
 
 type (
-	// EndpointsData contains the data necessary to render the
+	// endpointsData contains the data necessary to render the
 	// service endpoints struct template.
-	EndpointsData struct {
+	endpointsData struct {
 		// Name is the service name.
 		Name string
 		// Description is the service description.
@@ -24,7 +24,7 @@ type (
 		// ServiceVarName is the service interface name.
 		ServiceVarName string
 		// Methods lists the endpoint struct methods.
-		Methods []*EndpointMethodData
+		Methods []*endpointMethodData
 		// ClientInitArgs lists the arguments needed to instantiate the client.
 		ClientInitArgs string
 		// Schemes contains the security schemes types used by the
@@ -32,8 +32,8 @@ type (
 		Schemes SchemesData
 	}
 
-	// EndpointMethodData describes a single endpoint method.
-	EndpointMethodData struct {
+	// endpointMethodData describes a single endpoint method.
+	endpointMethodData struct {
 		*MethodData
 		// ArgName is the name of the argument used to initialize the client
 		// struct method field.
@@ -120,7 +120,7 @@ func EndpointFile(genpkg string, service *expr.ServiceExpr) *codegen.File {
 				Name:    "endpoint-method",
 				Source:  serviceEndpointMethodT,
 				Data:    m,
-				FuncMap: map[string]any{"payloadVar": payloadVar},
+				FuncMap: map[string]interface{}{"payloadVar": payloadVar},
 			})
 		}
 	}
@@ -128,12 +128,12 @@ func EndpointFile(genpkg string, service *expr.ServiceExpr) *codegen.File {
 	return &codegen.File{Path: path, SectionTemplates: sections}
 }
 
-func endpointData(service *expr.ServiceExpr) *EndpointsData {
+func endpointData(service *expr.ServiceExpr) *endpointsData {
 	svc := Services.Get(service.Name)
-	methods := make([]*EndpointMethodData, len(svc.Methods))
+	methods := make([]*endpointMethodData, len(svc.Methods))
 	names := make([]string, len(svc.Methods))
 	for i, m := range svc.Methods {
-		methods[i] = &EndpointMethodData{
+		methods[i] = &endpointMethodData{
 			MethodData:     m,
 			ArgName:        codegen.Goify(m.VarName, false),
 			ServiceName:    svc.Name,
@@ -143,7 +143,7 @@ func endpointData(service *expr.ServiceExpr) *EndpointsData {
 		names[i] = codegen.Goify(m.VarName, false)
 	}
 	desc := fmt.Sprintf("%s wraps the %q service endpoints.", endpointsStructName, service.Name)
-	return &EndpointsData{
+	return &endpointsData{
 		Name:           service.Name,
 		Description:    desc,
 		VarName:        endpointsStructName,
@@ -155,7 +155,7 @@ func endpointData(service *expr.ServiceExpr) *EndpointsData {
 	}
 }
 
-func payloadVar(e *EndpointMethodData) string {
+func payloadVar(e *endpointMethodData) string {
 	if e.ServerStream != nil || e.SkipRequestBodyEncodeDecode {
 		return "ep.Payload"
 	}
@@ -225,7 +225,7 @@ type {{ .ResponseStruct }} struct {
 // input: endpointMethodData
 const serviceEndpointMethodT = `{{ printf "New%sEndpoint returns an endpoint function that calls the method %q of service %q." .VarName .Name .ServiceName | comment }}
 func New{{ .VarName }}Endpoint(s {{ .ServiceVarName }}{{ range .Schemes }}, auth{{ .Type }}Fn security.Auth{{ .Type }}Func{{ end }}) goa.Endpoint {
-	return func(ctx context.Context, req any) (any, error) {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
 {{- if or .ServerStream }}
 		ep := req.(*{{ .ServerStream.EndpointStruct }})
 {{- else if .SkipRequestBodyEncodeDecode }}

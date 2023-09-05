@@ -21,11 +21,11 @@ type Val expr.Val
 //        Value(Val{"ID": 1})
 //    })
 //
-func Value(val any) {
+func Value(val interface{}) {
 	switch e := eval.Current().(type) {
 	case *expr.ExampleExpr:
 		if v, ok := val.(expr.Val); ok {
-			val = map[string]any(v)
+			val = map[string]interface{}(v)
 		}
 		e.Value = val
 	default:

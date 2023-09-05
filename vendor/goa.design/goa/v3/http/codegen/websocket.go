@@ -134,7 +134,6 @@ func initWebSocketData(ed *EndpointData, e *expr.HTTPEndpointExpr, sd *ServiceDa
 						serverArgs = []*InitArgData{{
 							Ref: ref,
 							AttributeData: &AttributeData{
-								Name:     "payload",
 								VarName:  "body",
 								TypeName: sd.Scope.GoTypeName(e.StreamingBody),
 								TypeRef:  sd.Scope.GoTypeRef(e.StreamingBody),
@@ -293,7 +292,7 @@ func serverStructWSSections(data *ServiceData) []*codegen.SectionTemplate {
 		Name:    "server-websocket-conn-configurer-struct",
 		Source:  webSocketConnConfigurerStructT,
 		Data:    data,
-		FuncMap: map[string]any{"isWebSocketEndpoint": isWebSocketEndpoint},
+		FuncMap: map[string]interface{}{"isWebSocketEndpoint": isWebSocketEndpoint},
 	})
 	for _, e := range data.Endpoints {
 		if e.ServerWebSocket != nil {
@@ -316,7 +315,7 @@ func serverWSSections(data *ServiceData) []*codegen.SectionTemplate {
 		Name:    "server-websocket-conn-configurer-struct-init",
 		Source:  webSocketConnConfigurerStructInitT,
 		Data:    data,
-		FuncMap: map[string]any{"isWebSocketEndpoint": isWebSocketEndpoint},
+		FuncMap: map[string]interface{}{"isWebSocketEndpoint": isWebSocketEndpoint},
 	})
 	for _, e := range data.Endpoints {
 		if e.ServerWebSocket != nil {
@@ -325,7 +324,7 @@ func serverWSSections(data *ServiceData) []*codegen.SectionTemplate {
 					Name:   "server-websocket-send",
 					Source: webSocketSendT,
 					Data:   e.ServerWebSocket,
-					FuncMap: map[string]any{
+					FuncMap: map[string]interface{}{
 						"upgradeParams":    upgradeParams,
 						"viewedServerBody": viewedServerBody,
 					},
@@ -337,7 +336,7 @@ func serverWSSections(data *ServiceData) []*codegen.SectionTemplate {
 					Name:    "server-websocket-recv",
 					Source:  webSocketRecvT,
 					Data:    e.ServerWebSocket,
-					FuncMap: map[string]any{"upgradeParams": upgradeParams},
+					FuncMap: map[string]interface{}{"upgradeParams": upgradeParams},
 				})
 			}
 			if e.ServerWebSocket.MustClose {
@@ -345,7 +344,7 @@ func serverWSSections(data *ServiceData) []*codegen.SectionTemplate {
 					Name:    "server-websocket-close",
 					Source:  webSocketCloseT,
 					Data:    e.ServerWebSocket,
-					FuncMap: map[string]any{"upgradeParams": upgradeParams},
+					FuncMap: map[string]interface{}{"upgradeParams": upgradeParams},
 				})
 			}
 			if e.Method.ViewedResult != nil && e.Method.ViewedResult.ViewName == "" {
@@ -368,7 +367,7 @@ func clientStructWSSections(data *ServiceData) []*codegen.SectionTemplate {
 		Name:    "client-websocket-conn-configurer-struct",
 		Source:  webSocketConnConfigurerStructT,
 		Data:    data,
-		FuncMap: map[string]any{"isWebSocketEndpoint": isWebSocketEndpoint},
+		FuncMap: map[string]interface{}{"isWebSocketEndpoint": isWebSocketEndpoint},
 	})
 	for _, e := range data.Endpoints {
 		if e.ClientWebSocket != nil {
@@ -390,7 +389,7 @@ func clientWSSections(data *ServiceData) []*codegen.SectionTemplate {
 		Name:    "client-websocket-conn-configurer-struct-init",
 		Source:  webSocketConnConfigurerStructInitT,
 		Data:    data,
-		FuncMap: map[string]any{"isWebSocketEndpoint": isWebSocketEndpoint},
+		FuncMap: map[string]interface{}{"isWebSocketEndpoint": isWebSocketEndpoint},
 	})
 	for _, e := range data.Endpoints {
 		if e.ClientWebSocket != nil {
@@ -399,7 +398,7 @@ func clientWSSections(data *ServiceData) []*codegen.SectionTemplate {
 					Name:    "client-websocket-recv",
 					Source:  webSocketRecvT,
 					Data:    e.ClientWebSocket,
-					FuncMap: map[string]any{"upgradeParams": upgradeParams},
+					FuncMap: map[string]interface{}{"upgradeParams": upgradeParams},
 				})
 			}
 			switch e.ClientWebSocket.Kind {
@@ -408,7 +407,7 @@ func clientWSSections(data *ServiceData) []*codegen.SectionTemplate {
 					Name:   "client-websocket-send",
 					Source: webSocketSendT,
 					Data:   e.ClientWebSocket,
-					FuncMap: map[string]any{
+					FuncMap: map[string]interface{}{
 						"upgradeParams":    upgradeParams,
 						"viewedServerBody": viewedServerBody,
 					},
@@ -419,7 +418,7 @@ func clientWSSections(data *ServiceData) []*codegen.SectionTemplate {
 					Name:    "client-websocket-close",
 					Source:  webSocketCloseT,
 					Data:    e.ClientWebSocket,
-					FuncMap: map[string]any{"upgradeParams": upgradeParams},
+					FuncMap: map[string]interface{}{"upgradeParams": upgradeParams},
 				})
 			}
 			if e.Method.ViewedResult != nil && e.Method.ViewedResult.ViewName == "" {
@@ -539,7 +538,7 @@ func (s *{{ .VarName }}) {{ .SendName }}(v {{ .SendTypeRef }}) error {
 					{{- $vsb := (viewedServerBody $.Response.ServerBody .Endpoint.Method.ViewedResult.ViewName) }}
 					body := {{ $vsb.Init.Name }}({{ range $vsb.Init.ServerArgs }}{{ .Ref }}, {{ end }})
 				{{- else }}
-					var body any
+					var body interface{}
 					switch s.view {
 					{{- range .Endpoint.Method.ViewedResult.Views }}
 						case {{ printf "%q" .Name }}{{ if eq .Name "default" }}, ""{{ end }}:

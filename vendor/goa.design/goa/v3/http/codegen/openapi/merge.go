@@ -4,7 +4,7 @@ import "reflect"
 
 // mergeItems is an internal datatype used to merge two schemas.
 type mergeItems []struct {
-	a, b   any
+	a, b   interface{}
 	needed bool
 }
 

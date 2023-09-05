@@ -48,9 +48,9 @@ type (
 		// renders the section text.
 		Source string
 		// FuncMap lists the functions used to render the templates.
-		FuncMap map[string]any
+		FuncMap map[string]interface{}
 		// Data used as input of template.
-		Data any
+		Data interface{}
 	}
 )
 

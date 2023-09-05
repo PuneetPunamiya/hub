@@ -19,9 +19,9 @@ type (
 		Name() string
 		// IsCompatible checks whether val has a Go type that is compatible with the data
 		// type.
-		IsCompatible(any) bool
+		IsCompatible(interface{}) bool
 		// Example generates a pseudo-random value using the given random generator.
-		Example(*ExampleGenerator) any
+		Example(*ExampleGenerator) interface{}
 		// Hash returns a unique hash value for the instance of the type.
 		Hash() string
 	}
@@ -83,10 +83,10 @@ type (
 	}
 
 	// ArrayVal is the type used to set the default value for arrays.
-	ArrayVal []any
+	ArrayVal []interface{}
 
 	// MapVal is the type used to set the default value for maps.
-	MapVal map[any]any
+	MapVal map[interface{}]interface{}
 )
 
 const (
@@ -162,7 +162,7 @@ const (
 	// Bytes is the type for binary data.
 	Bytes = Primitive(BytesKind)
 
-	// Any is the type for an arbitrary JSON value (any in Go).
+	// Any is the type for an arbitrary JSON value (interface{} in Go).
 	Any = Primitive(AnyKind)
 )
 
@@ -321,7 +321,7 @@ func (p Primitive) Name() string {
 }
 
 // IsCompatible returns true if val is compatible with p.
-func (p Primitive) IsCompatible(val any) bool {
+func (p Primitive) IsCompatible(val interface{}) bool {
 	if p == Any {
 		return true
 	}
@@ -346,7 +346,7 @@ func (p Primitive) IsCompatible(val any) bool {
 
 // Example generates a pseudo-random primitive value using the given random
 // generator.
-func (p Primitive) Example(r *ExampleGenerator) any {
+func (p Primitive) Example(r *ExampleGenerator) interface{} {
 	switch p {
 	case Boolean:
 		return r.Bool()
@@ -394,7 +394,7 @@ func (a *Array) Hash() string {
 }
 
 // IsCompatible returns true if val is compatible with p.
-func (a *Array) IsCompatible(val any) bool {
+func (a *Array) IsCompatible(val interface{}) bool {
 	k := reflect.TypeOf(val).Kind()
 	if k != reflect.Array && k != reflect.Slice {
 		return false
@@ -411,23 +411,23 @@ func (a *Array) IsCompatible(val any) bool {
 
 // Example generates a pseudo-random array value using the given random
 // generator.
-func (a *Array) Example(r *ExampleGenerator) any {
+func (a *Array) Example(r *ExampleGenerator) interface{} {
 	count := NewLength(a.ElemType, r)
-	res := make([]any, count)
+	res := make([]interface{}, count)
 	for i := 0; i < count; i++ {
 		res[i] = a.ElemType.Example(r)
 		if res[i] == nil {
 			// Handle the case of recursive data structures
-			res[i] = make(map[string]any)
+			res[i] = make(map[string]interface{})
 		}
 	}
 	return a.MakeSlice(res)
 }
 
 // MakeSlice examines the key type from the Array and create a slice with
-// builtin type if possible. The idea is to avoid generating []any and
+// builtin type if possible. The idea is to avoid generating []interface{} and
 // produce more precise types.
-func (a *Array) MakeSlice(s []any) any {
+func (a *Array) MakeSlice(s []interface{}) interface{} {
 	slice := reflect.MakeSlice(toReflectType(a), 0, len(s))
 	for _, item := range s {
 		slice = reflect.Append(slice, reflect.ValueOf(item))
@@ -436,8 +436,8 @@ func (a *Array) MakeSlice(s []any) any {
 }
 
 // ToSlice converts an ArrayVal into a slice.
-func (a ArrayVal) ToSlice() []any {
-	arr := make([]any, len(a))
+func (a ArrayVal) ToSlice() []interface{} {
+	arr := make([]interface{}, len(a))
 	for i, elem := range a {
 		switch actual := elem.(type) {
 		case ArrayVal:
@@ -524,14 +524,14 @@ func (o *Object) Merge(other *Object) *Object {
 }
 
 // IsCompatible returns true if o describes the (Go) type of val.
-func (o *Object) IsCompatible(val any) bool {
+func (o *Object) IsCompatible(val interface{}) bool {
 	k := reflect.TypeOf(val).Kind()
 	return k == reflect.Map || k == reflect.Struct
 }
 
 // Example returns a random value of the object.
-func (o *Object) Example(r *ExampleGenerator) any {
-	res := make(map[string]any)
+func (o *Object) Example(r *ExampleGenerator) interface{} {
+	res := make(map[string]interface{})
 	for _, nat := range *o {
 		if v := nat.Attribute.Example(r); v != nil {
 			res[nat.Name] = v
@@ -552,7 +552,7 @@ func (m *Map) Hash() string {
 }
 
 // IsCompatible returns true if o describes the (Go) type of val.
-func (m *Map) IsCompatible(val any) bool {
+func (m *Map) IsCompatible(val interface{}) bool {
 	k := reflect.TypeOf(val).Kind()
 	if k != reflect.Map {
 		return false
@@ -569,13 +569,13 @@ func (m *Map) IsCompatible(val any) bool {
 }
 
 // Example returns a random example value.
-func (m *Map) Example(r *ExampleGenerator) any {
+func (m *Map) Example(r *ExampleGenerator) interface{} {
 	if IsObject(m.KeyType.Type) || IsArray(m.KeyType.Type) || IsMap(m.KeyType.Type) {
 		// not much we can do for non hashable Go types
 		return nil
 	}
 	count := r.Int()%3 + 1
-	pair := map[any]any{}
+	pair := map[interface{}]interface{}{}
 	for i := 0; i < count; i++ {
 		k := m.KeyType.Example(r)
 		v := m.ElemType.Example(r)
@@ -587,9 +587,9 @@ func (m *Map) Example(r *ExampleGenerator) any {
 }
 
 // MakeMap examines the key type from a Map and create a map with builtin type
-// if possible. The idea is to avoid generating map[any]any,
+// if possible. The idea is to avoid generating map[interface{}]interface{},
 // which cannot be handled by json.Marshal.
-func (m *Map) MakeMap(raw map[any]any) any {
+func (m *Map) MakeMap(raw map[interface{}]interface{}) interface{} {
 	ma := reflect.MakeMap(toReflectType(m))
 	for key, value := range raw {
 		ma.SetMapIndex(reflect.ValueOf(key), reflect.ValueOf(value))
@@ -598,8 +598,8 @@ func (m *Map) MakeMap(raw map[any]any) any {
 }
 
 // ToMap converts a MapVal to a map.
-func (m MapVal) ToMap() map[any]any {
-	mp := make(map[any]any, len(m))
+func (m MapVal) ToMap() map[interface{}]interface{} {
+	mp := make(map[interface{}]interface{}, len(m))
 	for k, v := range m {
 		switch actual := v.(type) {
 		case ArrayVal:
@@ -625,7 +625,7 @@ func (u *Union) Hash() string {
 }
 
 // IsCompatible returns true if u describes the (Go) type of val.
-func (u *Union) IsCompatible(val any) bool {
+func (u *Union) IsCompatible(val interface{}) bool {
 	for _, nat := range u.Values {
 		if nat.Attribute.Type.IsCompatible(val) {
 			return true
@@ -635,7 +635,7 @@ func (u *Union) IsCompatible(val any) bool {
 }
 
 // Example returns a random example value.
-func (u *Union) Example(r *ExampleGenerator) any {
+func (u *Union) Example(r *ExampleGenerator) interface{} {
 	if len(u.Values) == 0 {
 		return nil
 	}
@@ -696,7 +696,7 @@ func toReflectType(dtype DataType) reflect.Type {
 	case BytesKind:
 		return reflect.TypeOf([]byte{})
 	case ObjectKind:
-		return reflect.TypeOf(map[string]any{})
+		return reflect.TypeOf(map[string]interface{}{})
 	case UserTypeKind:
 		return toReflectType(dtype.(*UserTypeExpr).Attribute().Type)
 	case ResultTypeKind:
@@ -710,10 +710,10 @@ func toReflectType(dtype DataType) reflect.Type {
 		if m.KeyType.Type.Kind() != ObjectKind {
 			ktype = toReflectType(m.KeyType.Type)
 		} else {
-			ktype = reflect.TypeOf([]any{}).Elem()
+			ktype = reflect.TypeOf([]interface{}{}).Elem()
 		}
 		return reflect.MapOf(ktype, toReflectType(m.ElemType.Type))
 	default:
-		return reflect.TypeOf([]any{}).Elem()
+		return reflect.TypeOf([]interface{}{}).Elem()
 	}
 }

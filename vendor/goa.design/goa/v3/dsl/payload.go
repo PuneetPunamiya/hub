@@ -68,7 +68,7 @@ import (
 //	        Required("left", "right")
 //	    })
 //	})
-func Payload(val any, args ...any) {
+func Payload(val interface{}, args ...interface{}) {
 	if len(args) > 2 {
 		eval.ReportError("too many arguments")
 	}
@@ -122,7 +122,7 @@ func Payload(val any, args ...any) {
 //	Method("add", func() {
 //	    StreamingPayload(Operands)
 //	})
-func StreamingPayload(val any, args ...any) {
+func StreamingPayload(val interface{}, args ...interface{}) {
 	if len(args) > 2 {
 		eval.ReportError("too many arguments")
 	}
@@ -139,7 +139,7 @@ func StreamingPayload(val any, args ...any) {
 	}
 }
 
-func methodDSL(m *expr.MethodExpr, suffix string, p any, args ...any) *expr.AttributeExpr {
+func methodDSL(m *expr.MethodExpr, suffix string, p interface{}, args ...interface{}) *expr.AttributeExpr {
 	var (
 		att *expr.AttributeExpr
 		fn  func()

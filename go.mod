@@ -1,6 +1,6 @@
 module github.com/tektoncd/hub
 
-go 1.20
+go 1.19
 
 require (
 	github.com/ActiveState/vt10x v1.3.1
@@ -15,7 +15,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/sessions v1.2.1
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/ikawaha/goahttpcheck v1.14.2
+	github.com/ikawaha/goahttpcheck v1.13.7
 	github.com/joho/godotenv v1.5.1
 	github.com/markbates/goth v1.77.0
 	github.com/mitchellh/go-homedir v1.1.0
@@ -26,8 +26,8 @@ require (
 	github.com/tektoncd/plumbing v0.0.0-20220817140952-3da8ce01aeeb
 	go.uber.org/automaxprocs v1.5.3
 	go.uber.org/zap v1.25.0
-	goa.design/goa/v3 v3.12.4
-	goa.design/plugins/v3 v3.12.4
+	goa.design/goa/v3 v3.11.1
+	goa.design/plugins/v3 v3.11.0
 	golang.org/x/term v0.12.0
 	golang.org/x/text v0.13.0
 	gopkg.in/h2non/gock.v1 v1.1.2
@@ -43,7 +43,6 @@ require (
 require (
 	contrib.go.opencensus.io/exporter/ocagent v0.7.1-0.20200907061046-05415f1de66d // indirect
 	contrib.go.opencensus.io/exporter/prometheus v0.4.0 // indirect
-	github.com/AnatolyRugalev/goregen v0.1.0 // indirect
 	github.com/ClickHouse/ch-go v0.55.0 // indirect
 	github.com/ClickHouse/clickhouse-go/v2 v2.9.1 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
@@ -145,6 +144,7 @@ require (
 	github.com/theupdateframework/go-tuf v0.5.2 // indirect
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399 // indirect
 	github.com/vbatts/tar-split v0.11.3 // indirect
+	github.com/zach-klippenstein/goregen v0.0.0-20160303162051-795b5e3961ea // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/otel v1.16.0 // indirect
 	go.opentelemetry.io/otel/trace v1.16.0 // indirect

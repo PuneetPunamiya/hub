@@ -28,7 +28,7 @@ type (
 		// Meta is a list of key/value pairs
 		Meta MetaExpr
 		// Optional member default value
-		DefaultValue any
+		DefaultValue interface{}
 		// UserExample set in DSL or computed in Finalize
 		UserExamples []*ExampleExpr
 		// finalized is true if the attribute has been finalized - only
@@ -43,12 +43,12 @@ type (
 		// Description is an optional long description.
 		Description string
 		// Value is the example value.
-		Value any
+		Value interface{}
 	}
 
 	// Val is the type used to provide the value of examples for attributes that are
 	// objects.
-	Val map[string]any
+	Val map[string]interface{}
 
 	// CompositeExpr defines a generic composite expression that contains an
 	// attribute.  This makes it possible for plugins to use attributes in
@@ -62,7 +62,7 @@ type (
 	ValidationExpr struct {
 		// Values represents an enum validation as described at
 		// http://json-schema.org/latest/json-schema-validation.html#anchor76.
-		Values []any
+		Values []interface{}
 		// Format represents a format validation as described at
 		// http://json-schema.org/latest/json-schema-validation.html#anchor104.
 		Format ValidationFormat
@@ -493,7 +493,7 @@ func (a *AttributeExpr) HasDefaultValue(attName string) bool {
 // GetDefault gets the default value for the child attribute with the given
 // name. It returns nil if the child attribute with the given name does not
 // exist or if the child attribute does not have a default value.
-func (a *AttributeExpr) GetDefault(attName string) any {
+func (a *AttributeExpr) GetDefault(attName string) interface{} {
 	if o := AsObject(a.Type); o != nil {
 		att := o.Attribute(attName)
 		if att.DefaultValue != nil {
@@ -508,7 +508,7 @@ func (a *AttributeExpr) GetDefault(attName string) any {
 
 // SetDefault sets the default for the attribute. It also converts HashVal
 // and ArrayVal to map and slice respectively.
-func (a *AttributeExpr) SetDefault(def any) {
+func (a *AttributeExpr) SetDefault(def interface{}) {
 	switch actual := def.(type) {
 	case MapVal:
 		a.DefaultValue = actual.ToMap()
@@ -563,7 +563,7 @@ func (a *AttributeExpr) Delete(name string) {
 			a.Validation.RemoveRequired(name)
 		}
 		for _, ex := range a.UserExamples {
-			if m, ok := ex.Value.(map[string]any); ok {
+			if m, ok := ex.Value.(map[string]interface{}); ok {
 				delete(m, name)
 			}
 		}

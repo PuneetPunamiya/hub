@@ -100,7 +100,7 @@ func (t TopExpr) EvalName() string { return string(t) }
 
 // ToExpressionSet is a convenience function that accepts a slice of expressions
 // and builds the corresponding ExpressionSet.
-func ToExpressionSet(slice any) ExpressionSet {
+func ToExpressionSet(slice interface{}) ExpressionSet {
 	if slice == nil {
 		return nil
 	}

@@ -3,10 +3,11 @@ package goa
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/hashicorp/go-multierror"
 )
 
 type (
@@ -73,13 +74,13 @@ func NewServiceError(err error, name string, timeout, temporary, fault bool) *Se
 
 // Fault creates an error given a format and values a la fmt.Printf. The error
 // has the Fault field set to true.
-func Fault(format string, v ...any) *ServiceError {
+func Fault(format string, v ...interface{}) *ServiceError {
 	return newError("fault", false, false, true, format, v...)
 }
 
 // PermanentError creates an error given a name and a format and values a la
 // fmt.Printf.
-func PermanentError(name, format string, v ...any) *ServiceError {
+func PermanentError(name, format string, v ...interface{}) *ServiceError {
 	return newError(name, false, false, false, format, v...)
 }
 
@@ -87,20 +88,20 @@ func PermanentError(name, format string, v ...any) *ServiceError {
 // and that retrying the request may be successful. TemporaryError creates an
 // error given a name and a format and values a la fmt.Printf. The error has the
 // Temporary field set to true.
-func TemporaryError(name, format string, v ...any) *ServiceError {
+func TemporaryError(name, format string, v ...interface{}) *ServiceError {
 	return newError(name, false, true, false, format, v...)
 }
 
 // PermanentTimeoutError creates an error given a name and a format and values a
 // la fmt.Printf. The error has the Timeout field set to true.
-func PermanentTimeoutError(name, format string, v ...any) *ServiceError {
+func PermanentTimeoutError(name, format string, v ...interface{}) *ServiceError {
 	return newError(name, true, false, false, format, v...)
 }
 
 // TemporaryTimeoutError creates an error given a name and a format and values a
 // la fmt.Printf. The error has both the Timeout and Temporary fields set to
 // true.
-func TemporaryTimeoutError(name, format string, v ...any) *ServiceError {
+func TemporaryTimeoutError(name, format string, v ...interface{}) *ServiceError {
 	return newError(name, true, true, false, format, v...)
 }
 
@@ -118,7 +119,7 @@ func DecodePayloadError(msg string) error {
 
 // InvalidFieldTypeError is the error produced by the generated code when the
 // type of a payload field does not match the type defined in the design.
-func InvalidFieldTypeError(name string, val any, expected string) error {
+func InvalidFieldTypeError(name string, val interface{}, expected string) error {
 	return withField(name, PermanentError(
 		InvalidFieldType, "invalid value %#v for %q, must be a %s", val, name, expected))
 }
@@ -133,7 +134,7 @@ func MissingFieldError(name, context string) error {
 // InvalidEnumValueError is the error produced by the generated code when the
 // value of a payload field does not match one the values defined in the design
 // Enum validation.
-func InvalidEnumValueError(name string, val any, allowed []any) error {
+func InvalidEnumValueError(name string, val interface{}, allowed []interface{}) error {
 	elems := make([]string, len(allowed))
 	for i, a := range allowed {
 		elems[i] = fmt.Sprintf("%#v", a)
@@ -161,7 +162,7 @@ func InvalidPatternError(name, target string, pattern string) error {
 // InvalidRangeError is the error produced by the generated code when the value
 // of a payload field does not match the range validation defined in the design.
 // value may be an int or a float64.
-func InvalidRangeError(name string, target any, value any, min bool) error {
+func InvalidRangeError(name string, target interface{}, value interface{}, min bool) error {
 	comp := "greater or equal"
 	if !min {
 		comp = "lesser or equal"
@@ -173,7 +174,7 @@ func InvalidRangeError(name string, target any, value any, min bool) error {
 // InvalidLengthError is the error produced by the generated code when the value
 // of a payload field does not match the length validation defined in the
 // design.
-func InvalidLengthError(name string, target any, ln, value int, min bool) error {
+func InvalidLengthError(name string, target interface{}, ln, value int, min bool) error {
 	comp := "greater or equal"
 	if !min {
 		comp = "lesser or equal"
@@ -227,7 +228,7 @@ func MergeErrors(err, other error) error {
 	//
 	// Do this before we modify ourselves, as History() may include us!
 	e.history = append(e.History(), o.History()...)
-	e.err = errors.Join(e.err, o.err)
+	e.err = multierror.Append(e.err, o.err)
 
 	e.Message = e.Message + "; " + o.Message
 	e.Timeout = e.Timeout && o.Timeout
@@ -264,7 +265,7 @@ func withField(field string, err *ServiceError) *ServiceError {
 	return err
 }
 
-func newError(name string, timeout, temporary, fault bool, format string, v ...any) *ServiceError {
+func newError(name string, timeout, temporary, fault bool, format string, v ...interface{}) *ServiceError {
 	return &ServiceError{
 		Name:      name,
 		ID:        NewErrorID(),

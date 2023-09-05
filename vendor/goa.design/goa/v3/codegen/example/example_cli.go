@@ -45,30 +45,30 @@ func exampleCLIMain(genpkg string, root *expr.RootExpr, svr *expr.ServerExpr) *c
 		&codegen.SectionTemplate{
 			Name:   "cli-main-start",
 			Source: cliMainStartT,
-			Data: map[string]any{
+			Data: map[string]interface{}{
 				"Server": svrdata,
 			},
-			FuncMap: map[string]any{
+			FuncMap: map[string]interface{}{
 				"join": strings.Join,
 			},
 		},
 		&codegen.SectionTemplate{
 			Name:   "cli-main-var-init",
 			Source: cliMainVarInitT,
-			Data: map[string]any{
+			Data: map[string]interface{}{
 				"Server": svrdata,
 			},
-			FuncMap: map[string]any{
+			FuncMap: map[string]interface{}{
 				"join": strings.Join,
 			},
 		},
 		&codegen.SectionTemplate{
 			Name:   "cli-main-endpoint-init",
 			Source: cliMainEndpointInitT,
-			Data: map[string]any{
+			Data: map[string]interface{}{
 				"Server": svrdata,
 			},
-			FuncMap: map[string]any{
+			FuncMap: map[string]interface{}{
 				"join":    strings.Join,
 				"toUpper": strings.ToUpper,
 			},
@@ -77,11 +77,11 @@ func exampleCLIMain(genpkg string, root *expr.RootExpr, svr *expr.ServerExpr) *c
 		&codegen.SectionTemplate{
 			Name:   "cli-main-usage",
 			Source: cliMainUsageT,
-			Data: map[string]any{
+			Data: map[string]interface{}{
 				"APIName": root.API.Name,
 				"Server":  svrdata,
 			},
-			FuncMap: map[string]any{
+			FuncMap: map[string]interface{}{
 				"toUpper": strings.ToUpper,
 				"join":    strings.Join,
 			},
@@ -91,7 +91,7 @@ func exampleCLIMain(genpkg string, root *expr.RootExpr, svr *expr.ServerExpr) *c
 }
 
 const (
-	// input: map[string]any{"Server": *Data}
+	// input: map[string]interface{}{"Server": *Data}
 	cliMainStartT = `func main() {
 	var (
 		hostF = flag.String("host", {{ printf "%q" .Server.DefaultHost.Name }}, "Server host (valid values: {{ (join .Server.AvailableHosts ", ") }})")
@@ -107,7 +107,7 @@ const (
 	flag.Parse()
 `
 
-	// input: map[string]any{"Server": *Data}
+	// input: map[string]interface{}{"Server": *Data}
 	cliMainVarInitT = `var (
 		addr string
 		timeout int
@@ -163,10 +163,10 @@ const (
 	}
 `
 
-	// input: map[string]any{"Server": *Data}
+	// input: map[string]interface{}{"Server": *Data}
 	cliMainEndpointInitT = `var(
 		endpoint goa.Endpoint
-		payload any
+		payload interface{}
 		err error
 	)
 	{
@@ -204,7 +204,7 @@ const (
 }
 `
 
-	// input: map[string]any{"APIName": string, "Server": *Data}
+	// input: map[string]interface{}{"APIName": string, "Server": *Data}
 	cliMainUsageT = `
 func usage() {
   fmt.Fprintf(os.Stderr, ` + "`" + `%s is a command line client for the {{ .APIName }} API.

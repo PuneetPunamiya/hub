@@ -35,7 +35,7 @@ func protoFile(genpkg string, svc *expr.GRPCServiceExpr) *codegen.File {
 		{
 			Name:   "proto-header",
 			Source: protoHeaderT,
-			Data: map[string]any{
+			Data: map[string]interface{}{
 				"Title":       fmt.Sprintf("%s protocol buffer definition", svc.Name()),
 				"ToolVersion": goa.Version(),
 			},
@@ -44,7 +44,7 @@ func protoFile(genpkg string, svc *expr.GRPCServiceExpr) *codegen.File {
 		{
 			Name:   "proto-start",
 			Source: protoStartT,
-			Data: map[string]any{
+			Data: map[string]interface{}{
 				"ProtoVersion": ProtoVersion,
 				"Pkg":          pkgName(svc, svcName),
 				"Imports":      data.ProtoImports,
